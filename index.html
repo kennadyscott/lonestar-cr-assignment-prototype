@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LoneStar CR Assignment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d4257;
+    --navy-2: #125570;
+    --cyan: #1fb3de;
+    --cyan-soft: #d9f2fb;
+    --cyan-softer: #eef9fd;
+    --bg: #f3f8fb;
+    --surface: #ffffff;
+    --border: #dfe9ef;
+    --text: #1d2b33;
+    --muted: #5d7280;
+    --sand: #fdf6ea;
+    --sand-border: #f0dcb8;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(13,66,87,.05), 0 4px 16px rgba(13,66,87,.05);
+  }
+  /* Grade band font scale: 2–3 = base, 4–5 smaller, 6–8 smaller still */
+  body { --fs: 1; }
+  body[data-band="4-5"] { --fs: .9; }
+  body[data-band="6-8"] { --fs: .8; }
+  body[data-band="9-12"] { --fs: .8; }   /* same as 6–8 */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Manrope", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: calc(16px * var(--fs));
+    line-height: 1.65;
+    display: flex; flex-direction: column;
+  }
+  button { font-family: inherit; cursor: pointer; }
+
+  /* ---------- Top bar — copied from LoneStar Writing Studio V1 (src/theme.css + Shell.jsx) ---------- */
+  .topbar {
+    --v1-navy-deep: #01172d; --v1-navy: #02384d; --v1-teal: #035c78; --v1-ink: #14344a;
+    --v1-muted: #5c7285; --v1-line: #dde8ee; --v1-gold: #f5b400; --v1-gold-line: rgba(245, 180, 0, 0.45);
+    font-family: 'Manrope', system-ui, sans-serif; line-height: normal;
+    flex: none;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 1px 0 var(--v1-gold-line); padding: 0 20px 0 16px; display: flex; align-items: center; gap: 14px; min-height: 64px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  }
+  .topbar button { font-family: inherit; cursor: pointer; border: none; background: none; }
+  .logo-chip { background: linear-gradient(150deg, var(--v1-navy) 0%, var(--v1-navy-deep) 100%) !important; border-radius: 12px; padding: 5px 12px; margin: 8px 0; display: grid; place-items: center; }
+  .logo-chip img { height: 36px; display: block; }
+  .cc-btn { display: flex; align-items: center; gap: 10px; background: #fff !important; border: 1px solid var(--v1-gold-line) !important; border-radius: 999px; padding: 5px 12px 5px 8px; }
+  .cc-btn:hover { border-color: var(--v1-gold) !important; background: #fffdf6 !important; }
+  .cc-btn img { height: 22px; }
+  .cc-btn .split { width: 1px; height: 22px; background: var(--v1-line); }
+  .cc-btn small { display: block; font-size: 9px; font-weight: 700; letter-spacing: .7px; color: var(--v1-muted); text-align: left; }
+  .cc-btn b { font-size: 13px; color: var(--v1-ink); display: block; text-align: left; font-weight: 700; }
+  .who { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--v1-gold-line); border-radius: 999px; padding: 4px 10px 4px 4px; }
+  .who .av-init { width: 32px; height: 32px; border-radius: 50%; background: #d9f2fb; color: var(--v1-teal); display: grid; place-items: center; font-weight: 800; font-size: 12px; border: 1.5px solid var(--v1-gold); }
+  .who .nm { font-weight: 700; font-size: 13.5px; line-height: 1.15; color: var(--v1-ink); }
+  .who .sub { font-size: 11.5px; color: var(--v1-muted); }
+  .who .pwr { font-size: 16px; color: var(--v1-muted); padding: 4px; }
+  .who .pwr:hover { color: var(--v1-ink); }
+  .spacer { flex: 1; }
+  /* Prototype-only grade band switcher */
+  .band { display: flex; align-items: center; gap: 4px; background: #fff; border: 1px solid var(--v1-gold-line); border-radius: 999px; padding: 4px; margin-left: 6px; }
+  .band span { font-size: 10px; font-weight: 800; letter-spacing: .7px; color: var(--v1-muted); padding: 0 6px 0 8px; }
+  .topbar .band button { height: 28px; padding: 0 11px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: var(--v1-ink); }
+  .topbar .band button:hover { background: #eef6fa; }
+  .topbar .band button.on { background: var(--v1-navy); color: #fff; }
+
+  /* ---------- Assignment bar (matches the current app: title left, Save And Exit right) ---------- */
+  .assign-bar { flex: none; display: flex; align-items: center; gap: 12px; padding: 14px 20px 0; }
+  .assign-bar h1 { margin: 0; font-size: 20px; font-weight: 500; color: var(--navy); line-height: 1.2; }
+  .save-btn { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 8px; border: 0; background: var(--navy); color: #fff; font-size: 13.5px; font-weight: 500; }
+  .save-btn:hover { background: var(--navy-2); }
+
+  /* ---------- Layout ---------- */
+  .workspace {
+    display: grid; align-items: start;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) var(--luna-w, 280px);
+    gap: 20px;
+    padding: 20px;
+    transition: grid-template-columns .25s ease;
+  }
+  body.luna-collapsed .workspace { --luna-w: 72px; }
+  /* Page scrolls now. The passage panel grows to ~2 screens tall before scrolling inside;
+     the response + Luna panels stick below the header so they stay in view while reading. */
+  .workspace > .panel:first-child { max-height: calc(2 * (100vh - 150px)); }
+  .workspace > .panel:not(:first-child) { position: sticky; top: 84px; max-height: calc(100vh - 104px); }
+  .panel {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); min-height: 0;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .panel-head {
+    flex: none; display: flex; align-items: center; gap: 10px;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+  }
+  .panel-head h2 { margin: 0; font-size: calc(15px * var(--fs)); font-weight: 600; color: var(--navy); }
+  .eyebrow { font-size: calc(11px * var(--fs)); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .panel-body { flex: 1; overflow-y: auto; padding: 24px 28px; }
+
+  /* Passage */
+  .passage p { margin: 0 0 1.1em; max-width: 64ch; }
+  .passage .pnum { display: inline-block; min-width: 1.6em; color: var(--cyan); font-weight: 600; font-size: calc(14px * var(--fs)); }
+  /* Collapsible passage sections (used when an assignment has 2+ passages) */
+  .psg { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; background: var(--surface); }
+  .psg > summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 10px; font-family: "Manrope", system-ui, sans-serif; font-size: calc(16px * var(--fs));
+  }
+  .psg > summary::-webkit-details-marker { display: none; }
+  .psg > summary:hover { background: var(--cyan-softer); }
+  .psg[open] > summary { border-bottom: 1px solid var(--border); border-radius: 10px 10px 0 0; }
+  .psg .num { width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: #fff; font-size: calc(13px * var(--fs)); font-weight: 600; display: grid; place-items: center; flex: none; }
+  .psg .ttl { font-weight: 600; color: var(--navy); flex: 1; line-height: 1.3; }
+  .psg .chev { flex: none; color: var(--muted); transition: transform .2s; }
+  .psg[open] .chev { transform: rotate(180deg); }
+  .psg .psg-body { padding: 16px 18px 4px; }
+  .psg-toggle { background: none; border: 0; padding: 0; color: var(--navy-2); font-size: calc(13px * var(--fs)); font-weight: 500; text-decoration: underline; text-underline-offset: 2px; }
+  .psg-actions { display: flex; justify-content: flex-end; margin: -6px 0 10px; }
+
+  /* Passage toolbar (matches the current app, with zoom moved in from the top) */
+  .passage-bar { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .passage-pill { display: flex; align-items: center; gap: 18px; min-height: 44px; padding: 8px 16px; border-radius: 6px; background: #f1f3f4; border: 1px solid #e3e6e8; flex: 1 1 220px; min-width: 0; }
+  .passage-pill span { color: var(--muted); }
+  .passage-pill b { font-weight: 500; color: var(--text); margin-left: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tools { display: flex; flex-wrap: nowrap; gap: 6px; }
+  .tool { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 10px; font-size: calc(13.5px * var(--fs)); white-space: nowrap; border-radius: 6px; border: 1.5px solid var(--navy); background: var(--cyan-softer); color: var(--navy); }
+  .tool:hover, .tool.on { background: var(--cyan-soft); }
+  .tool.icon { width: 34px; padding: 0; justify-content: center; }
+  .tool svg { width: 15px; height: 15px; }
+  .zoom { display: inline-flex; border-radius: 6px; overflow: hidden; border: 1.5px solid var(--navy); }
+  .zoom button { width: 32px; height: 31px; border: 0; background: var(--cyan-softer); color: var(--navy); display: grid; place-items: center; }
+  .zoom button + button { border-left: 1.5px solid var(--navy); }
+  .zoom button:hover { background: var(--cyan-soft); }
+  .zoom button:active { background: var(--cyan); }
+  .zoom svg { width: 16px; height: 16px; }
+  body.line-reader .passage p { opacity: .3; transition: opacity .15s; }
+  body.line-reader .passage p:hover { opacity: 1; background: var(--cyan-softer); border-radius: 6px; }
+
+  /* Prompt + steps */
+  .prompt-card { background: var(--cyan-softer); border: 1px solid var(--cyan-soft); border-radius: 12px; padding: 16px 18px; margin-bottom: 22px; }
+  .prompt-card .q { font-size: calc(17px * var(--fs)); font-weight: 500; color: var(--navy); margin: 6px 0 0; line-height: 1.5; }
+  .prompt-card details { margin-top: 10px; font-size: calc(14px * var(--fs)); color: var(--muted); }
+  .prompt-card summary { cursor: pointer; color: var(--navy-2); font-weight: 500; }
+
+  .stepper { display: flex; gap: 6px; margin-bottom: 18px; }
+  .stepper button {
+    flex: 1; border: 0; background: none; padding: 0; text-align: left;
+    font-size: calc(12px * var(--fs)); color: var(--muted);
+  }
+  .stepper .bar { height: 5px; border-radius: 3px; background: var(--border); margin-bottom: 6px; }
+  .stepper button.done .bar { background: var(--navy-2); }
+  .stepper button.active .bar { background: var(--cyan); }
+  .stepper button.active { color: var(--navy); font-weight: 600; }
+
+  .step h3 { margin: 0 0 4px; font-size: calc(18px * var(--fs)); color: var(--navy); font-weight: 600; }
+  .step .instr { color: var(--muted); margin: 0 0 16px; }
+  .checklist { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 10px; }
+  .checklist li { display: flex; gap: 12px; align-items: flex-start; background: var(--sand); border: 1px solid var(--sand-border); border-radius: 10px; padding: 12px 14px; }
+  .checklist input { margin-top: 5px; width: 18px; height: 18px; accent-color: var(--navy-2); flex: none; }
+  .field-label { font-size: calc(14px * var(--fs)); font-weight: 500; color: var(--navy); margin: 0 0 6px; display: block; }
+  textarea {
+    width: 100%; font-family: inherit; font-size: calc(16px * var(--fs)); line-height: 1.65;
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; resize: vertical; color: var(--text);
+    min-height: 90px;
+  }
+  textarea:focus { outline: 2px solid var(--cyan); outline-offset: -1px; border-color: transparent; }
+  textarea.big { min-height: 260px; }
+  .step-nav { flex: none; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-top: 1px solid var(--border); background: #fbfdfe; }
+  .btn { height: 40px; padding: 0 18px; border-radius: 10px; font-size: calc(14px * var(--fs)); font-weight: 500; border: 1px solid var(--border); background: var(--surface); color: var(--navy); }
+  .btn.primary { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .wc { font-size: calc(13px * var(--fs)); color: var(--muted); }
+
+  /* Highlighting */
+  mark.hl { color: inherit; border-radius: 3px; padding: 1px 0; cursor: pointer; }
+  .hl-green { background: #bff0c9; }
+  .hl-blue  { background: #cfe0ff; }
+  .hl-red   { background: #ffcfcf; }
+  .hl-pop {
+    position: fixed; z-index: 50; display: none; gap: 4px; padding: 6px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(13,66,87,.18);
+  }
+  .hl-pop.show { display: flex; }
+  .hl-pop button { display: flex; align-items: center; gap: 6px; border: 0; background: none; padding: 6px 10px; border-radius: 8px; font-size: 13px; color: var(--text); white-space: nowrap; }
+  .hl-pop button:hover { background: var(--cyan-softer); }
+  .hl-pop .sw { width: 16px; height: 16px; border-radius: 50%; flex: none; }
+  .hl-pop .rm { color: #b3261e; border-left: 1px solid var(--border); border-radius: 0 8px 8px 0; }
+  .hl-legend { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 10px; }
+  .hl-legend li { display: flex; gap: 12px; align-items: center; background: var(--sand); border: 1px solid var(--sand-border); border-radius: 10px; padding: 12px 14px; }
+  .hl-legend .sw { width: 34px; height: 34px; border-radius: 8px; flex: none; }
+  .hl-legend b { display: block; font-weight: 600; color: var(--navy); }
+  .hl-legend small { color: var(--muted); font-size: calc(13px * var(--fs)); line-height: 1.4; display: block; }
+  .hl-legend .count { margin-left: auto; flex: none; min-width: 28px; height: 28px; padding: 0 8px; border-radius: 999px; background: #fff; border: 1px solid var(--sand-border); display: grid; place-items: center; font-size: calc(13px * var(--fs)); font-weight: 600; color: var(--navy); }
+  .hl-tip { font-size: calc(13px * var(--fs)); color: var(--muted); margin: 0; }
+  .char-count { text-align: right; font-size: calc(13px * var(--fs)); color: var(--muted); margin: -10px 0 16px; }
+  .char-count.over { color: #b3261e; font-weight: 600; }
+
+  /* Graphic organizer (Step 3): the color lives on each section's keyword */
+  .org { display: grid; gap: 16px; margin-bottom: 8px; }
+  .org-sec { border: 1px solid #cfe3ec; border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .org-head { background: #e9f6fc; padding: 12px 16px; font-size: calc(14.5px * var(--fs)); font-weight: 600; color: #2a3f4d; line-height: 1.45; }
+  .org-head .kw { font-weight: 700; }
+  .kw-green  { color: #2e8b3a; }
+  .kw-purple { color: #a23be6; }
+  .kw-blue   { color: #2a66c9; }
+  .kw-red    { color: #e0605a; }
+  .kw-orange { color: #ef9a2e; }
+  .rte-bar { display: flex; gap: 2px; padding: 4px 8px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .rte-bar button { width: 30px; height: 28px; border: 0; background: none; border-radius: 6px; color: var(--text); display: grid; place-items: center; font-size: 14px; }
+  .rte-bar button:hover { background: var(--cyan-softer); }
+  .rte-bar .sep { width: 1px; background: var(--border); margin: 4px 6px; }
+  .rte { min-height: 96px; padding: 10px 14px; font-size: calc(15px * var(--fs)); line-height: 1.6; outline: none; }
+  .rte:focus { box-shadow: inset 0 0 0 2px var(--cyan); }
+  .rte:empty::before { content: attr(data-placeholder); color: #98a6ae; font-style: italic; }
+  .rte ul, .rte ol { margin: 4px 0; padding-left: 22px; }
+
+  /* Step 4: essay box + Revise / Edit checklist (left panel) */
+  .essay-note { background: var(--sand); border: 1px solid var(--sand-border); border-radius: 10px; padding: 12px 16px; color: #6b5a3e; margin: 0 0 16px; }
+  .rte-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .rte-wrap .rte-bar { border-top: 0; }
+  .rte.big { min-height: 280px; }
+  .rte p { margin: 0 0 .8em; }
+  .rebuild { background: none; border: 0; padding: 0; color: var(--navy-2); font-size: calc(13px * var(--fs)); text-decoration: underline; text-underline-offset: 2px; }
+  .revise { --rv: #4a7fe0; --rv-bg: #e6effc; }
+  .revise[data-tab="edit"] { --rv: #3d9a5c; --rv-bg: #e5f4ea; }
+  .rv-top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .rv-top .luna-avatar { width: 52px; height: 52px; }
+  .rv-top .bubble { font-size: calc(16px * var(--fs)); padding: 10px 16px; }
+  body[data-band="9-12"] .rv-top { display: none; }
+  .rv-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  .rv-tab { display: flex; align-items: center; justify-content: center; gap: 10px; height: 56px; border-radius: 14px; border: 2px solid transparent; font-size: calc(18px * var(--fs)); font-weight: 600; }
+  .rv-tab[data-key="revise"] { background: #e6effc; color: #3b78e0; }
+  .rv-tab[data-key="edit"]   { background: #e5f4ea; color: #3d9a5c; }
+  .rv-tab.on { border-color: currentColor; }
+  .rv-tab .ck { color: #9aa7b3; }
+  .rv-tab.on .ck, .rv-tab.done .ck { color: currentColor; }
+  .rv-q { font-size: calc(19px * var(--fs)); font-weight: 600; color: var(--text); margin: 0 0 14px; }
+  .rv-items { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 12px; }
+  .rv-item { display: flex; align-items: center; gap: 16px; padding: 12px; border-radius: 14px; background: #f6f8fa; border: 1px solid #e3e8ee; cursor: pointer; }
+  .rv-item.on { background: var(--rv-bg); border-color: var(--rv); }
+  .rv-letter { width: 52px; height: 52px; flex: none; border-radius: 12px; background: var(--rv); color: #fff; display: grid; place-items: center; font-size: calc(26px * var(--fs)); font-weight: 700; }
+  .rv-text { flex: 1; font-weight: 600; font-size: calc(16px * var(--fs)); line-height: 1.35; }
+  .rv-box { width: 44px; height: 44px; flex: none; border-radius: 10px; border: 2.5px solid #c5ced8; background: #fff; display: grid; place-items: center; color: transparent; }
+  .rv-item.on .rv-box { background: var(--rv); border-color: var(--rv); color: #fff; }
+  .rv-stars { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-weight: 700; font-size: calc(18px * var(--fs)); color: var(--navy); }
+  .rv-stars svg { width: 30px; height: 30px; fill: #dde3e9; transition: fill .2s; }
+  .rv-stars svg.lit { fill: #f5b400; }
+  .rv-next { width: 100%; height: 52px; border-radius: 12px; border: 0; background: var(--rv); color: #fff; font-size: calc(18px * var(--fs)); font-weight: 600; }
+  .rv-next:hover { filter: brightness(.95); }
+  /* 4–5 list layout */
+  .rvl-head, .rvc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .rvl-head h4, .rvc-head h4 { margin: 0; font-size: calc(20px * var(--fs)); font-weight: 600; color: var(--navy); line-height: 1.3; }
+  .rvl-head span, .rvc-head span { color: var(--muted); font-weight: 600; font-size: calc(14px * var(--fs)); white-space: nowrap; }
+  .rvl-bar { height: 10px; border-radius: 999px; background: #e3e8ee; overflow: hidden; margin-bottom: 16px; }
+  .rvl-bar i { display: block; height: 100%; background: #4a7fe0; transition: width .25s; }
+  .rvl-tabs, .rvc-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .rvl-tab { display: flex; justify-content: space-between; align-items: center; height: 52px; padding: 0 18px; border-radius: 12px; border: 0; font-size: calc(17px * var(--fs)); font-weight: 700; }
+  .rvl-tab[data-key="revise"] { background: #e6effc; color: #3b78e0; }
+  .rvl-tab[data-key="edit"]   { background: #e5f4ea; color: #3d9a5c; }
+  .rvl-tab.on[data-key="revise"] { background: #4a7fe0; color: #fff; }
+  .rvl-tab.on[data-key="edit"]   { background: #3d9a5c; color: #fff; }
+  .rvl-box { border: 1px solid #dfe6ee; border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .rvl-box-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; background: var(--rv-bg); }
+  .rvl-box-head b { color: var(--rv); font-size: calc(17px * var(--fs)); }
+  .rvl-box-head small { color: var(--muted); font-weight: 600; font-size: calc(13px * var(--fs)); }
+  .rvl-box-head .n { color: var(--muted); font-weight: 600; font-size: calc(14px * var(--fs)); }
+  .rvl-row { display: flex; gap: 16px; align-items: flex-start; padding: 12px 18px; border-top: 1px solid #eef1f4; cursor: pointer; font-weight: 600; font-size: calc(15.5px * var(--fs)); line-height: 1.45; }
+  .rvl-row:hover { background: #fafbfc; }
+  .rvl-row .rv-box { width: 28px; height: 28px; border-radius: 7px; border-width: 2px; }
+  .rvl-row.on .rv-box { background: var(--rv); border-color: var(--rv); color: #fff; }
+  .rvl-row .rv-box svg { width: 16px; height: 16px; }
+  .rvl-next { width: 100%; height: 52px; border-radius: 12px; border: 0; background: #52a06a; color: #fff; font-size: calc(18px * var(--fs)); font-weight: 700; }
+
+  /* 6–8 compact layout */
+  .rvc-head { padding-bottom: 12px; border-bottom: 1px solid #e3e8ee; }
+  .rvc-head span { font-weight: 400; }
+  .rvc-tabs .rvl-tab { height: 46px; font-size: calc(15px * var(--fs)); }
+  .rvc-eyebrow { font-size: calc(12.5px * var(--fs)); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #6b7c8a; padding-bottom: 8px; border-bottom: 1px solid #e3e8ee; margin: 0; }
+  .rvc-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid #e3e8ee; font-weight: 600; font-size: calc(15.5px * var(--fs)); line-height: 1.4; }
+  .rvc-done { flex: none; height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid #d5dde5; background: #fff; color: #6b7c8a; font-weight: 600; font-size: calc(14px * var(--fs)); }
+  .rvc-done.on { background: var(--rv); border-color: var(--rv); color: #fff; }
+  .rvc-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; color: var(--muted); font-size: calc(13.5px * var(--fs)); }
+  .rvc-foot .view-psg { margin: 0; background: #fff; border-color: #d5dde5; font-weight: 600; }
+
+  .view-psg { margin-top: 18px; height: 40px; padding: 0 16px; border-radius: 8px; border: 1.5px solid var(--navy); background: var(--cyan-softer); color: var(--navy); font-size: calc(14px * var(--fs)); }
+  .back-rv { margin: 0 0 14px; }
+
+  /* Luna — matches the current Writing Support box; Luna sits beside her bubble */
+  .luna .panel-head { justify-content: center; border-bottom: 0; padding: 20px 20px 8px; position: relative; }
+  .luna .panel-head h2 { font-size: calc(20px * var(--fs)); font-weight: 500; color: #2f3a40; }
+  .luna .panel-body { padding: 12px 20px 20px; display: flex; flex-direction: column; gap: 16px; }
+  .luna-intro { display: flex; gap: 12px; align-items: center; }
+  .luna-avatar { width: 72px; height: 72px; flex: none; border-radius: 50%; background: #0f2540; display: grid; place-items: center; overflow: hidden; }
+  .luna-avatar img { width: 80%; height: 80%; object-fit: contain; }
+  .bubble { position: relative; background: #d6f3fb; border-radius: 14px; padding: 14px 16px; font-size: calc(16px * var(--fs)); font-weight: 500; line-height: 1.45; color: #111; }
+  .bubble::before { content: ""; position: absolute; left: -9px; top: 50%; transform: translateY(-50%); border: 9px solid transparent; border-left: 0; border-right-color: #d6f3fb; }
+  .pick { text-align: center; color: #555; font-size: calc(15px * var(--fs)); margin: 4px 0 0; }
+  /* Support cards: compact, and each one expands in place (accordion) */
+  .supports { display: grid; gap: 8px; }
+  .support-item { border-radius: 12px; background: #e6f7fc; color: #1d5a5a; overflow: hidden; }
+  .support-item.blue { background: #dfe8f9; color: #2350a8; }
+  .support-item.open { box-shadow: inset 0 0 0 1.5px currentColor; }
+  .support {
+    width: 100%; display: flex; gap: 10px; align-items: center; text-align: left;
+    padding: 8px 12px; border: 0; background: none; color: inherit;
+    font-size: calc(14.5px * var(--fs)); font-weight: 600; line-height: 1.3;
+  }
+  .support:hover { background: rgba(255,255,255,.35); }
+  .support .ic { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.75); display: grid; place-items: center; flex: none; }
+  .support .ic svg { width: 17px; height: 17px; }
+  .support .chev { margin-left: auto; flex: none; opacity: .6; transition: transform .2s; }
+  .support-item.open .chev { transform: rotate(180deg); }
+  .support-body { margin: 0 8px 8px; padding: 10px 12px; border-radius: 8px; background: var(--surface); color: var(--text); font-size: calc(14px * var(--fs)); line-height: 1.5; }
+  .support-body ul { margin: 6px 0 0; padding-left: 18px; }
+  /* Older grades: tighter still */
+  body[data-band="6-8"] .support, body[data-band="9-12"] .support { padding: 6px 10px; gap: 8px; }
+  body[data-band="6-8"] .support .ic, body[data-band="9-12"] .support .ic { width: 24px; height: 24px; }
+  body[data-band="6-8"] .support .ic svg, body[data-band="9-12"] .support .ic svg { width: 14px; height: 14px; }
+  body[data-band="6-8"] .supports, body[data-band="9-12"] .supports { gap: 6px; }
+  .wb { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: calc(13px * var(--fs)); }
+  .wb th, .wb td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; line-height: 1.4; }
+  .wb th { width: 38%; background: var(--cyan-softer); font-weight: 600; color: var(--navy); }
+  .icon-btn { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); display: grid; place-items: center; position: absolute; right: 14px; top: 18px; }
+  .icon-btn:hover { background: var(--cyan-softer); }
+  body.luna-collapsed .luna .panel-body, body.luna-collapsed .luna h2 { display: none; }
+  body.luna-collapsed .luna .panel-head { flex-direction: column; border: 0; padding: 14px 0; }
+  body.luna-collapsed .luna .icon-btn { position: static; }
+  .luna-mini { display: none; }
+  /* Grades 9–12: no Luna character, just the Writing Support list */
+  body[data-band="9-12"] .luna-intro, body[data-band="9-12"] .luna-mini { display: none !important; }
+  body[data-band="9-12"] .pick { text-align: left; }
+  body.luna-collapsed .luna-mini { display: grid; margin-top: 8px; width: 48px; height: 48px; }
+
+  /* Responsive */
+  @media (max-width: 1180px) {
+    .workspace { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+    .luna { grid-column: 1 / -1; }
+    .workspace > .panel.luna { position: static; max-height: none; }
+  }
+  @media (max-width: 760px) {
+    .workspace { grid-template-columns: 1fr; padding: 12px 16px; }
+    .workspace > .panel { position: static !important; max-height: none !important; }
+    .who .sub, .cc-btn .split, .cc-btn span:last-child, .save-btn .lbl { display: none; }
+  }
+
+  /* ---------- Extended Writing Feedback (after Submit) ---------- */
+  .fb-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(1,23,45,.55); display: none; align-items: center; justify-content: center; padding: 24px; }
+  .fb-overlay.show { display: flex; }
+  .fb { width: min(1100px, 100%); max-height: calc(100vh - 48px); background: #f7fafc; border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+  .fb-top { flex: none; display: flex; align-items: center; gap: 12px; padding: 14px 22px; color: #fff;
+    background: linear-gradient(100deg, #02384d 0%, #035c78 55%, #0a7ea4 100%); border-bottom: 3px solid #1fb3de; }
+  .fb-top h2 { margin: 0; font-size: 22px; font-weight: 800; flex: 1; }
+  .fb-star { width: 30px; height: 30px; border-radius: 50%; background: #1fb3de; display: grid; place-items: center; }
+  .fb-x { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.4); background: rgba(255,255,255,.1); color: #fff; font-size: 18px; }
+  .fb-scroll { flex: 1; overflow-y: auto; padding: 20px 26px 8px; }
+  .fb-hero { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: center; margin-bottom: 18px; }
+  .fb-score { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .fb-ring { width: 128px; height: 128px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 10px #eaf4f9, 0 8px 20px rgba(2,56,77,.12); display: grid; place-items: center; font-weight: 800; color: #14344a; }
+  .fb-ring b { font-size: 50px; } .fb-ring small { font-size: 24px; color: #5c7285; }
+  .fb-view { height: 44px; padding: 0 20px; border-radius: 10px; border: 2px solid #02384d; background: #fff; color: #02384d; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .fb-prompt { text-align: center; font-weight: 700; font-size: 17px; color: #14344a; margin: 0 0 12px; line-height: 1.45; }
+  .fb-status { display: flex; justify-content: center; margin-bottom: 14px; }
+  .fb-status span { display: inline-flex; align-items: center; gap: 8px; padding: 7px 18px; border-radius: 999px; font-weight: 700; font-size: 16px; }
+  .fb-status .not { background: #fdecea; color: #c23b2e; border: 1px solid #f6c9c3; }
+  .fb-status .app { background: #fff4e0; color: #b86e00; border: 1px solid #f5d9a6; }
+  .fb-status .met { background: #e5f4ea; color: #2e7d4a; border: 1px solid #bfe3cb; }
+  .fb-scale { display: flex; justify-content: center; align-items: center; }
+  .fb-scale .lv { width: 64px; height: 50px; border-radius: 10px; background: #fff; border: 1px solid #dde8ee; display: grid; place-items: center; font-size: 24px; font-weight: 800; color: #8ea1ae; }
+  .fb-scale .lv.on { background: #02384d; border-color: #02384d; color: #fff; }
+  .fb-scale .ln { width: 40px; height: 2px; background: #dde8ee; }
+  .fb-scale-labels { display: flex; justify-content: center; gap: 250px; margin-top: 6px; font-size: 13px; font-weight: 600; color: #5c7285; }
+  .fb-answer { background: #fff; border: 1px solid #dde8ee; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; line-height: 1.6; color: #14344a; }
+  .fb-sec { background: #fff; border-radius: 16px; overflow: hidden; margin-bottom: 18px; box-shadow: 0 1px 3px rgba(2,56,77,.08); }
+  .fb-sec-head { display: flex; align-items: center; gap: 14px; padding: 10px 14px 10px 16px; color: #fff; background: linear-gradient(100deg, #02384d, #035c78 70%, #0a6f93); }
+  .fb-sec-head h3 { margin: 0; flex: 1; font-size: 18px; font-weight: 800; }
+  .fb-bulb { width: 34px; height: 34px; border-radius: 50%; background: #1fb3de; display: grid; place-items: center; flex: none; }
+  .fb-sec-head .n { font-weight: 800; font-size: 17px; }
+  .fb-bar { width: 200px; height: 8px; border-radius: 999px; background: rgba(255,255,255,.25); overflow: hidden; }
+  .fb-bar i { display: block; height: 100%; background: #1fb3de; }
+  .fb-pill { background: #fff; color: #14344a; border-radius: 999px; padding: 6px 20px; font-weight: 800; font-size: 18px; }
+  .fb-crits { display: grid; gap: 12px; padding: 14px 16px 6px; }
+  .fb-crit { border: 1px solid #e3eaef; border-radius: 12px; background: #fff; padding: 10px 8px 12px; text-align: center; font-weight: 700; font-size: 14px; color: #14344a; cursor: pointer; }
+  .fb-crit.on[data-st="not"] { border-color: #f09a8f; background: #fff7f5; }
+  .fb-crit.on[data-st="almost"] { border-color: #f5c46a; background: #fffaf0; }
+  .fb-crit.on[data-st="got"] { border-color: #8fd1a6; background: #f4fbf6; }
+  .fb-chip { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; padding: 4px 12px; border-radius: 999px; color: #fff; font-size: 13.5px; font-weight: 700; }
+  .fb-chip[data-st="not"] { background: #ef5a45; } .fb-chip[data-st="almost"] { background: #f0a020; } .fb-chip[data-st="got"] { background: #38a861; }
+  .fb-chip i { width: 11px; height: 11px; border-radius: 50%; border: 2px solid #fff; }
+  .fb-detail { display: flex; align-items: center; gap: 16px; margin: 6px 16px 16px; padding: 12px 16px; border-radius: 12px; border: 1px solid; }
+  .fb-detail[data-st="not"] { border-color: #f6c9c3; background: #fff8f6; }
+  .fb-detail[data-st="almost"] { border-color: #f5d9a6; background: #fffbf2; }
+  .fb-detail[data-st="got"] { border-color: #bfe3cb; background: #f5fbf7; }
+  .fb-detail .ic { width: 44px; height: 44px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 22px; flex: none; }
+  .fb-detail[data-st="not"] .ic { background: #ef5a45; } .fb-detail[data-st="almost"] .ic { background: #f0a020; } .fb-detail[data-st="got"] .ic { background: #38a861; }
+  .fb-detail h4 { margin: 0; font-size: 19px; color: #14344a; }
+  .fb-detail p { margin: 2px 0 0; font-size: 15.5px; }
+  .fb-detail[data-st="not"] p { color: #c23b2e; } .fb-detail[data-st="almost"] p { color: #9a5b00; } .fb-detail[data-st="got"] p { color: #2e7d4a; }
+  .fb-say { margin-left: auto; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #e9f2f7; color: #035c78; display: grid; place-items: center; flex: none; }
+  .fb-foot { flex: none; display: flex; align-items: center; gap: 22px; padding: 12px 26px; background: #fff; border-top: 1px solid #e3eaef; font-weight: 600; color: #14344a; }
+  .fb-foot .dot { display: inline-block; width: 16px; height: 16px; border-radius: 50%; vertical-align: -3px; margin-right: 6px; }
+  .fb-done { margin-left: auto; height: 50px; padding: 0 34px; border-radius: 12px; border: 0; color: #fff; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 12px; background: linear-gradient(100deg, #0a7ea4, #035c78); }
+  .fb-demo { font-size: 12px; font-weight: 600; color: #5c7285; display: flex; gap: 6px; align-items: center; }
+  .fb-demo button { height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #dde8ee; background: #fff; font-size: 12px; font-weight: 700; color: #14344a; }
+  .fb-demo button.on { background: #02384d; border-color: #02384d; color: #fff; }
+  @media (max-width: 860px) { .fb-hero { grid-template-columns: 1fr; } .fb-crits { grid-template-columns: 1fr 1fr !important; } .fb-scale-labels { gap: 80px; } .fb-bar { display: none; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="logo-chip" title="Home">
+    <img src="lonestar-logo.png" alt="LoneStar CR" />
+  </button>
+
+  <div class="band" id="band" title="Prototype only: preview by grade band">
+    <span>GRADE</span>
+    <button data-band="2-3">2–3</button>
+    <button data-band="4-5">4–5</button>
+    <button data-band="6-8">6–8</button>
+    <button data-band="9-12">9–12</button>
+  </div>
+
+  <div style="flex: 1"></div>
+
+  <button class="cc-btn" title="Switch to ClassCade">
+    <img src="https://assets.cleark12.com/clearlearning/classcadelogo.png" alt="" onerror="this.nextElementSibling.remove(); this.remove()" />
+    <span class="split"></span>
+    <span>
+      <small>SWITCH TO</small>
+      <b>ClassCade</b>
+    </span>
+  </button>
+
+  <div class="who">
+    <div class="av-init">HS</div>
+    <div>
+      <div class="nm">Henry Scott</div>
+      <div class="sub">Dallas Mavs Elementary</div>
+    </div>
+    <button class="pwr" title="Log out (demo)">⏻</button>
+  </div>
+</header>
+
+<div class="assign-bar">
+  <h1>Assignment</h1>
+  <div class="spacer"></div>
+  <button class="save-btn" title="Save and exit">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+    <span class="lbl">Save And Exit</span>
+  </button>
+</div>
+
+<main class="workspace">
+  <!-- Passage -->
+  <section class="panel">
+    <div class="passage-bar">
+      <div class="passage-pill"><span id="passageLabel">Passage</span><b id="passageTitle"></b></div>
+      <div class="tools">
+      <div class="zoom" aria-label="Passage text size">
+        <button id="zoomIn" title="Zoom in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6M11 8v6"/></svg></button>
+        <button id="zoomOut" title="Zoom out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/></svg></button>
+      </div>
+      <button class="tool">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/></svg>Dictionary
+      </button>
+      <button class="tool" id="lineReader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h12"/></svg>Line Reader
+      </button>
+      <button class="tool icon" id="resetView" title="Reset view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16m0 5v-5h5"/></svg>
+      </button>
+      </div>
+    </div>
+    <div class="panel-body passage" id="passage"></div>
+    <div class="panel-body revise" id="revise" hidden></div>
+  </section>
+
+  <!-- Prompt + guided steps -->
+  <section class="panel">
+    <div class="panel-head">
+      <span class="eyebrow">Your response</span>
+      <div class="spacer"></div>
+      <span class="wc" id="stepCount"></span>
+    </div>
+    <div class="panel-body">
+      <div class="prompt-card">
+        <span class="eyebrow">Prompt</span>
+        <p class="q" id="promptQ"></p>
+        <details>
+          <summary>See full directions</summary>
+          <p id="promptDirections" style="margin:8px 0 0"></p>
+        </details>
+      </div>
+      <nav class="stepper" id="stepper"></nav>
+      <div class="step" id="step"></div>
+    </div>
+    <div class="step-nav">
+      <button class="btn" id="prevBtn">Back</button>
+      <button class="btn primary" id="nextBtn">Next step</button>
+    </div>
+  </section>
+
+  <!-- Luna -->
+  <aside class="panel luna">
+    <div class="panel-head">
+      <h2>Writing Support</h2>
+      <button class="icon-btn" id="lunaToggle" title="Collapse Luna">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6" id="lunaChevron"/></svg>
+      </button>
+      <div class="luna-avatar luna-mini" title="Luna"><img src="luna.png" alt="Luna"></div>
+    </div>
+    <div class="panel-body">
+      <div class="luna-intro">
+        <div class="luna-avatar"><img src="luna.png" alt="Luna"></div>
+        <div class="bubble" id="lunaGreeting"></div>
+      </div>
+      <p class="pick">Pick a writing support below:</p>
+      <div class="supports" id="supports"></div>
+    </div>
+  </aside>
+</main>
+
+<div class="fb-overlay" id="fbOverlay" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
+  <div class="fb">
+    <div class="fb-top">
+      <span class="fb-star"><svg width="18" height="18" viewBox="0 0 24 24" fill="#02384d"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z"/></svg></span>
+      <h2 id="fbTitle">Extended Writing Feedback</h2>
+      <button class="fb-x" id="fbClose" title="Close">✕</button>
+    </div>
+    <div class="fb-scroll" id="fbBody"></div>
+    <div class="fb-foot">
+      <span><span class="dot" style="background:#38a861"></span>Got it</span>
+      <span><span class="dot" style="background:#f0a020"></span>Almost</span>
+      <span><span class="dot" style="background:#ef5a45"></span>Not yet</span>
+      <span class="fb-demo">Sample result: <button data-demo="low">0/5</button><button data-demo="mid">3/5</button><button data-demo="high">5/5</button></span>
+      <button class="fb-done" id="fbDone">Done <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<div class="hl-pop" id="hlPop" role="toolbar" aria-label="Highlight color"></div>
+
+<script>
+/* ------------------------------------------------------------------
+   Content model — shaped like what CMS would eventually serve.
+   Assignment → passages[], prompt, steps[], Luna supports[] (scoped per step).
+------------------------------------------------------------------- */
+const assignment = {
+  passages: [
+    {
+      title: "The Sounds of a Busy Day",
+      paragraphs: [
+        "Every day, we hear many different sounds. Some sounds are soft, like a whisper, while others are loud, like a fire alarm. These sounds help us understand what is happening around us. In this passage, we will explore how different sounds are used in our daily lives.",
+        "Imagine you are in a classroom. The teacher is talking, and everyone is listening quietly. This is a time when a soft sound, like a whisper, is important. If someone whispers, it means they want to share a secret or ask a question without disturbing others. Whispering helps keep the classroom calm and focused. It shows respect for the teacher and classmates.",
+        "Now, think about a time when you heard a fire alarm. The fire alarm makes a loud, blaring sound that gets everyone’s attention. This sound is very important because it tells us to leave the building quickly and safely. When we hear a loud sound like this, we know that something is wrong and we need to act fast. Loud sounds can be alarming, but they are also very helpful in emergencies.",
+        "Different sounds can also help us in other ways. For example, when you are playing outside, you might hear the sound of a ball bouncing. This sound tells you that someone is playing with a ball nearby. You might also hear birds chirping or leaves rustling in the wind. These sounds help us connect with nature and understand what is happening around us.",
+        "In sports, sounds play an important role too. When a referee blows a whistle, it makes a sharp sound that tells players to stop or pay attention. This sound is important for keeping the game fair and safe. Players listen carefully for the whistle so they know what to do next.",
+        "Sounds can also help us learn. When we listen to music, we hear different notes and rhythms. Music can make us feel happy, sad, or excited. It can help us remember things, like the words to a song or the steps to a dance. Different sounds in music can change our mood and make us feel different emotions.",
+        "In conclusion, sounds are all around us, and they help us in many ways. Soft sounds like whispers help us communicate quietly, while loud sounds like fire alarms keep us safe. Whether we are in a classroom, playing outside, or listening to music, sounds are an important part of our everyday lives. Next time you hear a sound, think about what it means and how it helps you!"
+      ]
+    },
+    {
+      title: "[Placeholder] The Power of Quiet",
+      paragraphs: [
+        "Have you ever noticed how good it feels to sit in a quiet room? Quiet places give our brains a chance to rest. Scientists have found that too much noise can make it hard for people to think and learn.",
+        "Libraries are built to be quiet. When the room is calm, readers can focus on their books for a long time. Soft sounds, like pages turning, do not pull their attention away.",
+        "Quiet is also important at night. Our bodies need calm and silence to get deep, healthy sleep. Loud noises at night can wake us up and leave us feeling tired the next day.",
+        "Even animals depend on quiet. Many birds and forest animals listen carefully for soft sounds to find food or stay safe. Too much noise from people can make this harder for them."
+      ]
+    }
+  ],
+  prompt: {
+    question: "Do you think loud sounds or soft sounds are more important in our daily lives? Use details from both passages to explain your answer.",
+    directions: "Read the articles The Sounds of a Busy Day and The Power of Quiet. Based on the information in the articles, write a response to the following prompt."
+  },
+  steps: [
+    {
+      label: "Read",
+      title: "Read and think",
+      instruction: "Read both passages and consider the following.",
+      checklist: [
+        "This is an ARGUMENTATIVE writing piece.",
+        "What is the claim?",
+        "What are the reasons that support the claim?"
+      ],
+      supports: ["claim-def", "evidence-def"],
+      // Grade-band overrides: any field set here replaces the 2–3 default. [Placeholder wording]
+      byBand: {
+        "4-5": {
+          instruction: "Read both passages. As you read, think about:",
+          checklist: [
+            "This is an ARGUMENTATIVE piece. You will pick a side and defend it.",
+            "What claim will you make?",
+            "Which reasons and details from the passages support it?"
+          ]
+        },
+        "6-8": {
+          instruction: "Read both passages closely and annotate as you go.",
+          checklist: [
+            "Genre: argumentative. Take a clear position.",
+            "Draft a working claim that answers the prompt.",
+            "Identify at least two reasons, each backed by text evidence.",
+            "Consider a counterclaim: what would someone on the other side say?"
+          ],
+          supports: ["claim-def", "evidence-def", "counterclaim"]
+        },
+        "9-12": {
+          instruction: "Read the passages critically and consider how each could inform your argument.",
+          checklist: [
+            "Task: argumentative response. Establish a precise, defensible claim.",
+            "Identify your strongest reasons and the evidence behind each.",
+            "Anticipate counterclaims and plan a rebuttal.",
+            "Note where each piece of evidence comes from and how reliable it is."
+          ]
+        }
+      }
+    },
+    {
+      label: "Highlight",
+      title: "Highlight the passage",
+      instruction: "Highlight parts of the passage that will help you answer the prompt. Select some words, then choose a color.",
+      // Color keys are fixed (green / blue / red). Labels are generic: they work for any
+      // argumentative prompt, whether or not the passage itself argues. [Placeholder wording]
+      highlights: [
+        { color: "green", label: "Ideas for my claim",    hint: "Details that help you decide your answer to the prompt" },
+        { color: "blue",  label: "Details and evidence",  hint: "Facts and examples that could prove your answer" },
+        { color: "red",   label: "Other helpful details", hint: "Words or ideas you want to remember for your writing" }
+      ],
+      supports: ["hint-claim", "hint-evidence"],
+      byBand: { // [Placeholder wording]
+        "4-5": {
+          instruction: "Highlight details that will help you build your answer to the prompt. The passage may not take a side, but you will. Select text, then choose a color.",
+          highlights: [
+            { color: "green", label: "Ideas for my claim",   hint: "Details that help you decide your position on the prompt" },
+            { color: "blue",  label: "Supporting evidence",  hint: "Facts, examples, and details that could back up your claim" },
+            { color: "red",   label: "Other useful details", hint: "Key words or ideas to use in your response" }
+          ]
+        },
+        "6-8": {
+          instruction: "Annotate the passages with your argument in mind. The text may be informational, so the argument is yours to build.",
+          highlights: [
+            { color: "green", label: "Ideas for my claim",  hint: "Details that shape your position on the prompt" },
+            { color: "blue",  label: "Relevant evidence",   hint: "Facts, examples, or quotations that could support your claim" },
+            { color: "red",   label: "Counterclaim details", hint: "Details someone who disagrees with you could use" }
+          ],
+          supports: ["hint-claim", "hint-evidence", "counterclaim"]
+        },
+        "9-12": {
+          instruction: "Annotate with your argument in mind. Informational sources don’t argue for you, so evaluate how each detail could be used.",
+          highlights: [
+            { color: "green", label: "Ideas for my claim",      hint: "Details that help define and refine your position" },
+            { color: "blue",  label: "Relevant evidence",       hint: "Facts, data, or quotations that substantiate your claim" },
+            { color: "red",   label: "Counterclaim & rebuttal", hint: "Opposing points, and details you could use to answer them" }
+          ]
+        }
+      }
+    },
+    {
+      label: "Organize",
+      title: "Graphic organizer",
+      instruction: "Use the graphic organizer to help compose your response.",
+      maxChars: 2300,   // total across all sections
+      // Each section = a color-coded keyword + direction (+ optional "Ask yourself" line).
+      // Colors: green, purple, blue, red, orange. Shared across assignments; varies by band.
+      organizer: [
+        { color: "green",  keyword: "Think", text: "State your answer or opinion.", ask: "What do I think?" },
+        { color: "purple", keyword: "Says",  text: "Find evidence in the text.",    ask: "What does the story say or show that makes me think this?" },
+        { color: "blue",   keyword: "Means", text: "Explain how your evidence supports your answer.", ask: "So what? Why does this evidence matter?" }
+      ],
+      supports: ["claim-def", "evidence-def", "sentence-starters"],
+      byBand: {
+        "4-5": {
+          organizer: [
+            { color: "green",  keyword: "Restate the question",   text: "Turn the question around into a statement." },
+            { color: "red",    keyword: "Answer the question",    text: "Answer all parts of the question." },
+            { color: "purple", keyword: "Cite evidence",          text: "Use key details and facts from the text to support your answer." },
+            { color: "blue",   keyword: "Explain your reasoning", text: "Explain why this evidence clearly supports your answer." },
+            { color: "orange", keyword: "Sum it up",              text: "End with a concluding sentence." }
+          ]
+        },
+        "6-8": {
+          organizer: [
+            { color: "green",  keyword: "Introduction Paragraph",    text: "Restate and answer the question (2–3 sentences)." },
+            { color: "purple", keyword: "Cite evidence and explain", text: "Use evidence to support your answer and explain the connection." },
+            { color: "purple", keyword: "Cite evidence and explain", text: "Use evidence to support your answer and explain the connection." },
+            { color: "blue",   keyword: "Conclusion paragraph",      text: "Restate the topic and provide closure (2–3 sentences)." }
+          ],
+          supports: ["claim-def", "evidence-def", "counterclaim"]
+        }
+        // 9–12: no organizer yet, so it inherits the 6–8 one
+      }
+    },
+    {
+      label: "Revise & Edit",
+      title: "Here is your paragraph. Let’s revise and edit.",
+      instruction: "Remember to include transition words and enhance your word choice. Reread your writing to check for organization and flow. Always check for spelling and punctuation.",
+      // The organizer answers are combined into one piece of writing:
+      // "paragraph" = all sections run together, "essay" = one paragraph per section
+      essay: { combine: "paragraph", maxChars: 2300 },
+      // Revise / Edit checklists shown in the left panel (designed for 2–3; other bands inherit)
+      revise: {
+        layout: "cards",   // cards (2–3) | list (4–5) | compact (6–8+)
+        greeting: "Let’s make your writing even better!",
+        tabs: [
+          { key: "revise", label: "Revise", question: "Can I make my ideas better?", items: [
+            { letter: "A", text: "Add details, sentences, evidence, and words." },
+            { letter: "R", text: "Remove unnecessary wording or information." },
+            { letter: "M", text: "Move words or sentences." },
+            { letter: "S", text: "Substitute words or sentences for better ones." }
+          ] },
+          { key: "edit", label: "Edit", question: "Can I fix my mistakes?", items: [   // [Placeholder wording]
+            { letter: "C", text: "Capitalize the first word of each sentence and names." },
+            { letter: "U", text: "Use words correctly, like “he runs” and “they run.”" },
+            { letter: "P", text: "Put punctuation at the end of every sentence." },
+            { letter: "S", text: "Spell words correctly." }
+          ] }
+        ]
+      },
+      supports: ["example-transitions", "example-description", "rev-edit-tips"],
+      byBand: {
+        "4-5": {
+          revise: {
+            layout: "list",
+            title: "Revise and edit your paragraph",
+            tabs: [
+              { key: "revise", label: "Revise", heading: "Revise your ideas", tag: "ARMS", next: "Check Editing next →", items: [
+                { text: "Add more details." },
+                { text: "Delete unnecessary wording or information." },
+                { text: "Elaborate on or combine sentences. Check sentence variety and structure." },
+                { text: "Rearrange sentences or paragraphs for clarity." },
+                { text: "Could you improve your topic sentence?" },
+                { text: "Use more or better transition words or phrases." }
+              ] },
+              { key: "edit", label: "Edit", heading: "Edit your writing", tag: "CUPS", items: [   // [Placeholder wording]
+                { text: "Capitalize the first word of each sentence and proper nouns." },
+                { text: "Use correct grammar and verb agreement." },
+                { text: "Punctuate every sentence correctly." },
+                { text: "Spell every word correctly." }
+              ] }
+            ]
+          }
+        },
+        "6-8": {
+          title: "Here is your essay. Let’s revise and edit.",
+          essay: { combine: "essay", maxChars: 2300 },
+          revise: {
+            layout: "compact",
+            title: "Revise and edit",
+            note: "Checks stay in this session and are not scored.",
+            tabs: [
+              { key: "revise", label: "Revise", heading: "Revise · Ideas and organization", items: [
+                { text: "Adding more details?" },
+                { text: "Deleting unnecessary wording or information?" },
+                { text: "Elaborating or combining sentences?" },
+                { text: "Rearranging sentences or paragraphs for clarity?" },
+                { text: "Writing better topic sentences for paragraphs?" },
+                { text: "Using more or better transition words or phrases?" }
+              ] },
+              { key: "edit", label: "Edit", heading: "Edit · Conventions", items: [
+                { text: "Capitalization?" },
+                { text: "Usage (verb agreement)?" },
+                { text: "Punctuation?" },
+                { text: "Spelling?" }
+              ] }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  luna: {
+    greeting: "Hi, I’m Luna! I’m here to help you with your writing",
+    // Card colors alternate teal / blue down the list
+    supports: {
+      "claim-def":         { title: "Claim Definition",
+                             reply: "A <b>claim</b> is what you believe about the question. It picks one side.",
+                             byBand: { // [Placeholder wording]
+                               "4-5": { reply: "A <b>claim</b> is a sentence that states your position on the question. It should be clear and something you can prove with evidence." },
+                               "6-8": { reply: "A <b>claim</b> is an arguable statement that answers the prompt. It takes a position, can be supported with text evidence, and sets up the reasons you will develop." },
+                               "9-12": { reply: "A <b>claim</b> is a precise, defensible thesis that responds directly to the prompt and sets the scope of your argument." }
+                             } },
+      "evidence-def":      { title: "Details and Evidence Definition",
+                             reply: "<b>Evidence</b> is a detail from the passage that proves your claim. <ul><li>Say which passage and paragraph it came from.</li><li>Explain how it supports your claim.</li></ul>",
+                             byBand: { // [Placeholder wording]
+                               "4-5": { reply: "<b>Evidence</b> is a fact or detail from a passage that supports your claim.<ul><li>Name the passage and paragraph.</li><li>Use the author’s words or put them in your own words.</li><li>Explain how it proves your claim.</li></ul>" },
+                               "6-8": { reply: "<b>Evidence</b> is specific support from the text, either a quotation or a paraphrase, that proves your reasoning.<ul><li>Cite the source (passage and paragraph).</li><li>Choose evidence that is relevant and sufficient.</li><li>Follow it with commentary that explains the connection to your claim.</li></ul>" },
+                               "9-12": { reply: "<b>Evidence</b> substantiates your reasoning; it doesn’t speak for itself.<ul><li>Integrate quotations smoothly and cite them.</li><li>Evaluate whether the evidence is relevant, sufficient, and credible.</li><li>Explain your reasoning so the reader sees how the evidence proves your claim.</li></ul>" }
+                             } },
+      "counterclaim":      { title: "Counterclaim",   // Grades 6–8 and up [Placeholder wording]
+                             reply: "A <b>counterclaim</b> is what someone who disagrees with you might say. Strong arguments name it, then explain why your claim is still stronger.<ul><li>Some people might argue that…</li><li>However, the passages show…</li></ul>",
+                             byBand: {
+                               "9-12": { reply: "Acknowledge the strongest opposing view fairly, then <b>rebut</b> it with evidence and reasoning.<ul><li>While some argue that…, this overlooks…</li><li>Admittedly…; however, …</li></ul>" }
+                             } },
+      "hint-claim":        { title: "Hint: What is the Claim?",
+                             reply: "Your <b>claim</b> is your answer to the prompt. The passage might not give you one. Highlight details that help you decide what <i>you</i> think.",
+                             byBand: { // [Placeholder wording]
+                               "4-5": { reply: "Your <b>claim</b> is the position you choose to argue. The passage may just give information, so the decision is yours. Highlight details that help you decide, then pick the position you can support best." },
+                               "6-8": { reply: "Your <b>claim</b> is the position you take on the prompt. Informational texts don’t argue for you, so weigh the evidence, then commit to the position with the strongest support." }
+                             } },
+      "hint-evidence":     { title: "Hint: Finding Details and Evidence",
+                             reply: "<b>Evidence</b> is a detail from the passage that could help prove your answer. Ask yourself: would this detail help me explain what I think?",
+                             byBand: { // [Placeholder wording]
+                               "4-5": { reply: "<b>Evidence</b> is a fact or example that helps prove your claim. The author might not connect it to the prompt, so you decide how it fits. Look for sentences that explain <i>why</i> a sound is important." },
+                               "6-8": { reply: "When the author presents facts without arguing, <b>you</b> decide what each detail proves. Strong evidence is specific and relevant. Note what it supports and which paragraph it’s in." }
+                             } },
+      "find-evidence":     { title: "Help Me Find Evidence",
+                             reply: "In Passage 1, look at paragraphs 2 and 3: one is about a soft sound and one is about a loud sound. Passage 2 gives more reasons quiet matters. Which side has stronger evidence?" },
+      "example-transitions": { title: "Example Transition Words",
+                             reply: "<table class=\"wb\"><tr><th>Relationship</th><td>After, afterward, after that, at first, at this time, before, beginning with, beyond, during, earlier, ending with, eventually, finally, following, from then on, in the meantime, last, later, meanwhile, next, now, since, soon, then, until, while</td></tr><tr><th>Spatial Placement</th><td>Below, beside, between, beyond, next to</td></tr><tr><th>Series</th><td>After, after that, finally, first, lastly, next, second, third</td></tr><tr><th>To add information</th><td>Also, another, besides, further, in addition, likewise</td></tr><tr><th>To summarize</th><td>Accordingly, finally, in conclusion, in other words, to conclude, to sum up, to summarize</td></tr><tr><th>Comparison</th><td>By comparison, compared to, likewise, similarly</td></tr><tr><th>Contrast</th><td>Although, but, however, in contrast, on the other hand, unlike</td></tr><tr><th>To repeat information</th><td>Above all, in other words, most important, once again</td></tr><tr><th>To provide an example</th><td>For example, for instance, to illustrate</td></tr><tr><th>Cause and Effect</th><td>As a result, because, for that reason</td></tr></table>" },
+      "example-description": { title: "Example Description Words",
+                             reply: "<table class=\"wb\"><tr><th>Size & Amount</th><td>Massive, microscopic, abundant, scarce, vast</td></tr><tr><th>Shape & Structure</th><td>Circular, angular, symmetrical, jagged, hollow</td></tr><tr><th>Texture and Material</th><td>Rigid, porous, dense, flexible, brittle</td></tr><tr><th>Speed & Movement</th><td>Gradual, rapid, constant, intermittent, turbulent</td></tr><tr><th>Scientific & Factual</th><td>Efficient, essential, significant, reliable, innovative</td></tr></table>" },
+      "rev-edit-tips":     { title: "Revision and Editing Tips",
+                             reply: "<b>Revision:</b> Can I improve my writing by…<ul><li>Adding more details?</li><li>Deleting unnecessary wording or information?</li><li>Elaborating or combining sentences?</li><li>Rearranging sentences or paragraphs for clarity?</li><li>Writing better topic sentences for paragraphs?</li><li>Using more or better transition words or phrases?</li></ul><b>Editing:</b> Check your<ul><li>Capitalization</li><li>Usage (verb agreement)</li><li>Punctuation</li><li>Spelling</li></ul>" },
+      "sentence-starters": { title: "Sentence Starters",
+                             reply: "Try one of these:<ul><li>I believe ___ sounds are more important because…</li><li>According to the passage…</li><li>One reason is…</li></ul>" },
+      "check-claim":       { title: "Check My Claim",
+                             reply: "A strong claim picks <b>one side</b> and says <b>why</b>. Does yours do both?" },
+      "transitions":       { title: "Linking Words",
+                             reply: "Try: <i>First, Also, Another reason, For example, In conclusion</i>." }
+    }
+  }
+};
+
+/* ---------------- Render ---------------- */
+const ICON_LIST = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6"/><path d="M12 17h.01" stroke-width="2.6"/></svg>';
+const ICON_OL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 6h11M10 12h11M10 18h11"/><path d="M4 4v4M3 8h2M3 14c0-1 2-1.5 2 0s-2 2-2 4h2" stroke-width="1.5"/></svg>';
+const ICON_UL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h12M9 12h12M9 18h12M4.5 6h.01M4.5 12h.01M4.5 18h.01" /></svg>';
+const $ = id => document.getElementById(id);
+const rteBar = () => `<div class="rte-bar">
+    <button data-cmd="bold" title="Bold"><b>B</b></button>
+    <button data-cmd="italic" title="Italic"><i style="font-family:serif">I</i></button>
+    <button data-cmd="underline" title="Underline"><u>U</u></button>
+    <span class="sep"></span>
+    <button data-cmd="insertOrderedList" title="Numbered list">${ICON_OL}</button>
+    <button data-cmd="insertUnorderedList" title="Bulleted list">${ICON_UL}</button>
+  </div>`;
+let current = 0;
+const answers = {};
+
+const paras = list => list.map((p, i) => `<p><span class="pnum">${i + 1}</span>${p}</p>`).join('');
+const chev = '<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>';
+const psgs = assignment.passages;
+if (psgs.length === 1) {
+  // Single passage: same as today — title in the pill, text straight in the panel
+  $('passageTitle').textContent = psgs[0].title;
+  $('passage').innerHTML = paras(psgs[0].paragraphs);
+} else {
+  // Multiple passages: collapsible section per passage, first one open
+  $('passageLabel').textContent = 'Passages';
+  $('passageTitle').textContent = `${psgs.length} passages`;
+  $('passage').innerHTML =
+    `<div class="psg-actions"><button class="psg-toggle" id="psgToggle">Expand all</button></div>` +
+    psgs.map((ps, i) => `
+      <details class="psg" ${i === 0 ? 'open' : ''}>
+        <summary><span class="num">${i + 1}</span><span class="ttl">${ps.title}</span>${chev}</summary>
+        <div class="psg-body">${paras(ps.paragraphs)}</div>
+      </details>`).join('');
+  const all = () => [...document.querySelectorAll('.psg')];
+  const syncToggle = () => $('psgToggle').textContent = all().every(d => d.open) ? 'Collapse all' : 'Expand all';
+  all().forEach(d => d.addEventListener('toggle', syncToggle));
+  $('psgToggle').onclick = () => { const open = !all().every(d => d.open); all().forEach(d => d.open = open); };
+  syncToggle();
+}
+$('promptQ').textContent = assignment.prompt.question;
+$('promptDirections').textContent = assignment.prompt.directions;
+$('lunaGreeting').textContent = assignment.luna.greeting;
+
+// Resolve a step or scaffold for the current grade band. Bands cascade: start from the
+// 2–3 default, then apply each band's overrides up to the current one (9–12 inherits 6–8, etc.)
+const BANDS = ['2-3', '4-5', '6-8', '9-12'];
+const forBand = obj => {
+  const upTo = BANDS.indexOf(document.body.dataset.band);
+  return BANDS.slice(1, upTo + 1).reduce((acc, b) => ({ ...acc, ...((obj.byBand || {})[b] || {}) }), { ...obj });
+};
+
+function renderStep() {
+  const steps = assignment.steps, s = forBand(steps[current]);
+  $('stepCount').textContent = `Step ${current + 1} of ${steps.length}`;
+  $('stepper').innerHTML = steps.map((st, i) =>
+    `<button class="${i < current ? 'done' : i === current ? 'active' : ''}" data-i="${i}"><div class="bar"></div>${i + 1}. ${st.label}</button>`).join('');
+  let html = `<h3>${s.title}</h3><p class="instr">${s.instruction}</p>`;
+  if (s.checklist) html += `<ul class="checklist">${s.checklist.map((c, i) =>
+    `<li><input type="checkbox" id="c${current}-${i}" ${answers[`c${current}-${i}`] ? 'checked' : ''}><label for="c${current}-${i}">${c}</label></li>`).join('')}</ul>`;
+  if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
+    `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
+    <p class="hl-tip">Tip: click a highlight to change its color or remove it.</p>`;
+  if (s.organizer) {
+    html += `<div class="org">${s.organizer.map((sec, i) => {
+      const k = `o${current}-${document.body.dataset.band}-${i}`;
+      return `<div class="org-sec rte-host">
+        <div class="org-head"><span class="kw kw-${sec.color}">${sec.keyword}:</span> ${sec.text}${sec.ask ? `<br>Ask yourself: ${sec.ask}` : ''}</div>
+        ${rteBar()}
+        <div class="rte" id="${k}" contenteditable="true" data-placeholder="Write your answer here…">${answers[k] || ''}</div>
+      </div>`; }).join('')}</div>
+      <div class="char-count" id="orgCount" data-max="${s.maxChars}" style="margin:6px 0 0"></div>`;
+  }
+  if (s.essay) {
+    const k = essayKey();
+    if (!answers[k]) answers[k] = buildEssay(s.essay.combine);
+    html = `<h3>${s.title}</h3><div class="essay-note">${s.instruction}</div>
+      <div class="rte-wrap rte-host">${rteBar()}<div class="rte big" id="${k}" contenteditable="true" data-placeholder="Write your answer here…">${answers[k]}</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+        <button class="rebuild" id="rebuild">Start over from my graphic organizer</button>
+        <div class="char-count" id="orgCount" data-max="${s.essay.maxChars}" style="margin:0"></div>
+      </div>`;
+  }
+  (s.fields || []).forEach((f, i) => {
+    const k = `f${current}-${i}`;
+    html += `<label class="field-label" for="${k}">${f.label}</label>
+             <textarea id="${k}" class="${f.big ? 'big' : ''}" placeholder="${f.placeholder}" style="margin-bottom:16px" ${f.maxChars ? `data-max="${f.maxChars}"` : ''}>${answers[k] || ''}</textarea>`;
+    if (f.maxChars) html += `<div class="char-count" data-for="${k}"></div>`;
+  });
+  $('step').innerHTML = html;
+  const syncCount = el => { const c = $('step').querySelector(`[data-for="${el.id}"]`); if (!c) return;
+    const n = el.value.length, max = +el.dataset.max; c.textContent = `${n} / ${max} characters`; c.classList.toggle('over', n > max); };
+  $('step').querySelectorAll('input,textarea').forEach(el => {
+    el.addEventListener('input', () => { answers[el.id] = el.type === 'checkbox' ? el.checked : el.value; syncCount(el); });
+    syncCount(el);
+  });
+  updateCounts();
+  if (s.organizer || s.essay) {
+    const syncOrg = () => {
+      const eds = [...$('step').querySelectorAll('.rte')], n = eds.reduce((t, e) => t + e.innerText.trim().length, 0);
+      const c = $('orgCount'), max = +c.dataset.max;
+      c.textContent = `${n} / ${max} characters`; c.classList.toggle('over', n > max);
+    };
+    $('step').querySelectorAll('.rte').forEach(ed => ed.addEventListener('input', () => {
+      if (!ed.innerText.trim()) ed.innerHTML = '';   // keeps the placeholder working
+      answers[ed.id] = ed.innerHTML; syncOrg();
+    }));
+    $('step').querySelectorAll('.rte-bar button').forEach(b => {
+      b.addEventListener('mousedown', e => e.preventDefault());
+      b.addEventListener('click', () => { b.closest('.rte-host').querySelector('.rte').focus(); document.execCommand(b.dataset.cmd); });
+    });
+    syncOrg();
+  }
+  if (s.essay) $('rebuild').onclick = e => {
+    const b = e.currentTarget;
+    if (!b.dataset.armed) {   // first click asks, second click replaces
+      b.dataset.armed = '1'; b.textContent = 'This replaces your writing. Click again to confirm.';
+      setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = 'Start over from my graphic organizer'; } }, 4000);
+      return;
+    }
+    answers[essayKey()] = buildEssay(s.essay.combine); renderStep();
+  };
+  renderRevise(s);
+  $('prevBtn').disabled = current === 0;
+  $('nextBtn').textContent = current === steps.length - 1 ? 'Submit' : `Go to Step ${current + 2}`;
+  // Last step: Submit unlocks only after the student has gone through Revise and Edit
+  $('nextBtn').disabled = current === steps.length - 1 && !rv.finished;
+  $('nextBtn').title = $('nextBtn').disabled ? 'Finish Revise and Edit first' : '';
+  $('supports').innerHTML = s.supports.map((id, i) => {
+    const sp = forBand(assignment.luna.supports[id]);
+    return `<div class="support-item ${i % 2 ? 'blue' : ''}">
+      <button class="support" data-id="${id}" aria-expanded="false"><span class="ic">${ICON_LIST}</span><span>${sp.title}</span>${chev}</button>
+      <div class="support-body" hidden>${sp.reply}</div></div>`;
+  }).join('');
+}
+// ---------- Step 4: combine organizer → essay, Revise / Edit checklist ----------
+function essayKey() { return `essay-${document.body.dataset.band}`; }
+function buildEssay(combine) {
+  const i = assignment.steps.findIndex(st => st.organizer);
+  const org = forBand(assignment.steps[i]).organizer;
+  const parts = org.map((_, j) => answers[`o${i}-${document.body.dataset.band}-${j}`] || '')
+    .map(h => { const d = document.createElement('div'); d.innerHTML = h; return { html: h, text: d.innerText.trim() }; })
+    .filter(x => x.text);
+  if (!parts.length) return '';
+  return combine === 'essay' ? parts.map(x => `<p>${x.html}</p>`).join('') : `<p>${parts.map(x => x.text).join(' ')}</p>`;
+}
+
+const rv = { tab: 'revise', checked: {}, finished: false, showPassage: false };
+const STAR = '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z"/></svg>';
+const CHECK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+function renderRevise(s) {
+  const onStep4 = !!s.revise, showRv = onStep4 && !rv.showPassage;
+  $('passage').hidden = showRv; $('revise').hidden = !showRv;
+  if (!onStep4) return;
+  if (!showRv) {   // viewing the passage again from step 4
+    if (!$('backRv')) $('passage').insertAdjacentHTML('afterbegin', '<button class="view-psg back-rv" id="backRv">← Back to Revise &amp; Edit</button>');
+    $('backRv').onclick = () => { rv.showPassage = false; $('backRv').remove(); renderRevise(s); };
+    return;
+  }
+  const R = s.revise, tabs = R.tabs;
+  if (!tabs.some(x => x.key === rv.tab)) rv.tab = tabs[0].key;
+  const t = tabs.find(x => x.key === rv.tab), ti = tabs.indexOf(t), isLast = ti === tabs.length - 1;
+  const band = document.body.dataset.band, key = (tk, i) => `${band}-${tk}-${i}`;
+  const count = tab => tab.items.filter((_, i) => rv.checked[key(tab.key, i)]).length;
+  const total = tabs.reduce((n, x) => n + x.items.length, 0), totalDone = tabs.reduce((n, x) => n + count(x), 0);
+  const n = count(t), all = n === t.items.length;
+  // Reaching the last tab (Edit) unlocks Submit
+  if (isLast && !rv.finished) { rv.finished = true; $('nextBtn').disabled = false; $('nextBtn').title = ''; }
+  let html = '';
+
+  if (R.layout === 'list') {
+    html = `
+      <div class="rvl-head"><h4>${R.title}</h4><span>${totalDone} of ${total} checks</span></div>
+      <div class="rvl-bar"><i style="width:${total ? totalDone / total * 100 : 0}%"></i></div>
+      <div class="rvl-tabs">${tabs.map(x => `<button class="rvl-tab rv-tabbtn ${x === t ? 'on' : ''}" data-key="${x.key}"><span>${x.label}</span><span>${count(x)}/${x.items.length}</span></button>`).join('')}</div>
+      <div class="rvl-box">
+        <div class="rvl-box-head"><span><b>${t.heading}</b>${t.tag ? ` <small>· ${t.tag}</small>` : ''}</span><span class="n">${n} of ${t.items.length}</span></div>
+        ${t.items.map((it, i) => `<div class="rvl-row rv-toggle ${rv.checked[key(t.key, i)] ? 'on' : ''}" data-i="${i}" role="checkbox" aria-checked="${!!rv.checked[key(t.key, i)]}"><span class="rv-box">${CHECK}</span><span>${it.text}</span></div>`).join('')}
+      </div>
+      ${isLast ? '' : `<button class="rvl-next" id="rvNext">${t.next || `Go to ${tabs[ti + 1].label} →`}</button>`}
+      <button class="view-psg" id="viewPsg">View Passage Again</button>`;
+  } else if (R.layout === 'compact') {
+    html = `
+      <div class="rvc-head"><h4>${R.title}</h4><span>${totalDone} of ${total} done</span></div>
+      <div class="rvc-tabs">${tabs.map((x, i) => `<button class="rvl-tab rv-tabbtn ${x === t ? 'on' : ''}" data-key="${x.key}"><span>${i + 1} · ${x.label}</span><span>${count(x)}/${x.items.length}</span></button>`).join('')}</div>
+      <p class="rvc-eyebrow">${t.heading}</p>
+      ${t.items.map((it, i) => `<div class="rvc-row"><span>${it.text}</span><button class="rvc-done rv-toggle ${rv.checked[key(t.key, i)] ? 'on' : ''}" data-i="${i}" aria-pressed="${!!rv.checked[key(t.key, i)]}">Done</button></div>`).join('')}
+      <div class="rvc-foot"><span>${R.note || ''}</span><button class="view-psg" id="viewPsg">View passage</button></div>`;
+  } else {   // cards (2–3)
+    html = `
+      <div class="rv-top"><div class="luna-avatar"><img src="luna.png" alt="Luna"></div><div class="bubble">${R.greeting}</div></div>
+      <div class="rv-tabs">${tabs.map(x => `<button class="rv-tab rv-tabbtn ${x === t ? 'on' : ''} ${count(x) === x.items.length ? 'done' : ''}" data-key="${x.key}"><span class="ck">${CHECK}</span>${x.label}</button>`).join('')}</div>
+      <p class="rv-q">${t.question}</p>
+      <ul class="rv-items">${t.items.map((it, i) => `<li class="rv-item rv-toggle ${rv.checked[key(t.key, i)] ? 'on' : ''}" data-i="${i}" role="checkbox" aria-checked="${!!rv.checked[key(t.key, i)]}">
+        <span class="rv-letter">${it.letter}</span><span class="rv-text">${it.text}</span><span class="rv-box">${CHECK}</span></li>`).join('')}</ul>
+      <div class="rv-stars">${t.items.map((_, i) => STAR.replace('<svg', `<svg class="${i < n ? 'lit' : ''}"`)).join('')} ${n} of ${t.items.length}</div>
+      ${isLast ? '' : `<button class="rv-next" id="rvNext">${all ? 'Go' : 'Skip'} to ${tabs[ti + 1].label} →</button>`}
+      <button class="view-psg" id="viewPsg">View Passage Again</button>`;
+  }
+  $('revise').dataset.tab = t.key;
+  $('revise').dataset.layout = R.layout;
+  $('revise').innerHTML = html;
+  $('revise').querySelectorAll('.rv-toggle').forEach(el => el.onclick = () => {
+    const k = key(t.key, el.dataset.i); rv.checked[k] = !rv.checked[k]; renderRevise(s);
+  });
+  $('revise').querySelectorAll('.rv-tabbtn').forEach(b => b.onclick = () => { rv.tab = b.dataset.key; renderRevise(s); });
+  if ($('rvNext')) $('rvNext').onclick = () => { rv.tab = tabs[ti + 1].key; renderRevise(s); };
+  $('viewPsg').onclick = () => { rv.showPassage = true; renderRevise(s); };
+}
+
+renderStep();
+
+$('stepper').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { current = +b.dataset.i; renderStep(); } });
+$('prevBtn').onclick = () => { if (current > 0) { current--; renderStep(); } };
+$('nextBtn').onclick = () => { if (current < assignment.steps.length - 1) { current++; renderStep(); } else openFeedback(); };
+
+// ---------- Extended Writing Feedback (shown on Submit) ----------
+// Rubric structure is content; scores + messages come from grading. Results below are SAMPLE data.
+const rubric = {
+  scale: { max: 5, levels: [
+    { upTo: 2, label: "Not met expectations", cls: "not" },
+    { upTo: 3, label: "Approaching expectations", cls: "app" },
+    { upTo: 5, label: "Met expectations", cls: "met" }
+  ] },
+  sections: [
+    { key: "org", title: "Organization and Development of Ideas", max: 3,
+      criteria: ["Argument / Opinion", "Organization", "Evidence", "Expression"] },
+    { key: "conv", title: "Conventions", max: 2,
+      criteria: ["Punctuation", "Capitalization", "Sentence Structure", "Grammar", "Spelling"],
+      // If Organization & Development scores too low, Conventions isn't graded
+      gatedBy: { section: "org", minScore: 1, message: "Not graded due to low score with Organization and Development." } }
+  ]
+};
+const SAMPLE = {   // [Sample feedback]
+  low:  { org: { score: 0, st: ["not", "not", "not", "not"], msg: [
+            "No argument or opinion is evident in the response.",
+            "Your ideas need a beginning, middle, and end.",
+            "Add details from the passage to support your answer.",
+            "Try using more exact words to explain your ideas."] },
+          conv: { score: 0, st: ["not", "not", "not", "not", "not"] } },
+  mid:  { org: { score: 2, st: ["got", "almost", "got", "almost"], msg: [
+            "Your opinion is clear and answers the prompt.",
+            "Your ideas are in order. Add a transition between your evidence and your conclusion.",
+            "You used details from the passage to support your answer.",
+            "Some word choices could be stronger. Try the Description Words support."] },
+          conv: { score: 1, st: ["got", "got", "almost", "got", "almost"], msg: [
+            "Your sentences end with the right punctuation.",
+            "You capitalized the start of each sentence.",
+            "Some sentences run together. Try splitting long sentences.",
+            "Your verbs match their subjects.",
+            "Check the spelling of a few words, like “important.”"] } },
+  high: { org: { score: 3, st: ["got", "got", "got", "got"], msg: [
+            "Your opinion is clear and answers the prompt.",
+            "Your writing has a clear beginning, middle, and end.",
+            "Your evidence from the passage strongly supports your answer.",
+            "You used precise, interesting words."] },
+          conv: { score: 2, st: ["got", "got", "got", "got", "got"], msg: [
+            "Punctuation is correct throughout.", "Capitalization is correct throughout.",
+            "Your sentences are complete and varied.", "Your grammar is correct.", "Your spelling is correct."] } }
+};
+const ST_LABEL = { got: "Got it", almost: "Almost", not: "Not yet" };
+let fbDemo = 'mid', fbSel = {}, fbShowAnswer = false;
+
+function renderFeedback() {
+  const res = SAMPLE[fbDemo], total = rubric.sections.reduce((n, sec) => n + res[sec.key].score, 0);
+  const lvl = rubric.scale.levels.find(l => total <= l.upTo);
+  const essay = answers[essayKey()] || '<i style="color:#8ea1ae">No writing yet.</i>';
+  let html = `
+    <div class="fb-hero">
+      <div class="fb-score"><div class="fb-ring"><span><b>${total}</b><small>/${rubric.scale.max}</small></span></div>
+        <button class="fb-view" id="fbView"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>${fbShowAnswer ? 'Hide my answer' : 'View my answer'}</button></div>
+      <div>
+        <p class="fb-prompt">${assignment.prompt.question}</p>
+        <div class="fb-status"><span class="${lvl.cls}">★ ${lvl.label}</span></div>
+        <div class="fb-scale">${[1,2,3,4,5].map(i => `${i > 1 ? '<span class="ln"></span>' : ''}<span class="lv ${i === total ? 'on' : ''}">${i}</span>`).join('')}</div>
+        <div class="fb-scale-labels"><span>Not met expectations</span><span>Met expectations</span></div>
+      </div>
+    </div>
+    ${fbShowAnswer ? `<div class="fb-answer">${essay}</div>` : ''}`;
+  rubric.sections.forEach(sec => {
+    const r = res[sec.key];
+    const gated = sec.gatedBy && res[sec.gatedBy.section].score < sec.gatedBy.minScore;
+    const sel = fbSel[sec.key] ?? 0;
+    const st = i => r.st[i];
+    const msg = i => gated ? sec.gatedBy.message : r.msg[i];
+    html += `<div class="fb-sec">
+      <div class="fb-sec-head"><span class="fb-bulb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.2h6c0-.4.2-.9.6-1.2A6 6 0 0 0 12 3z"/></svg></span>
+        <h3>${sec.title}</h3><span class="n">${r.score} / ${sec.max}</span><span class="fb-bar"><i style="width:${r.score / sec.max * 100}%"></i></span><span class="fb-pill">${r.score} / ${sec.max}</span></div>
+      <div class="fb-crits" style="grid-template-columns:repeat(${sec.criteria.length},1fr)">${sec.criteria.map((c, i) =>
+        `<div class="fb-crit ${i === sel ? 'on' : ''}" data-st="${st(i)}" data-sec="${sec.key}" data-i="${i}" role="button" tabindex="0">${c}<br><span class="fb-chip" data-st="${st(i)}"><i></i>${ST_LABEL[st(i)]}</span></div>`).join('')}</div>
+      <div class="fb-detail" data-st="${st(sel)}">
+        <span class="ic">${st(sel) === 'got' ? '✓' : '!'}</span>
+        <div><h4>${sec.criteria[sel]}</h4><p id="fbMsg-${sec.key}">${msg(sel)}</p></div>
+        <button class="fb-say" data-say="fbMsg-${sec.key}" title="Read aloud"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
+      </div></div>`;
+  });
+  $('fbBody').innerHTML = html;
+  document.querySelectorAll('.fb-demo button').forEach(b => b.classList.toggle('on', b.dataset.demo === fbDemo));
+  $('fbView').onclick = () => { fbShowAnswer = !fbShowAnswer; renderFeedback(); };
+  $('fbBody').querySelectorAll('.fb-crit').forEach(c => c.onclick = () => { fbSel[c.dataset.sec] = +c.dataset.i; renderFeedback(); });
+  $('fbBody').querySelectorAll('.fb-say').forEach(b => b.onclick = () => {
+    try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance($(b.dataset.say).textContent)); } catch (e) {}
+  });
+}
+const openFeedback = () => { fbSel = {}; fbShowAnswer = false; renderFeedback(); $('fbOverlay').classList.add('show'); $('fbClose').focus(); };
+const closeFeedback = () => { $('fbOverlay').classList.remove('show'); try { speechSynthesis.cancel(); } catch (e) {} };
+$('fbClose').onclick = closeFeedback; $('fbDone').onclick = closeFeedback;
+$('fbOverlay').addEventListener('click', e => { if (e.target === $('fbOverlay')) closeFeedback(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') closeFeedback(); });
+document.querySelectorAll('.fb-demo button').forEach(b => b.onclick = () => { fbDemo = b.dataset.demo; fbSel = {}; renderFeedback(); });
+
+$('supports').addEventListener('click', e => {
+  const b = e.target.closest('.support'); if (!b) return;
+  const item = b.parentElement, opening = !item.classList.contains('open');
+  // one open at a time
+  document.querySelectorAll('.support-item').forEach(x => {
+    const on = x === item && opening;
+    x.classList.toggle('open', on); x.querySelector('.support-body').hidden = !on;
+    x.querySelector('.support').setAttribute('aria-expanded', on);
+  });
+});
+
+// ---------- Highlighting ----------
+// Select text in the passage → pick a color. Click a highlight → recolor or remove.
+// One highlight can span paragraphs, so its pieces share a data-hid.
+let hid = 0, pendingRange = null, editing = null;
+const hlConfig = () => forBand(assignment.steps.find(st => st.highlights)).highlights;
+
+function wrapRange(range, color) {
+  const id = ++hid;
+  const walker = document.createTreeWalker($('passage'), NodeFilter.SHOW_TEXT, {
+    acceptNode: n => range.intersectsNode(n) && n.textContent.trim() && !n.parentElement.closest('.pnum, summary, .psg-actions')
+      ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
+  });
+  const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n => {
+    const start = n === range.startContainer ? range.startOffset : 0;
+    const end = n === range.endContainer ? range.endOffset : n.length;
+    if (start >= end) return;
+    if (end < n.length) n.splitText(end);
+    const target = start > 0 ? n.splitText(start) : n;
+    const m = document.createElement('mark');
+    m.className = `hl hl-${color}`; m.dataset.hid = id; m.dataset.color = color;
+    target.parentNode.insertBefore(m, target); m.appendChild(target);
+  });
+}
+const piecesOf = id => document.querySelectorAll(`mark[data-hid="${id}"]`);
+function removeHl(id) {
+  piecesOf(id).forEach(m => { const p = m.parentNode; while (m.firstChild) p.insertBefore(m.firstChild, m); m.remove(); p.normalize(); });
+}
+function updateCounts() {
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const ids = new Set([...document.querySelectorAll(`#passage mark[data-color="${el.dataset.count}"]`)].map(m => m.dataset.hid));
+    el.textContent = ids.size;
+  });
+}
+function showPop(rect, withRemove) {
+  const pop = $('hlPop');
+  pop.innerHTML = hlConfig().map(h => `<button data-color="${h.color}"><span class="sw hl-${h.color}"></span>${h.label}</button>`).join('')
+    + (withRemove ? '<button class="rm" data-remove>Remove</button>' : '');
+  pop.classList.add('show');
+  const w = pop.offsetWidth, h = pop.offsetHeight;
+  let x = Math.min(Math.max(8, rect.left + rect.width / 2 - w / 2), innerWidth - w - 8);
+  let y = rect.bottom + 8; if (y + h > innerHeight - 8) y = rect.top - h - 8;
+  pop.style.left = x + 'px'; pop.style.top = y + 'px';
+}
+const hidePop = () => { $('hlPop').classList.remove('show'); pendingRange = null; editing = null; };
+
+$('passage').addEventListener('mouseup', e => setTimeout(() => {
+  const sel = getSelection();
+  if (sel.isCollapsed || !sel.rangeCount) {
+    const m = e.target.closest('mark.hl');
+    if (m) { editing = m.dataset.hid; pendingRange = null; showPop(m.getBoundingClientRect(), true); }
+    return;
+  }
+  const r = sel.getRangeAt(0);
+  if (!$('passage').contains(r.commonAncestorContainer)) return;
+  pendingRange = r.cloneRange(); editing = null;
+  showPop(r.getBoundingClientRect(), false);
+}));
+$('hlPop').addEventListener('mousedown', e => e.preventDefault()); // keep the selection
+$('hlPop').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (editing) {
+    if (b.hasAttribute('data-remove')) removeHl(editing);
+    else piecesOf(editing).forEach(m => { m.className = `hl hl-${b.dataset.color}`; m.dataset.color = b.dataset.color; });
+  } else if (pendingRange) {
+    wrapRange(pendingRange, b.dataset.color);
+    getSelection().removeAllRanges();
+  }
+  hidePop(); updateCounts();
+});
+document.addEventListener('mousedown', e => { if (!e.target.closest('#hlPop')) $('hlPop').classList.remove('show'); });
+$('passage').addEventListener('scroll', () => $('hlPop').classList.remove('show'));
+addEventListener('scroll', () => $('hlPop').classList.remove('show'));
+
+// Grade band (prototype control) — remembered per browser
+const setBand = b => {
+  document.body.dataset.band = b;
+  document.querySelectorAll('#band button').forEach(x => x.classList.toggle('on', x.dataset.band === b));
+  try { localStorage.setItem('lscr-band', b); } catch (e) {}
+  rv.tab = 'revise'; rv.showPassage = false;
+  renderStep();
+};
+let savedBand = '2-3';
+try { savedBand = localStorage.getItem('lscr-band') || '2-3'; } catch (e) {}
+setBand(savedBand);
+$('band').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setBand(b.dataset.band); });
+
+// Zoom only scales the passage text
+let size = 16;
+const setSize = n => { size = Math.max(14, Math.min(26, n)); $('passage').style.fontSize = `calc(${size}px * var(--fs))`; };
+$('zoomIn').onclick = () => setSize(size + 2);
+$('zoomOut').onclick = () => setSize(size - 2);
+$('resetView').onclick = () => { setSize(16); document.body.classList.remove('line-reader'); $('lineReader').classList.remove('on'); };
+$('lineReader').onclick = e => { document.body.classList.toggle('line-reader'); e.currentTarget.classList.toggle('on'); };
+$('lunaToggle').onclick = () => {
+  const c = document.body.classList.toggle('luna-collapsed');
+  $('lunaChevron').setAttribute('d', c ? 'm9 6 6 6-6 6' : 'm15 6-6 6 6 6');
+};
+
+// ---------- Demo writing (prototype only) ----------
+// Pre-fills the graphic organizer for every band, plus a few Step 2 highlights,
+// so Steps 3–4 and the feedback screen have something to show.
+const DEMO_WRITING = {
+  "2-3": [
+    "I think loud sounds are more importent than soft sounds.",
+    "The passage says a fire alarm makes a loud sound that tells us to leave the building quickly and safely. It also says a referee blows a whistle to keep the game safe.",
+    "This means loud sounds help keep people safe. If a fire alarm was soft, nobody would hear it!"
+  ],
+  "4-5": [
+    "Loud sounds and soft sounds are both important in our daily lives, but one matters more.",
+    "I believe loud sounds are more important because they keep us safe when something goes wrong.",
+    "In paragraph 3, the author explains that a fire alarm “gets everyone’s attention” and “tells us to leave the building quickly and safely.” In paragraph 5, a referee’s whistle helps keep the game “fair and safe.”",
+    "These examples show that loud sounds warn a lot of people at once. A soft sound, like a whisper, would not reach everyone in time.",
+    "Even though soft sounds help us stay calm, loud sounds are more important because they protect us."
+  ],
+  "6-8": [
+    "Every day we hear sounds that range from quiet whispers to blaring alarms. While both kinds of sounds have a purpose, loud sounds are more important in our daily lives because they keep people safe and help large groups act quickly.",
+    "The strongest example is the fire alarm. According to “The Sounds of a Busy Day,” a fire alarm “gets everyone’s attention” and “tells us to leave the building quickly and safely” (paragraph 3). This shows that a loud sound can protect a whole building of people at once, something a soft sound could never do.",
+    "Loud sounds also help keep order in everyday activities. The passage explains that when a referee blows a whistle, “it makes a sharp sound that tells players to stop or pay attention” (paragraph 5). Without that sound, a game could quickly become unfair or unsafe. Some people might argue that soft sounds matter more because “The Power of Quiet” shows that calm helps us focus and sleep. However, focus and rest only matter if people are safe first.",
+    "Soft sounds make our days calmer, but loud sounds are the ones we depend on when it matters most. From fire alarms to referees’ whistles, loud sounds warn us, guide us, and keep us safe."
+  ],
+  "9-12": [
+    "Sound shapes nearly every part of daily life, from the hush of a library to the shriek of an emergency siren. Although quiet environments support focus and well-being, loud sounds are ultimately more essential because they communicate urgent information to many people at once and prompt immediate, coordinated action.",
+    "The clearest evidence comes from emergencies. “The Sounds of a Busy Day” notes that a fire alarm “gets everyone’s attention” and signals people “to leave the building quickly and safely” (paragraph 3). The alarm’s volume is not incidental; it is the feature that allows a single signal to override every other activity and move an entire building to safety.",
+    "Loud signals also structure ordinary group activities. The passage explains that a referee’s whistle “tells players to stop or pay attention,” which keeps games “fair and safe” (paragraph 5). Critics might point to “The Power of Quiet,” which argues that silence improves learning and sleep. Yet the benefits of quiet depend on a baseline of safety and order, and that baseline is maintained largely by loud, unmistakable signals.",
+    "Quiet enriches daily life, but loud sounds protect it. Because they reach everyone instantly and demand a response, loud sounds serve a role that soft sounds cannot replace."
+  ]
+};
+(() => {
+  const orgIdx = assignment.steps.findIndex(st => st.organizer);
+  Object.entries(DEMO_WRITING).forEach(([band, parts]) =>
+    parts.forEach((t, i) => { answers[`o${orgIdx}-${band}-${i}`] = t; }));
+  // A few demo highlights in Passage 1
+  const demoHl = [
+    ["Whispering helps keep the classroom calm and focused.", "green"],
+    ["This sound is very important because it tells us to leave the building quickly and safely.", "blue"],
+    ["This sound is important for keeping the game fair and safe.", "blue"],
+    ["blaring", "red"]
+  ];
+  demoHl.forEach(([phrase, color]) => {
+    const walker = document.createTreeWalker($('passage'), NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const n = walker.currentNode, at = n.textContent.indexOf(phrase);
+      if (at < 0 || n.parentElement.closest('mark')) continue;
+      const r = document.createRange(); r.setStart(n, at); r.setEnd(n, at + phrase.length);
+      wrapRange(r, color); break;
+    }
+  });
+  renderStep();
+})();
+</script>
+</body>
+</html>
