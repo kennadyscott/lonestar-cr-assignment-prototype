@@ -848,7 +848,7 @@ const assignment = {
           checklist: [
             "This is an ARGUMENTATIVE piece. You will pick a side and defend it.",
             "What claim will you make?",
-            "Which reasons and details from the passages support it?"
+            "Which reasons and evidence from the passages support it?"
           ]
         },
         "6-8": {
@@ -972,7 +972,7 @@ const assignment = {
     }
   ],
   luna: {
-    greeting: "Hi, I’m Luna! I’m here to help you with your writing",
+    greeting: "Hi, I’m Luna! I’m here to help you with your writing.",
     // Card colors alternate teal / blue down the list
     supports: {
       "claim-def":         { title: "Claim Definition",
@@ -1289,6 +1289,25 @@ scaffold("corr-message", "Hint: Your Message", {
   "6-8": aiTag + "Make your request specific and reasonable, such as one quiet room during reading time, and explain the benefit.",
   "9-12": aiTag + "Frame a precise, actionable proposal and anticipate concerns about how it would work." });
 
+// Reviewer feedback (4–5, Sept 29): "Evidence" at Grade 4+ ("Details" before 4th); new 4–5 claim definition.
+scaffold("claim-def", "Claim Definition", { "4-5": "A <b>claim</b> is a sentence that states your position on the question. It should be clear and arguable." });
+scaffold("evidence-def", "Details", { "2-3": "<b>Details</b> are facts and examples from the passage. They show that your claim is right." });
+scaffold("find-evidence-ai", "Find Details", {});
+for (const [key, title] of [["evidence-def", "Evidence"], ["find-evidence-ai", "Find Evidence"]]) {
+  const sp = assignment.luna.supports[key]; sp.byBand["4-5"] = { ...(sp.byBand["4-5"] || {}), title };
+}
+// Key terms are bolded in the instructions and guided work, per prompt type
+const KEY_TERMS = {
+  arg: ["counterclaims?", "claims?", "evidence", "rebuttal", "reasons?"],
+  info: ["main idea", "central idea", "key details", "topic", "facts?"],
+  narr: ["characters?", "setting", "problem", "conflict", "beginning", "middle", "end"],
+  corr: ["audience", "purpose", "greeting", "closing", "letter"]
+};
+const emph = t => {
+  if (!t) return t;
+  const re = new RegExp('\\b(' + KEY_TERMS[ptype].join('|') + ')\\b', 'gi');
+  return String(t).split(/(<[^>]+>)/).map(part => (part.startsWith('<') ? part : part.replace(re, '<b>$1</b>'))).join('');
+};
 const withType = (s, stepIdx) => (ptype === 'arg' ? s : { ...s, ...forBand(typeSteps[ptype][stepIdx]) });
 const ansKey = (step, i) => `o${step}-${document.body.dataset.band}${typeSuffix()}-${i}`;
 
@@ -1352,9 +1371,9 @@ function renderStep() {
   $('stepCount').textContent = `Step ${current + 1} of ${steps.length}`;
   $('stepper').innerHTML = (mode === 'ecrq' ? `<button class="done" data-q="1"><div class="bar"></div>Questions ✓</button>` : '') + steps.map((st, i) =>
     `<button class="${i < current ? 'done' : i === current ? 'active' : ''}" data-i="${i}"><div class="bar"></div>${i + 1}. ${st.label}</button>`).join('');
-  let html = `<h3>${s.title}</h3><p class="instr">${s.instruction}</p>`;
+  let html = `<h3>${s.title}</h3><p class="instr">${emph(s.instruction)}</p>`;
   if (s.checklist) html += `<ul class="checklist">${s.checklist.map((c, i) =>
-    `<li><input type="checkbox" id="c${current}-${i}" ${answers[`c${current}-${i}`] ? 'checked' : ''}><label for="c${current}-${i}">${c}</label></li>`).join('')}</ul>`;
+    `<li><input type="checkbox" id="c${current}-${i}" ${answers[`c${current}-${i}`] ? 'checked' : ''}><label for="c${current}-${i}">${emph(c)}</label></li>`).join('')}</ul>`;
   if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
     `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
     <p class="hl-tip">Tip: click a highlight to change its color or remove it.</p>`;
@@ -1363,7 +1382,7 @@ function renderStep() {
       const k = ansKey(current, i);
       const starter = s.supports.includes('ai-starters') ? startersFor(document.body.dataset.band)[i] : null;
       return `<div class="org-sec rte-host">
-        <div class="org-head"><span class="kw kw-${sec.color}">${sec.keyword}:</span> ${sec.text}${sec.ask ? `<br>Ask yourself: ${sec.ask}` : ''}${starter ? `<div class="org-starter"><span>✦ <i>${starter}…</i></span><button type="button" data-starter="${i}">Use starter</button></div>` : ''}</div>
+        <div class="org-head"><span class="kw kw-${sec.color}">${sec.keyword}:</span> ${emph(sec.text)}${sec.ask ? `<br>Ask yourself: ${emph(sec.ask)}` : ''}${starter ? `<div class="org-starter"><span>✦ <i>${starter}…</i></span><button type="button" data-starter="${i}">Use starter</button></div>` : ''}</div>
         ${rteBar()}
         <div class="rte" id="${k}" contenteditable="true" data-placeholder="Write your answer here…">${answers[k] || ''}</div>
       </div>`; }).join('')}</div>
