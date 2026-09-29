@@ -866,7 +866,7 @@ const assignment = {
         { color: "blue",  label: "My evidence",           hint: "Facts and examples that show your side is right" },
         { color: "red",   label: "Other helpful details", hint: "Words or ideas you want to use in your writing" }
       ],
-      supports: ["hint-claim", "hint-evidence"],
+      supports: ["what-is-claim", "find-evidence-ai"],
       byBand: { // [Placeholder wording]
         "4-5": {
           title: "Highlight the passage",
@@ -884,7 +884,7 @@ const assignment = {
             { color: "blue",  label: "Relevant evidence",   hint: "Facts, examples, or quotations that could support your claim" },
             { color: "red",   label: "Counterclaim details", hint: "Details someone who disagrees with you could use" }
           ],
-          supports: ["hint-claim", "hint-evidence", "counterclaim"]
+          supports: ["what-is-claim", "find-evidence-ai", "counterclaim"]
         },
         "9-12": {
           instruction: "Annotate with your argument in mind. Informational sources don’t argue for you, so evaluate how each detail could be used.",
@@ -908,7 +908,7 @@ const assignment = {
         { color: "purple", keyword: "Says",  text: "Find evidence in the text.",    ask: "What does the story say or show that makes me think this?" },
         { color: "blue",   keyword: "Means", text: "Explain how your evidence supports your answer.", ask: "So what? Why does this evidence matter?" }
       ],
-      supports: ["claim-def", "evidence-def", "sentence-starters"],
+      supports: ["ai-starters", "example-transitions", "example-description"],
       byBand: {
         "4-5": {
           title: "Graphic organizer",
@@ -928,7 +928,7 @@ const assignment = {
             { color: "purple", keyword: "Cite evidence and explain", text: "Use evidence to support your answer and explain the connection." },
             { color: "blue",   keyword: "Conclusion paragraph",      text: "Restate the topic and provide closure (2–3 sentences)." }
           ],
-          supports: ["claim-def", "evidence-def", "counterclaim"]
+          supports: ["ai-starters", "example-transitions", "example-description", "counterclaim"]
         }
         // 9–12: no organizer yet, so it inherits the 6–8 one
       }
@@ -941,7 +941,7 @@ const assignment = {
       // "paragraph" = all sections run together, "essay" = one paragraph per section
       essay: { combine: "paragraph", maxChars: 2300 },
       revise: true,   // left panel shows the Revision & Editing Tips panel (content: CMS → CR Writing → Revision & Editing Tips)
-      supports: ["example-transitions", "example-description", "rev-edit-tips"],
+      supports: ["example-transitions", "example-description"],
       byBand: {
         "4-5": {
           title: "Here is your paragraph. Let’s revise and edit.",
@@ -965,30 +965,26 @@ const assignment = {
                                "6-8": { reply: "A <b>claim</b> is an arguable statement that answers the prompt. It takes a position, can be supported with text evidence, and sets up the reasons you will develop." },
                                "9-12": { reply: "A <b>claim</b> is a precise, defensible thesis that responds directly to the prompt and sets the scope of your argument." }
                              } },
-      "evidence-def":      { title: "Details and Evidence Definition",
-                             reply: "<b>Evidence</b> is a detail from the passage that proves your claim. <ul><li>Say which passage and paragraph it came from.</li><li>Explain how it supports your claim.</li></ul>",
+      "evidence-def":      { title: "Details and Evidence",   // static definition
+                             reply: "<b>Details and evidence</b> are facts and examples from the passage that show your claim is right.",
                              byBand: { // [Placeholder wording]
-                               "4-5": { reply: "<b>Evidence</b> is a fact or detail from a passage that supports your claim.<ul><li>Name the passage and paragraph.</li><li>Use the author’s words or put them in your own words.</li><li>Explain how it proves your claim.</li></ul>" },
-                               "6-8": { reply: "<b>Evidence</b> is specific support from the text, either a quotation or a paraphrase, that proves your reasoning.<ul><li>Cite the source (passage and paragraph).</li><li>Choose evidence that is relevant and sufficient.</li><li>Follow it with commentary that explains the connection to your claim.</li></ul>" },
-                               "9-12": { reply: "<b>Evidence</b> substantiates your reasoning; it doesn’t speak for itself.<ul><li>Integrate quotations smoothly and cite them.</li><li>Evaluate whether the evidence is relevant, sufficient, and credible.</li><li>Explain your reasoning so the reader sees how the evidence proves your claim.</li></ul>" }
+                               "4-5": { reply: "<b>Evidence</b> is a fact, detail or example from a passage that supports your claim." },
+                               "6-8": { reply: "<b>Evidence</b> is specific support from the text, either a quotation or a paraphrase, that proves your reasoning." },
+                               "9-12": { reply: "<b>Evidence</b> is relevant, credible support from the text that substantiates your reasoning." }
                              } },
       "counterclaim":      { title: "Counterclaim",   // Grades 6–8 and up [Placeholder wording]
                              reply: "A <b>counterclaim</b> is what someone who disagrees with you might say. Strong arguments name it, then explain why your claim is still stronger.<ul><li>Some people might argue that…</li><li>However, the passages show…</li></ul>",
                              byBand: {
                                "9-12": { reply: "Acknowledge the strongest opposing view fairly, then <b>rebut</b> it with evidence and reasoning.<ul><li>While some argue that…, this overlooks…</li><li>Admittedly…; however, …</li></ul>" }
                              } },
-      "hint-claim":        { title: "Hint: What is the Claim?",
+      "what-is-claim":     { title: "What is a Claim?",   // static
                              reply: "Your <b>claim</b> is your answer to the prompt. The passage might not give you one. Highlight details that help you decide what <i>you</i> think.",
                              byBand: { // [Placeholder wording]
                                "4-5": { reply: "Your <b>claim</b> is the position you choose to argue. The passage may just give information, so the decision is yours. Highlight details that help you decide, then pick the position you can support best." },
                                "6-8": { reply: "Your <b>claim</b> is the position you take on the prompt. Informational texts don’t argue for you, so weigh the evidence, then commit to the position with the strongest support." }
                              } },
-      "hint-evidence":     { title: "Hint: Finding Details and Evidence",
-                             reply: "<b>Evidence</b> is a detail from the passage that could help prove your answer. Ask yourself: would this detail help me explain what I think?",
-                             byBand: { // [Placeholder wording]
-                               "4-5": { reply: "<b>Evidence</b> is a fact or example that helps prove your claim. The author might not connect it to the prompt, so you decide how it fits. Look for sentences that explain <i>why</i> a sound is important." },
-                               "6-8": { reply: "When the author presents facts without arguing, <b>you</b> decide what each detail proves. Strong evidence is specific and relevant. Note what it supports and which paragraph it’s in." }
-                             } },
+      "find-evidence-ai":  { title: "Find Details & Evidence",   // AI-generated per passage [Sample text]
+                             reply: '<span class="ai-tag">✦ AI hint for this passage</span>Look for details that could help either side:<ul><li><b>Soft sounds:</b> whispering keeps the classroom calm (Passage 1, paragraph 2); quiet helps us sleep (Passage 2, paragraph 3)</li><li><b>Loud sounds:</b> the fire alarm tells us to leave safely (Passage 1, paragraph 3); the referee’s whistle keeps games safe (Passage 1, paragraph 5)</li></ul>Which details help <i>your</i> side?' },
       "find-evidence":     { title: "Help Me Find Evidence",
                              reply: "In Passage 1, look at paragraphs 2 and 3: one is about a soft sound and one is about a loud sound. Passage 2 gives more reasons quiet matters. Which side has stronger evidence?" },
       "example-transitions": { title: "Example Transition Words",
@@ -1036,7 +1032,7 @@ const infoSteps = [
       { color: "red",   label: "Words to know", hint: "Topic words you want to use in your writing" }
     ],
     supports: ["hint-key-details", "hint-main-idea"] },
-  { supports: ["hint-evidence", "info-starters", "example-transitions", "example-description"] },
+  { supports: ["info-hint-evidence", "ai-starters", "example-transitions", "example-description"] },
   { supports: ["example-description", "example-transitions"] }
 ];
 // AI sentence starters, one per organizer section, by band (they go straight into the organizer)
@@ -1045,15 +1041,20 @@ const infoStarters = {
   "4-5": ["Sounds help people every day.", "One way sounds help us is", "According to Passage 1,", "This detail shows that", "In conclusion, sounds"],
   "6-8": ["Every day, sounds help people understand the world around them.", "In “The Sounds of a Busy Day,” the author explains that", "“The Power of Quiet” adds that", "Together, these passages show that"]
 };
-const startersFor = band => infoStarters[band] || infoStarters["6-8"];
+const argStarters = {   // [Sample text: AI-generated per passage]
+  "2-3": ["I think", "The passage says", "This shows that"],
+  "4-5": ["Some sounds are soft and some are loud, but", "I believe", "According to the passage,", "This shows that", "That is why"],
+  "6-8": ["Every day we hear sounds, but", "In “The Sounds of a Busy Day,” the author explains that", "Another reason is that", "In conclusion,"]
+};
+const startersFor = band => { const set = ptype === 'info' ? infoStarters : argStarters; return set[band] || set["6-8"]; };
 const aiTag = '<span class="ai-tag">✦ AI hint for this passage</span>';
 Object.assign(assignment.luna.supports, {
   "hint-audience":    { title: "Hint: Audience", reply: aiTag + "Your readers are students who may not know much about sounds. Explain each idea clearly, like you are teaching a friend." },
   "hint-topic":       { title: "Hint: Topic & Subtopics", reply: aiTag + "<b>Topic:</b> how sounds help us every day.<ul><li>Soft sounds, like whispers and quiet places</li><li>Loud sounds, like fire alarms and whistles</li><li>Sounds that help us learn, like music</li></ul>" },
   "hint-key-details": { title: "Hint: Key Details", reply: aiTag + "Look for facts that explain how a sound helps:<ul><li>Whispering keeps the classroom calm (Passage 1, paragraph 2)</li><li>A fire alarm tells us to leave safely (Passage 1, paragraph 3)</li><li>Quiet helps us sleep (Passage 2, paragraph 3)</li></ul>" },
   "hint-main-idea":   { title: "Hint: Main Idea", reply: aiTag + "<b>Passage 1:</b> Sounds help us understand what is happening around us.<br><b>Passage 2:</b> Quiet helps people rest, focus and stay safe." },
-  "hint-evidence":    { title: "Hint: Evidence", reply: aiTag + "Choose one fact for each idea. Say which passage and paragraph it came from, then explain what it shows about how sounds help people." },
-  "info-starters":    { title: "Sentence Starters", reply: '<span class="ai-tag">✦ AI starters for this passage</span>Each box in your graphic organizer has a starter. Click <b>Use starter</b> to add it, then finish the sentence.<p style="margin:8px 0 0"><button class="btn primary" type="button" data-fill-starters style="height:32px;padding:0 12px">Add all starters to my organizer</button></p>' }
+  "info-hint-evidence": { title: "Hint: Evidence", reply: aiTag + "Choose one fact for each idea. Say which passage and paragraph it came from, then explain what it shows about how sounds help people." },
+  "ai-starters":      { title: "Sentence Starters", reply: '<span class="ai-tag">✦ AI starters for this passage</span>Each box in your graphic organizer has a starter. Click <b>Use starter</b> to add it, then finish the sentence.<p style="margin:8px 0 0"><button class="btn primary" type="button" data-fill-starters style="height:32px;padding:0 12px">Add all starters to my organizer</button></p>' }
 });
 const withType = (s, stepIdx) => (ptype === 'info' ? { ...s, ...infoSteps[stepIdx] } : s);
 const ansKey = (step, i) => `o${step}-${document.body.dataset.band}${ptype === 'info' ? '-info' : ''}-${i}`;
@@ -1127,7 +1128,7 @@ function renderStep() {
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
       const k = ansKey(current, i);
-      const starter = ptype === 'info' ? startersFor(document.body.dataset.band)[i] : null;
+      const starter = s.supports.includes('ai-starters') ? startersFor(document.body.dataset.band)[i] : null;
       return `<div class="org-sec rte-host">
         <div class="org-head"><span class="kw kw-${sec.color}">${sec.keyword}:</span> ${sec.text}${sec.ask ? `<br>Ask yourself: ${sec.ask}` : ''}${starter ? `<div class="org-starter"><span>✦ <i>${starter}…</i></span><button type="button" data-starter="${i}">Use starter</button></div>` : ''}</div>
         ${rteBar()}
