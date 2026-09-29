@@ -235,6 +235,14 @@
   .org-starter { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 10px; border-radius: 8px; background: #f3effd; color: #4a3a8a; font-size: calc(13.5px * var(--fs)); }
   .org-starter button { margin-left: auto; height: 26px; padding: 0 10px; border-radius: 6px; border: 1px solid #b9a8ee; background: #fff; color: #5a44b8; font-size: calc(12.5px * var(--fs)); font-weight: 700; }
 
+  /* Step 4: View Passage / View Checklist tabs */
+  .left-tabs { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 16px 0; }
+  .left-tabs[hidden] { display: none; }
+  .passage-bar[hidden] { display: none; }
+  .left-tabs button { height: 44px; border-radius: 10px 10px 0 0; border: 0; font-family: inherit; font-size: calc(15px * var(--fs)); font-weight: 700; letter-spacing: .02em; text-transform: uppercase; cursor: pointer; background: #e7eef2; color: var(--navy); }
+  .left-tabs button.on[data-left="passage"] { background: var(--navy); color: #fff; }
+  .left-tabs button.on[data-left="checklist"] { background: #ec7a2d; color: #fff; }
+  .left-tabs button:not(.on):hover { background: #dbe6ec; }
   /* Highlighting */
   mark.hl { color: inherit; border-radius: 3px; padding: 1px 0; cursor: pointer; }
   .hl-green { background: #bff0c9; }
@@ -706,7 +714,11 @@
 <main class="workspace">
   <!-- Passage -->
   <section class="panel">
-    <div class="passage-bar">
+    <div class="left-tabs" id="leftTabs" role="tablist" aria-label="Passage or checklist" hidden>
+      <button type="button" role="tab" data-left="passage">View Passage</button>
+      <button type="button" role="tab" data-left="checklist">View Checklist</button>
+    </div>
+    <div class="passage-bar" id="passageBar">
       <div class="passage-pill"><span id="passageLabel">Passage</span><b id="passageTitle"></b></div>
       <div class="tools">
       <div class="zoom" aria-label="Passage text size">
@@ -1551,12 +1563,16 @@ function speakTip(text, key, s) {
 function renderRevise(s) {
   const onStep4 = !!s.revise, showRv = onStep4 && !rv.showPassage;
   $('passage').hidden = showRv; $('revise').hidden = !showRv;
-  if (!onStep4) return;
-  if (!showRv) {   // viewing the passage again from step 4
-    if (!$('backRv')) $('passage').insertAdjacentHTML('afterbegin', '<button class="view-psg back-rv" id="backRv">← Back to Revise &amp; Edit</button>');
-    $('backRv').onclick = () => { rv.showPassage = false; $('backRv').remove(); renderRevise(s); };
-    return;
-  }
+  // Step 4: View Passage / View Checklist tabs, always in the same spot at the top of the left panel
+  $('leftTabs').hidden = !onStep4;
+  $('passageBar').hidden = showRv;
+  $('leftTabs').querySelectorAll('button').forEach(b => {
+    const on = (b.dataset.left === 'checklist') === showRv;
+    b.classList.toggle('on', on); b.setAttribute('aria-selected', on);
+    b.onclick = () => { rv.showPassage = b.dataset.left === 'passage'; renderRevise(s); };
+  });
+  if ($('backRv')) $('backRv').remove();
+  if (!onStep4 || !showRv) return;
   const band = tipBand(document.body.dataset.band), set = tipSets[band];
   const lists = { revise: set.revise, edit: set.edit, final: set.final };
   const hasFinal = set.final.length > 0;
@@ -1649,6 +1665,7 @@ function renderRevise(s) {
     }
   }
   $('revise').innerHTML = html;
+  $('revise').querySelectorAll('[data-view]').forEach(b => b.remove());
   const R = $('revise');
   R.querySelectorAll('[data-stage]').forEach(b => b.onclick = () => { rv.tab = b.dataset.stage; renderRevise(s); });
   R.querySelectorAll('[data-toggle]').forEach(b => b.onclick = () => {
