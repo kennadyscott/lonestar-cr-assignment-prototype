@@ -228,6 +228,9 @@
   .qs-fb.wrong { background: #fdeeec; color: #a8352a; }
   @media (max-width: 760px) { .qs-opts { grid-template-columns: 1fr; } }
 
+  .sp-sub { margin: 8px 0 2px; }
+  .sp-ex { margin: 8px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--cyan-softer); font-size: calc(13.5px * var(--fs)); }
+  .sp-ex span { font-weight: 700; color: var(--navy); }
   .ai-tag { display: block; font-size: calc(11px * var(--fs)); font-weight: 700; color: #7a5cd6; margin-bottom: 4px; }
   .org-starter { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 10px; border-radius: 8px; background: #f3effd; color: #4a3a8a; font-size: calc(13.5px * var(--fs)); }
   .org-starter button { margin-left: auto; height: 26px; padding: 0 10px; border-radius: 6px; border: 1px solid #b9a8ee; background: #fff; color: #5a44b8; font-size: calc(12.5px * var(--fs)); font-weight: 700; }
@@ -1295,6 +1298,26 @@ scaffold("evidence-def", "Details", { "2-3": "<b>Details</b> are facts and examp
 scaffold("find-evidence-ai", "Find Details", {});
 for (const [key, title] of [["evidence-def", "Evidence"], ["find-evidence-ai", "Find Evidence"]]) {
   const sp = assignment.luna.supports[key]; sp.byBand["4-5"] = { ...(sp.byBand["4-5"] || {}), title };
+}
+// Reviewer feedback (4–5 Step 2, Sept 29): say what makes a GOOD claim, and how to pick GOOD evidence.
+// "What is a Claim?" is static (shared across prompts), so its examples are topic-neutral.
+scaffold("what-is-claim", "What is a Claim?", {
+  "2-3": "The passage will not tell you what to think. <b>You</b> get to pick a side! That side is your <b>claim</b>.<p class=\"sp-sub\"><b>A good claim:</b></p><ul><li>Picks <b>one</b> side</li><li>Answers the question</li><li>Can be shown with facts from the passage</li></ul><p class=\"sp-ex\"><span>Not yet:</span> Recess is fun.<br><span>Good claim:</span> Recess should be longer because it helps kids focus.</p>",
+  "4-5": "Your <b>claim</b> is the position you choose to argue. The passage may just give information, so the decision is yours.<p class=\"sp-sub\"><b>A strong claim is:</b></p><ul><li><b>Arguable:</b> someone could disagree with it.</li><li><b>Specific:</b> it answers the exact question in the prompt.</li><li><b>Clear:</b> it takes one side, not both.</li><li><b>Supportable:</b> you can prove it with evidence from the text.</li></ul><p class=\"sp-ex\"><span>Weak:</span> “Recess is fun.” (Not arguable. Most people agree.)<br><span>Strong:</span> “Recess should be longer because it helps students focus in class.”</p>",
+  "6-8": "Your <b>claim</b> is the position you take on the prompt. Informational texts don’t argue for you, so weigh the evidence, then commit to a position.<p class=\"sp-sub\"><b>Test your claim:</b></p><ul><li>Could a reasonable person disagree? (<b>arguable</b>)</li><li>Does it answer the prompt directly? (<b>focused</b>)</li><li>Can you support it with at least two pieces of text evidence? (<b>supportable</b>)</li><li>Is it narrow enough to prove in one essay? (<b>specific</b>)</li></ul><p class=\"sp-ex\"><span>Weak:</span> “Schools have many rules.” (A fact, not a claim.)<br><span>Strong:</span> “Schools should replace some homework with in-class practice because students get help when they need it.”</p>",
+  "9-12": "Your <b>claim</b> is a defensible position on the prompt. When the sources are informational, weigh the evidence on both sides before you commit.<p class=\"sp-sub\"><b>A strong thesis is:</b></p><ul><li><b>Defensible:</b> open to reasoned disagreement, not a statement of fact.</li><li><b>Precise in scope:</b> narrow enough to prove with the available evidence.</li><li><b>Directional:</b> it previews your line of reasoning.</li></ul><p class=\"sp-ex\"><span>Weak:</span> “Technology affects students.”<br><span>Strong:</span> “Schools should limit phones during class because constant alerts fragment attention and lower the quality of learning.”</p>" });
+// "Find Evidence" (AI per passage): static how-to-pick guidance first, then the passage-specific pointers.
+{
+  const pick = {
+    "2-3": "<p class=\"sp-sub\"><b>Good details:</b></p><ul><li>Match <b>your</b> side</li><li>Tell a fact or example from the passage</li><li>Help a reader believe you</li></ul>",
+    "4-5": "<p class=\"sp-sub\"><b>How to pick strong evidence:</b></p><ul><li><b>Relevant:</b> it connects directly to your claim.</li><li><b>Specific:</b> it names a fact, example or quote, not just a general idea.</li><li><b>Convincing:</b> it clearly proves your point. Pick your best one or two.</li></ul><p class=\"sp-ex\">Ask yourself: <i>If I took this detail out, would my claim be weaker?</i> If yes, it’s strong evidence.</p>",
+    "6-8": "<p class=\"sp-sub\"><b>How to pick strong evidence:</b></p><ul><li><b>Relevant:</b> it supports your reason, not just your topic.</li><li><b>Specific:</b> a quotation or precise detail beats a general summary.</li><li><b>Sufficient:</b> enough evidence to be convincing, usually two or more pieces per reason.</li></ul>",
+    "9-12": "<p class=\"sp-sub\"><b>How to pick strong evidence:</b></p><ul><li><b>Relevant and credible:</b> it bears directly on your reasoning and comes from a reliable part of the source.</li><li><b>Sufficient:</b> enough to persuade a skeptical reader.</li><li><b>Purposeful:</b> choose evidence that also answers the strongest counterclaim.</li></ul>"
+  };
+  const sp = assignment.luna.supports["find-evidence-ai"], tagRe = /^<span class="ai-tag">[\s\S]*?<\/span>/;
+  const rebuild = (reply, b) => { const tag = (reply.match(tagRe) || [''])[0]; return pick[b] + '<p class="sp-sub" style="margin-top:10px">' + (tag || aiTag) + '<b>In this passage:</b></p>' + reply.replace(tagRe, ''); };
+  sp.reply = rebuild(sp.reply, '2-3');
+  for (const b of ['4-5', '6-8', '9-12']) if (sp.byBand[b]?.reply) sp.byBand[b].reply = rebuild(sp.byBand[b].reply, b);
 }
 // Key terms are bolded in the instructions and guided work, per prompt type
 const KEY_TERMS = {
