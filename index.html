@@ -219,6 +219,10 @@
   .qs-fb.wrong { background: #fdeeec; color: #a8352a; }
   @media (max-width: 760px) { .qs-opts { grid-template-columns: 1fr; } }
 
+  .ai-tag { display: block; font-size: calc(11px * var(--fs)); font-weight: 700; color: #7a5cd6; margin-bottom: 4px; }
+  .org-starter { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 10px; border-radius: 8px; background: #f3effd; color: #4a3a8a; font-size: calc(13.5px * var(--fs)); }
+  .org-starter button { margin-left: auto; height: 26px; padding: 0 10px; border-radius: 6px; border: 1px solid #b9a8ee; background: #fff; color: #5a44b8; font-size: calc(12.5px * var(--fs)); font-weight: 700; }
+
   /* Highlighting */
   mark.hl { color: inherit; border-radius: 3px; padding: 1px 0; cursor: pointer; }
   .hl-green { background: #bff0c9; }
@@ -451,6 +455,177 @@
   .fb-demo button { height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #dde8ee; background: #fff; font-size: 12px; font-weight: 700; color: #14344a; }
   .fb-demo button.on { background: #02384d; border-color: #02384d; color: #fff; }
   @media (max-width: 860px) { .fb-hero { grid-template-columns: 1fr; } .fb-crits { grid-template-columns: 1fr 1fr !important; } .fb-scale-labels { gap: 80px; } .fb-bar { display: none; } }
+
+/* ---------- Revision & Editing Tips panel: verbatim from CMS handoff/revision-editing-panel/revisioneditingpanel.css ---------- */
+/* Revision and Editing Tips panel — append to public/static/css/student.css.
+   One root class (.ret) and three band variants. Colors are fixed to the LoneStar CR light surface. */
+/* .ret-root is the size container: the @container rules below read its width, so the panel fills whatever column it is given. */
+.ret-root{container-type:inline-size;min-width:0}
+.ret{color:#15202b;display:grid;gap:12px;min-width:0}
+.ret button{font:inherit;cursor:pointer}
+.ret button:focus-visible{outline:3px solid #1fb6d5;outline-offset:2px}
+.ret .ret-empty{font-size:13px;color:#5b6b7b;margin:0}
+.ret .ret-cnt{font-size:12px;color:#5b6b7b;font-weight:700}
+/* Revise / Edit stage strip shared by grades 4–8: blue is revising, green is editing. The selected
+   tab fills with its colour so the student always knows which stage they are in. */
+.ret-guided .ret-stage,.ret-writer .ret-stage{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ret-guided .ret-stage button,.ret-writer .ret-stage button{border:2px solid transparent;border-radius:10px;padding:8px 10px;font-weight:800;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.ret-guided .ret-stage button>span:first-child,.ret-writer .ret-stage button>span:first-child{display:inline-flex;align-items:center;gap:6px}
+.ret-guided .ret-stage button{font-size:15px;min-height:44px}
+.ret-writer .ret-stage button{font-size:13px;min-height:38px}
+.ret-guided .ret-stage-rev,.ret-writer .ret-stage-rev{background:#e3eefc;color:#2f80ed}
+.ret-guided .ret-stage-ed,.ret-writer .ret-stage-ed{background:#e2f5ea;color:#2f9e63}
+.ret-guided .ret-stage-rev[aria-selected="true"],.ret-writer .ret-stage-rev[aria-selected="true"]{border-color:#2f80ed;background:#2f80ed;color:#fff}
+.ret-guided .ret-stage-ed[aria-selected="true"],.ret-writer .ret-stage-ed[aria-selected="true"]{border-color:#2f9e63;background:#2f9e63;color:#fff}
+.ret-guided .ret-stage button[aria-selected="true"] svg path,.ret-writer .ret-stage button[aria-selected="true"] svg path{stroke:#fff}
+
+/* ---- Luna · grades 2–3 ---- */
+.ret-luna{font-size:18px;line-height:1.35;gap:14px}
+.ret-luna .ret-greet{display:flex;gap:10px;align-items:center}
+.ret-luna .ret-luna-star{width:44px;height:44px;border-radius:50%;background:#02384d;display:grid;place-items:center;flex:none}
+.ret-luna .ret-say{background:#dff2f8;border-radius:14px;padding:8px 12px;font-weight:700;color:#02384d;font-size:17px}
+.ret-luna .ret-steps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ret-luna .ret-steps button{border:3px solid transparent;border-radius:14px;padding:10px;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px}
+.ret-luna .ret-step-rev{background:#e3eefc;color:#2f80ed}
+.ret-luna .ret-step-ed{background:#e2f5ea;color:#2f9e63}
+.ret-luna .ret-step-rev[aria-selected="true"]{border-color:#2f80ed}
+.ret-luna .ret-step-ed[aria-selected="true"]{border-color:#2f9e63}
+.ret-luna .ret-ask{font-weight:800;font-size:19px;margin:0}
+.ret-luna .ret-cards{display:grid;gap:10px}
+.ret-luna .ret-tip{display:grid;grid-template-columns:52px minmax(0,1fr) 52px;gap:10px;align-items:center;border-radius:16px;padding:10px;background:#f6f9fb;border:2px solid #e3eaf0}
+.ret-luna .ret-tip.ret-done{background:#fffbea;border-color:#f5b301}
+.ret-luna .ret-letter{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:26px;color:#fff;background:#2f80ed}
+.ret-luna.ret-step-edit .ret-letter{background:#2f9e63}
+.ret-luna .ret-tip.ret-nobadge{grid-template-columns:minmax(0,1fr) 52px}
+.ret-luna .ret-txt{display:grid;gap:2px;min-width:0}
+.ret-luna .ret-txt b{font-size:18px;line-height:1.25}
+.ret-luna .ret-txt span{font-size:15px;color:#5b6b7b}
+.ret-luna .ret-listen{border:0;background:none;padding:0;color:#0a7c94;font-size:14px;font-weight:700;display:inline-flex;gap:4px;align-items:center;justify-self:start}
+.ret-luna .ret-check{width:52px;height:52px;border-radius:14px;border:3px solid #b9c6d1;background:#fff;display:grid;place-items:center;padding:0}
+.ret-luna .ret-tip.ret-done .ret-check{background:#f5b301;border-color:#f5b301}
+.ret-luna .ret-stars{display:flex;gap:6px;align-items:center;font-weight:800;color:#02384d}
+.ret-luna .ret-stars svg{width:30px;height:30px}
+.ret-luna .ret-next{background:#02384d;color:#fff;border:0;border-radius:14px;padding:12px 16px;font-weight:800;font-size:18px;min-height:52px}
+.ret-luna .ret-next-rev{background:#2f80ed}
+.ret-luna .ret-next-ed{background:#2f9e63}
+.ret-luna .ret-cheer{background:#e2f5ea;border-radius:14px;padding:10px 12px;font-weight:800;color:#1f6b45}
+.ret-luna .ret-view{justify-self:start;background:#eef7fb;border:1px solid #1fb6d5;color:#02384d;border-radius:10px;padding:8px 14px;font-size:15px;font-weight:700}
+
+/* ---- Guided · grades 4–5 ---- */
+.ret-guided{font-size:15px}
+.ret-guided .ret-hd{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ret-guided .ret-hd h4{margin:0;font-weight:800;font-size:17px;color:#02384d}
+.ret-guided .ret-prog{height:8px;border-radius:999px;background:#e3eaf0;overflow:hidden}
+.ret-guided .ret-prog i{display:block;height:100%;background:#0a7c94;border-radius:999px;transition:width .2s}
+.ret-guided .ret-sec{border:1px solid #dfe6ec;border-radius:12px;overflow:hidden}
+.ret-guided .ret-sec-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;background:#f6f9fb;font-weight:800;color:#02384d}
+.ret-guided .ret-sec-rev .ret-sec-head{background:#e3eefc;color:#1f5fbf}
+.ret-guided .ret-sec-ed .ret-sec-head{background:#e2f5ea;color:#1f6b45}
+.ret-guided.ret-step-edit .ret-lt{background:#2f9e63}
+.ret-guided .ret-advance{border:0;border-radius:10px;padding:12px 16px;font-weight:800;font-size:16px;color:#fff;background:#2f80ed;width:100%;min-height:48px}
+.ret-guided .ret-advance-ed{background:#2f9e63}
+.ret-guided .ret-advance-back{background:#fff;color:#2f80ed;border:2px solid #2f80ed;font-size:14px;min-height:40px;padding:8px 12px}
+.ret-guided .ret-complete-note{margin:0;font-weight:800;color:#1f6b45;background:#e2f5ea;border-radius:10px;padding:10px 12px}
+.ret-guided .ret-row{display:grid;grid-template-columns:34px 28px minmax(0,1fr);gap:8px;align-items:start;padding:8px 12px;border-top:1px solid #edf1f5}
+.ret-guided .ret-row.ret-nobadge{grid-template-columns:34px minmax(0,1fr)}
+.ret-guided .ret-cb{width:26px;height:26px;border-radius:7px;border:2px solid #9fb0bf;background:#fff;display:grid;place-items:center;margin-top:2px;padding:0}
+.ret-guided .ret-row.ret-done .ret-cb{background:#2f9e63;border-color:#2f9e63}
+.ret-guided .ret-lt{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff;background:#2f80ed;margin-top:1px}
+.ret-guided .ret-q{font-weight:700}
+.ret-guided .ret-row.ret-done .ret-q{text-decoration:line-through;color:#6d7d8c}
+.ret-guided .ret-try{font-size:13px;color:#5b6b7b;margin-top:2px}
+.ret-guided .ret-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.ret-guided .ret-link{border:1px solid #bfe6f0;background:#eef9fc;color:#02384d;border-radius:8px;padding:7px 12px;font-weight:700;font-size:14px;display:inline-flex;gap:6px;align-items:center}
+
+/* ---- Writer · grades 6–8 ---- */
+.ret-writer{font-size:14px;color:#1c2b36}
+.ret-writer .ret-hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:1px solid #d9e1e8;padding-bottom:8px}
+.ret-writer .ret-hd h4{margin:0;font-weight:700;font-size:16px;color:#02384d}
+.ret-writer .ret-n{font-size:12px;color:#66788a;font-variant-numeric:tabular-nums}
+.ret-writer .ret-k,.ret-guided .ret-k{font-weight:600;font-variant-numeric:tabular-nums}
+.ret-writer .ret-sec h5{margin:0 0 4px;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#66788a}
+.ret-writer .ret-item{border-top:1px solid #d9e1e8;padding:8px 0;display:grid;gap:4px}
+.ret-writer .ret-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.ret-writer .ret-move{font-weight:700}
+.ret-writer .ret-item.ret-done .ret-move{color:#66788a;text-decoration:line-through}
+.ret-writer .ret-what{color:#66788a;font-size:13px}
+.ret-writer .ret-donebtn{flex:none;border:1px solid #d9e1e8;background:#fff;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;color:#66788a;display:inline-flex;align-items:center;gap:4px}
+.ret-writer .ret-donebtn[aria-pressed="true"]{background:#e2f5ea;border-color:#2f9e63;color:#2f9e63}
+.ret-writer .ret-how{font-size:12px;color:#66788a;background:#f6f9fb;border-radius:6px;padding:6px 8px;display:none}
+.ret-writer .ret-item.ret-open .ret-how{display:block}
+.ret-writer .ret-more{border:0;background:none;padding:0;color:#02384d;font-size:12px;font-weight:600;justify-self:start}
+.ret-writer .ret-advance{border:0;background:#2f9e63;color:#fff;border-radius:6px;padding:8px 12px;font-weight:600;font-size:13px}
+.ret-writer.ret-step-edit .ret-sec h5{color:#1f6b45}
+.ret-writer .ret-complete-note{font-size:13px;color:#2f9e63;font-weight:600;border-top:1px solid #d9e1e8;padding-top:8px;margin:0}
+.ret-writer .ret-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:#66788a}
+.ret-writer .ret-btn{border:1px solid #d9e1e8;background:#fff;color:#02384d;border-radius:6px;padding:6px 10px;font-weight:600;font-size:13px}
+
+/* ---- Fill the passage panel ----
+   The panel this replaces is the full width of the passage column (about 1,300px on a laptop,
+   24px body type). Sizes above are for a narrow column; these container queries (on .ret-root) scale type
+   and lay lists out in two columns once the panel is wide, so the checklist fills the box
+   instead of sitting small in a corner. */
+@container (min-width: 640px) {
+  .ret{gap:16px}
+  .ret-luna{font-size:20px}
+  .ret-luna .ret-say{font-size:20px;padding:10px 16px}
+  .ret-luna .ret-steps button{font-size:21px;min-height:64px}
+  .ret-luna .ret-ask{font-size:23px}
+  .ret-luna .ret-cards{grid-template-columns:1fr 1fr;gap:12px}
+  .ret-luna .ret-txt b{font-size:20px}
+  .ret-luna .ret-txt span{font-size:16px}
+  .ret-luna .ret-next{font-size:20px;min-height:58px}
+  .ret-luna .ret-view{font-size:17px;padding:10px 18px}
+  .ret-guided{font-size:18px}
+  .ret-guided .ret-hd h4{font-size:22px}
+  .ret-guided .ret-cnt,.ret .ret-cnt{font-size:14px}
+  .ret-guided .ret-stage button{font-size:18px;min-height:52px}
+  .ret-guided .ret-sec-head{font-size:19px;padding:12px 16px}
+  .ret-guided .ret-sec-body{display:grid;grid-template-columns:1fr 1fr}
+  .ret-guided .ret-row{grid-template-columns:38px 32px minmax(0,1fr);padding:12px 16px;border-top:0;border-bottom:1px solid #edf1f5}
+  .ret-guided .ret-row.ret-nobadge{grid-template-columns:38px minmax(0,1fr)}
+  .ret-guided .ret-cb{width:30px;height:30px}
+  .ret-guided .ret-lt{width:32px;height:32px;font-size:17px}
+  .ret-guided .ret-try{font-size:15px}
+  .ret-guided .ret-advance{font-size:19px;min-height:56px}
+  .ret-guided .ret-link{font-size:16px;padding:9px 14px}
+  .ret-writer{font-size:17px}
+  .ret-writer .ret-hd h4{font-size:21px}
+  .ret-writer .ret-n{font-size:14px}
+  .ret-writer .ret-stage button{font-size:16px;min-height:46px}
+  .ret-writer .ret-sec h5{font-size:14px}
+  .ret-writer .ret-items{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}
+  .ret-writer .ret-item{padding:12px 0}
+  .ret-writer .ret-what,.ret-writer .ret-how{font-size:15px}
+  .ret-writer .ret-donebtn{font-size:14px;padding:5px 14px}
+  .ret-writer .ret-more{font-size:14px}
+  .ret-writer .ret-advance{font-size:16px;padding:10px 16px}
+  .ret-writer .ret-foot{font-size:14px}
+  .ret-writer .ret-btn{font-size:15px;padding:8px 14px}
+}
+@container (min-width: 1000px) {
+  .ret-luna{font-size:22px}
+  .ret-luna .ret-txt b{font-size:22px}
+  .ret-guided{font-size:20px}
+  .ret-guided .ret-q{font-size:21px}
+  .ret-writer{font-size:18px}
+  .ret-writer .ret-move{font-size:19px}
+}
+
+/* ---- Final Check · optional third stage (a state's Writer's Checklist) ---- */
+.ret-luna .ret-steps.ret-steps-3{grid-template-columns:1fr 1fr 1fr}
+.ret-luna .ret-step-final{background:#efe7fb;color:#7c3aed}
+.ret-luna .ret-step-final[aria-selected="true"]{border-color:#7c3aed}
+.ret-luna.ret-step-final .ret-letter{background:#7c3aed}
+.ret-luna .ret-next-final{background:#7c3aed}
+.ret-guided .ret-stage.ret-stage-3,.ret-writer .ret-stage.ret-stage-3{grid-template-columns:1fr 1fr 1fr}
+.ret-guided .ret-stage-final,.ret-writer .ret-stage-final{background:#efe7fb;color:#7c3aed}
+.ret-guided .ret-stage-final[aria-selected="true"],.ret-writer .ret-stage-final[aria-selected="true"]{border-color:#7c3aed;background:#7c3aed;color:#fff}
+.ret-guided .ret-sec-final .ret-sec-head{background:#efe7fb;color:#5b21b6}
+.ret-guided.ret-step-final .ret-lt{background:#7c3aed}
+.ret-guided .ret-advance-final,.ret-writer .ret-advance-final{background:#7c3aed}
+.ret-writer.ret-step-final .ret-sec h5{color:#5b21b6}
+
 </style>
 </head>
 <body>
@@ -466,6 +641,11 @@
     <button data-band="4-5">4–5</button>
     <button data-band="6-8">6–8</button>
     <button data-band="9-12">9–12</button>
+  </div>
+
+  <div class="band" id="ptype" title="Prototype only: prompt type">
+    <button data-ptype="arg">Argumentative</button>
+    <button data-ptype="info">Informational</button>
   </div>
 
   <div class="band" id="mode" title="Prototype only: with or without a question set before writing">
@@ -760,75 +940,16 @@ const assignment = {
       // The organizer answers are combined into one piece of writing:
       // "paragraph" = all sections run together, "essay" = one paragraph per section
       essay: { combine: "paragraph", maxChars: 2300 },
-      // Revise / Edit checklists shown in the left panel (designed for 2–3; other bands inherit)
-      revise: {
-        layout: "cards",   // cards (2–3) | list (4–5) | compact (6–8+)
-        greeting: "Let’s make your writing even better!",
-        tabs: [
-          { key: "revise", label: "Revise", question: "Can I make my ideas better?", items: [
-            { letter: "A", text: "Add details, sentences, evidence, and words." },
-            { letter: "R", text: "Remove unnecessary wording or information." },
-            { letter: "M", text: "Move words or sentences." },
-            { letter: "S", text: "Substitute words or sentences for better ones." }
-          ] },
-          { key: "edit", label: "Edit", question: "Can I fix my mistakes?", items: [   // [Placeholder wording]
-            { letter: "C", text: "Capitals: Start every sentence and name with a capital letter." },
-            { letter: "U", text: "Usage: Do your words sound right? (He runs. They run.)" },
-            { letter: "P", text: "Punctuation: End every sentence with a . ? or !" },
-            { letter: "S", text: "Spelling: Check that your words are spelled right." }
-          ] }
-        ]
-      },
+      revise: true,   // left panel shows the Revision & Editing Tips panel (content: CMS → CR Writing → Revision & Editing Tips)
       supports: ["example-transitions", "example-description", "rev-edit-tips"],
       byBand: {
         "4-5": {
           title: "Here is your paragraph. Let’s revise and edit.",
           instruction: "Remember to include transition words and enhance your word choice. Reread your writing to check for organization and flow. Always check for spelling and punctuation.",
-          revise: {
-            layout: "list",
-            title: "Revise and edit your paragraph",
-            tabs: [
-              { key: "revise", label: "Revise", heading: "Revise your ideas", tag: "ARMS", next: "Check Editing next →", items: [
-                { text: "Add more details." },
-                { text: "Delete unnecessary wording or information." },
-                { text: "Elaborate on or combine sentences. Check sentence variety and structure." },
-                { text: "Rearrange sentences or paragraphs for clarity." },
-                { text: "Could you improve your topic sentence?" },
-                { text: "Use more or better transition words or phrases." }
-              ] },
-              { key: "edit", label: "Edit", heading: "Edit your writing", tag: "CUPS", items: [   // [Placeholder wording]
-                { text: "Capitalize the first word of each sentence and proper nouns." },
-                { text: "Use correct grammar and verb agreement." },
-                { text: "Punctuate every sentence correctly." },
-                { text: "Spell every word correctly." }
-              ] }
-            ]
-          }
         },
         "6-8": {
           title: "Here is your essay. Let’s revise and edit.",
           essay: { combine: "essay", maxChars: 2300 },
-          revise: {
-            layout: "compact",
-            title: "Revise and edit",
-            note: "Checks stay in this session and are not scored.",
-            tabs: [
-              { key: "revise", label: "Revise", heading: "Revise · Ideas and organization", items: [
-                { text: "Adding more details?" },
-                { text: "Deleting unnecessary wording or information?" },
-                { text: "Elaborating or combining sentences?" },
-                { text: "Rearranging sentences or paragraphs for clarity?" },
-                { text: "Writing better topic sentences for paragraphs?" },
-                { text: "Using more or better transition words or phrases?" }
-              ] },
-              { key: "edit", label: "Edit", heading: "Edit · Conventions", items: [
-                { text: "Capitalization?" },
-                { text: "Usage (verb agreement)?" },
-                { text: "Punctuation?" },
-                { text: "Spelling?" }
-              ] }
-            ]
-          }
         }
       }
     }
@@ -893,6 +1014,50 @@ if (LSCR) {
 // The set's own hints / sentence starters for a step (1-based), shown after the Student UX scaffolds
 const setSupports = step => (LSCR ? LSCR.supports.filter(sp => sp.steps.includes(step)).map(sp => sp.key) : []);
 
+// ---------- Prompt type: Argumentative (default content above) or Informational ----------
+// Informational swaps the prompt, the step wording and each step's Luna scaffolds. Hints marked ai are
+// written by AI for each passage set (sample text here); word banks are static.
+let ptype = 'arg';
+const argPrompt = { ...assignment.prompt };
+const infoPrompt = {
+  question: "How do different sounds help people in their daily lives? Use details from both passages to explain your answer.",
+  directions: "Read the articles The Sounds of a Busy Day and The Power of Quiet. Based on the information in the articles, write an informational response to the following:"
+};
+const infoSteps = [
+  { instruction: "Read the prompt and the passages. Then think about these questions.",
+    checklist: ["This is an informational prompt. This means you will teach your reader about a topic using facts from the passages.",
+                "What is the topic? What is the main idea?",
+                "What facts and details from the passages will help you explain it?"],
+    supports: ["hint-audience", "hint-topic"] },
+  { instruction: "Look back at the passages for facts that help you explain the topic. Select the words, then pick a color.",
+    highlights: [
+      { color: "green", label: "Main idea",     hint: "Sentences that tell what a passage is mostly about" },
+      { color: "blue",  label: "Key details",   hint: "Facts and examples that explain the main idea" },
+      { color: "red",   label: "Words to know", hint: "Topic words you want to use in your writing" }
+    ],
+    supports: ["hint-key-details", "hint-main-idea"] },
+  { supports: ["hint-evidence", "info-starters", "example-transitions", "example-description"] },
+  { supports: ["example-description", "example-transitions"] }
+];
+// AI sentence starters, one per organizer section, by band (they go straight into the organizer)
+const infoStarters = {
+  "2-3": ["Sounds help us in many ways.", "The passage says that", "This shows that"],
+  "4-5": ["Sounds help people every day.", "One way sounds help us is", "According to Passage 1,", "This detail shows that", "In conclusion, sounds"],
+  "6-8": ["Every day, sounds help people understand the world around them.", "In “The Sounds of a Busy Day,” the author explains that", "“The Power of Quiet” adds that", "Together, these passages show that"]
+};
+const startersFor = band => infoStarters[band] || infoStarters["6-8"];
+const aiTag = '<span class="ai-tag">✦ AI hint for this passage</span>';
+Object.assign(assignment.luna.supports, {
+  "hint-audience":    { title: "Hint: Audience", reply: aiTag + "Your readers are students who may not know much about sounds. Explain each idea clearly, like you are teaching a friend." },
+  "hint-topic":       { title: "Hint: Topic & Subtopics", reply: aiTag + "<b>Topic:</b> how sounds help us every day.<ul><li>Soft sounds, like whispers and quiet places</li><li>Loud sounds, like fire alarms and whistles</li><li>Sounds that help us learn, like music</li></ul>" },
+  "hint-key-details": { title: "Hint: Key Details", reply: aiTag + "Look for facts that explain how a sound helps:<ul><li>Whispering keeps the classroom calm (Passage 1, paragraph 2)</li><li>A fire alarm tells us to leave safely (Passage 1, paragraph 3)</li><li>Quiet helps us sleep (Passage 2, paragraph 3)</li></ul>" },
+  "hint-main-idea":   { title: "Hint: Main Idea", reply: aiTag + "<b>Passage 1:</b> Sounds help us understand what is happening around us.<br><b>Passage 2:</b> Quiet helps people rest, focus and stay safe." },
+  "hint-evidence":    { title: "Hint: Evidence", reply: aiTag + "Choose one fact for each idea. Say which passage and paragraph it came from, then explain what it shows about how sounds help people." },
+  "info-starters":    { title: "Sentence Starters", reply: '<span class="ai-tag">✦ AI starters for this passage</span>Each box in your graphic organizer has a starter. Click <b>Use starter</b> to add it, then finish the sentence.<p style="margin:8px 0 0"><button class="btn primary" type="button" data-fill-starters style="height:32px;padding:0 12px">Add all starters to my organizer</button></p>' }
+});
+const withType = (s, stepIdx) => (ptype === 'info' ? { ...s, ...infoSteps[stepIdx] } : s);
+const ansKey = (step, i) => `o${step}-${document.body.dataset.band}${ptype === 'info' ? '-info' : ''}-${i}`;
+
 /* ---------------- Render ---------------- */
 const ICON_LIST = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6"/><path d="M12 17h.01" stroke-width="2.6"/></svg>';
 const ICON_OL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 6h11M10 12h11M10 18h11"/><path d="M4 4v4M3 8h2M3 14c0-1 2-1.5 2 0s-2 2-2 4h2" stroke-width="1.5"/></svg>';
@@ -949,7 +1114,7 @@ function renderStep() {
   if (inQuestions()) return renderQuestions();
   document.body.classList.remove('in-q');
   $('midEyebrow').textContent = 'Your response';
-  const steps = assignment.steps, s = forBand(steps[current]);
+  const steps = assignment.steps, s = withType(forBand(steps[current]), current);
   $('stepCount').textContent = `Step ${current + 1} of ${steps.length}`;
   $('stepper').innerHTML = (mode === 'ecrq' ? `<button class="done" data-q="1"><div class="bar"></div>Questions ✓</button>` : '') + steps.map((st, i) =>
     `<button class="${i < current ? 'done' : i === current ? 'active' : ''}" data-i="${i}"><div class="bar"></div>${i + 1}. ${st.label}</button>`).join('');
@@ -961,9 +1126,10 @@ function renderStep() {
     <p class="hl-tip">Tip: click a highlight to change its color or remove it.</p>`;
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
-      const k = `o${current}-${document.body.dataset.band}-${i}`;
+      const k = ansKey(current, i);
+      const starter = ptype === 'info' ? startersFor(document.body.dataset.band)[i] : null;
       return `<div class="org-sec rte-host">
-        <div class="org-head"><span class="kw kw-${sec.color}">${sec.keyword}:</span> ${sec.text}${sec.ask ? `<br>Ask yourself: ${sec.ask}` : ''}</div>
+        <div class="org-head"><span class="kw kw-${sec.color}">${sec.keyword}:</span> ${sec.text}${sec.ask ? `<br>Ask yourself: ${sec.ask}` : ''}${starter ? `<div class="org-starter"><span>✦ <i>${starter}…</i></span><button type="button" data-starter="${i}">Use starter</button></div>` : ''}</div>
         ${rteBar()}
         <div class="rte" id="${k}" contenteditable="true" data-placeholder="Write your answer here…">${answers[k] || ''}</div>
       </div>`; }).join('')}</div>
@@ -1032,20 +1198,80 @@ function renderStep() {
   }).join('');
 }
 // ---------- Step 4: combine organizer → essay, Revise / Edit checklist ----------
-function essayKey() { return `essay-${document.body.dataset.band}`; }
+function essayKey() { return `essay-${document.body.dataset.band}${ptype === 'info' ? '-info' : ''}`; }
 function buildEssay(combine) {
   const i = assignment.steps.findIndex(st => st.organizer);
   const org = forBand(assignment.steps[i]).organizer;
-  const parts = org.map((_, j) => answers[`o${i}-${document.body.dataset.band}-${j}`] || '')
+  const parts = org.map((_, j) => answers[ansKey(i, j)] || '')
     .map(h => { const d = document.createElement('div'); d.innerHTML = h; return { html: h, text: d.innerText.trim() }; })
     .filter(x => x.text);
   if (!parts.length) return '';
   return combine === 'essay' ? parts.map(x => `<p>${x.html}</p>`).join('') : `<p>${parts.map(x => x.text).join(' ')}</p>`;
 }
 
-const rv = { tab: 'revise', checked: {}, finished: false, showPassage: false };
+const rv = { tab: 'revise', checked: {}, finished: false, showPassage: false, openHow: [] };
 const STAR = '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z"/></svg>';
 const CHECK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+// ---------- Step 4 left panel: Revision & Editing Tips ----------
+// Port of the approved student component (CMS handoff/revision-editing-panel/revisioneditingpanel.tsx).
+// Three templates: Luna (2–3), Guided (4–5), Writer (6–8; 9–12 uses it too). Content = the CMS
+// starter checklists (src/lib/revision-editing-tips.ts starterSets); publishers edit them per grade in
+// CR Writing → Revision & Editing Tips. Checks are session state only.
+const tipBand = b => (b === '2-3' ? 'Luna' : b === '4-5' ? 'Guided' : 'Writer');
+const bandLabel = b => 'Grades ' + String(b).replace('-', '–');
+const T = (letter, value, hint = null, detail = null) => ({ letter, value, hint, detail });
+const tipSets = {
+  Luna: { revisionLead: "Can I make my ideas better?", editingLead: "Is my writing ready to share?", final: [],
+    revise: [T("A", "Did I add a detail that tells more?", "Tell one more thing about your topic."),
+             T("R", "Did I take out a part that does not belong?", "Cross out a sentence that is not about your topic."),
+             T("M", "Are my ideas in an order that makes sense?", "First, next, last."),
+             T("S", "Can I swap a plain word for a better one?", "Change 'good' to 'helpful'.")],
+    edit:   [T("C", "Do my sentences start with a capital letter?", "Names start with a capital too."),
+             T("U", "Do my sentences sound right when I read them out loud?", "Read slowly with your finger."),
+             T("P", "Does every sentence end with . ? or !", "Look at the end of each line."),
+             T("S", "Did I spell the words I know correctly?", "Check the word wall words.")] },
+  Guided: { revisionLead: "Revise your ideas", editingLead: "Edit your conventions", final: [],
+    revise: [T("A", "Add a detail or example that supports each idea.", "Try: For example, the passage says…"),
+             T("R", "Remove sentences that repeat or wander off topic.", "Try: does every sentence help answer the question?"),
+             T("M", "Move sentences so the order makes sense.", "Try: put your reason before your example."),
+             T("S", "Substitute weak words for precise ones.", "Try: useful or powerful instead of good."),
+             T("T", "Start each paragraph with a topic sentence and add a transition.", "Try: Another reason… or In addition…")],
+    edit:   [T("C", "Capital letters start sentences and names of people, places and holidays."),
+             T("U", "Verbs match their subjects and stay in the same tense.", "Try: magnets hold, not magnets holds."),
+             T("P", "End punctuation, commas in a series, apostrophes in contractions."),
+             T("S", "Spelling, especially words with endings added.", "Try: floating, attracted."),
+             T("F", "No fragments or run-on sentences.", "Try: read each sentence alone. Does it make sense by itself?")] },
+  Writer: { revisionLead: "Revise · ideas and organization", editingLead: "Edit · conventions", final: [],
+    revise: [T(null, "Strengthen evidence", "Every claim has a quote or specific detail from the passage.", "Find a sentence that states an opinion with no support. Add a detail from the text and explain in one clause why it matters."),
+             T(null, "Cut what does not add meaning", "Repeated ideas and filler phrases are gone.", "Read each sentence and ask what it adds. If the answer is 'nothing new', delete it or merge it."),
+             T(null, "Check paragraph focus", "Each paragraph opens with a topic sentence that connects to the thesis.", "Underline the first sentence of each paragraph. Does it tell the reader what the paragraph proves?"),
+             T(null, "Connect ideas", "Transitions show how ideas relate: cause, contrast, addition.", "Replace 'also' and 'and' with transitions that name the relationship, such as 'as a result' or 'however'."),
+             T(null, "Vary sentence structure", "Sentence length and openings vary; no string of same-shaped sentences.", "Combine two short sentences with a subordinating word, or open one sentence with a phrase instead of the subject."),
+             T(null, "Choose precise words", "Vague words like 'things', 'good' and 'a lot' are replaced.", "Circle vague words and replace each with a term the passage uses or a more exact one.")],
+    edit:   [T(null, "Sentence boundaries", "No fragments, run-ons or comma splices.", "Where two complete thoughts meet, use a period, a semicolon, or a comma plus a conjunction."),
+             T(null, "Verb control", "Tense is consistent; passive voice is used only on purpose.", "Scan for 'was' and 'were'. Ask who is acting, and rewrite in active voice if the actor matters."),
+             T(null, "Pronoun reference", "Every pronoun clearly matches one noun.", "For each 'it', 'they' and 'this', point to the noun it replaces. If you cannot, name the noun."),
+             T(null, "Commas and semicolons", "Introductory phrases, nonrestrictive clauses and series are punctuated.", "Read aloud. A pause after an opening phrase or around an aside usually needs a comma."),
+             T(null, "Capitalization and spelling", "Proper nouns, titles and commonly confused words are correct.", "Check their / there / they're and affect / effect. Confirm passage names match the source.")] },
+};
+const defaultFinalLead = { Luna: "In my writing, I made sure to:", Guided: "In my well-written text, I made sure to:", Writer: "In my well-written text, I made sure to:" };
+const ICON = {
+  check: (c = 'currentColor', n = 24) => `<svg width="${n}" height="${n}" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="${c}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7"/></svg>`,
+  star: on => `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="${on ? '#f5b301' : '#d9e1e8'}" d="M12 2l2.9 6.6 7.1.7-5.4 4.8 1.6 7L12 17.4 5.8 21.1l1.6-7L2 9.3l7.1-.7z"/></svg>`,
+  speaker: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>',
+};
+let speakingKey = null;
+function speakTip(text, key, s) {
+  try {
+    speechSynthesis.cancel();
+    if (speakingKey === key) { speakingKey = null; return renderRevise(s); }
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US';
+    u.onend = () => { speakingKey = null; renderRevise(s); };
+    speakingKey = key; speechSynthesis.speak(u);
+  } catch (e) {}
+  renderRevise(s);
+}
+
 function renderRevise(s) {
   const onStep4 = !!s.revise, showRv = onStep4 && !rv.showPassage;
   $('passage').hidden = showRv; $('revise').hidden = !showRv;
@@ -1055,55 +1281,113 @@ function renderRevise(s) {
     $('backRv').onclick = () => { rv.showPassage = false; $('backRv').remove(); renderRevise(s); };
     return;
   }
-  const R = s.revise, tabs = R.tabs;
-  if (!tabs.some(x => x.key === rv.tab)) rv.tab = tabs[0].key;
-  const t = tabs.find(x => x.key === rv.tab), ti = tabs.indexOf(t), isLast = ti === tabs.length - 1;
-  const band = document.body.dataset.band, key = (tk, i) => `${band}-${tk}-${i}`;
-  const count = tab => tab.items.filter((_, i) => rv.checked[key(tab.key, i)]).length;
-  const total = tabs.reduce((n, x) => n + x.items.length, 0), totalDone = tabs.reduce((n, x) => n + count(x), 0);
-  const n = count(t), all = n === t.items.length;
-  // Reaching the last tab (Edit) unlocks Submit
-  if (isLast && !rv.finished) { rv.finished = true; $('nextBtn').disabled = false; $('nextBtn').title = ''; }
+  const band = tipBand(document.body.dataset.band), set = tipSets[band];
+  const lists = { revise: set.revise, edit: set.edit, final: set.final };
+  const hasFinal = set.final.length > 0;
+  if (!['revise', 'edit', 'final'].includes(rv.tab) || (rv.tab === 'final' && !hasFinal)) rv.tab = 'revise';
+  const stage = rv.tab;
+  const key = (st, i) => `${band}-${st}-${i}`;
+  const isDone = (st, i) => !!rv.checked[key(st, i)];
+  const count = st => lists[st].filter((_, i) => isDone(st, i)).length;
+  const complete = st => lists[st].length > 0 && count(st) === lists[st].length;
+  const lead = st => (st === 'revise' ? set.revisionLead : st === 'edit' ? set.editingLead : set.finalLead) || defaultFinalLead[band];
+  // Reaching Edit unlocks Submit
+  if (stage !== 'revise' && !rv.finished) { rv.finished = true; $('nextBtn').disabled = false; $('nextBtn').title = ''; }
+  const listen = (text, k) => `<button type="button" class="ret-listen" data-say="${k}" aria-pressed="${speakingKey === k}">${ICON.speaker} ${speakingKey === k ? 'Stop' : 'Listen'}</button>`;
+  const sayText = {};
   let html = '';
 
-  if (R.layout === 'list') {
-    html = `
-      <div class="rvl-head"><h4>${R.title}</h4><span>${totalDone} of ${total} checks</span></div>
-      <div class="rvl-bar"><i style="width:${total ? totalDone / total * 100 : 0}%"></i></div>
-      <div class="rvl-tabs">${tabs.map(x => `<button class="rvl-tab rv-tabbtn ${x === t ? 'on' : ''}" data-key="${x.key}"><span>${x.label}</span><span>${count(x)}/${x.items.length}</span></button>`).join('')}</div>
-      <div class="rvl-box">
-        <div class="rvl-box-head"><span><b>${t.heading}</b>${t.tag ? ` <small>· ${t.tag}</small>` : ''}</span><span class="n">${n} of ${t.items.length}</span></div>
-        ${t.items.map((it, i) => `<div class="rvl-row rv-toggle ${rv.checked[key(t.key, i)] ? 'on' : ''}" data-i="${i}" role="checkbox" aria-checked="${!!rv.checked[key(t.key, i)]}"><span class="rv-box">${CHECK}</span><span>${it.text}</span></div>`).join('')}
+  if (band === 'Luna') {
+    const list = lists[stage], n = count(stage), all = complete(stage);
+    const say = stage === 'revise' ? "Let's make your writing even better!" : stage === 'edit' ? "Now let's check for mistakes!" : 'Last step! Check everything on your list.';
+    html = `<div class="ret-root"><div class="ret ret-luna ret-step-${stage}" data-band="Luna">
+      <div class="ret-greet"><div class="ret-luna-star"><img src="luna.png" alt="" style="width:36px;height:36px;object-fit:contain"></div><div class="ret-say">${say}</div></div>
+      <div class="ret-steps${hasFinal ? ' ret-steps-3' : ''}" role="tablist" aria-label="Revise, edit and final check">
+        <button type="button" role="tab" class="ret-step-rev" data-stage="revise" aria-selected="${stage === 'revise'}">${ICON.check(stage === 'revise' ? '#2f80ed' : '#9fb0bf', 26)} Revise</button>
+        <button type="button" role="tab" class="ret-step-ed" data-stage="edit" aria-selected="${stage === 'edit'}">${ICON.check(stage === 'edit' ? '#2f9e63' : '#9fb0bf', 26)} Edit</button>
+        ${hasFinal ? `<button type="button" role="tab" class="ret-step-final" data-stage="final" aria-selected="${stage === 'final'}">${ICON.check(stage === 'final' ? '#7c3aed' : '#9fb0bf', 26)} Final Check</button>` : ''}
       </div>
-      ${isLast ? '' : `<button class="rvl-next" id="rvNext">${t.next || `Go to ${tabs[ti + 1].label} →`}</button>`}
-      <button class="view-psg" id="viewPsg">View Passage Again</button>`;
-  } else if (R.layout === 'compact') {
-    html = `
-      <div class="rvc-head"><h4>${R.title}</h4><span>${totalDone} of ${total} done</span></div>
-      <div class="rvc-tabs">${tabs.map((x, i) => `<button class="rvl-tab rv-tabbtn ${x === t ? 'on' : ''}" data-key="${x.key}"><span>${i + 1} · ${x.label}</span><span>${count(x)}/${x.items.length}</span></button>`).join('')}</div>
-      <p class="rvc-eyebrow">${t.heading}</p>
-      ${t.items.map((it, i) => `<div class="rvc-row"><span>${it.text}</span><button class="rvc-done rv-toggle ${rv.checked[key(t.key, i)] ? 'on' : ''}" data-i="${i}" aria-pressed="${!!rv.checked[key(t.key, i)]}">Done</button></div>`).join('')}
-      <div class="rvc-foot"><span>${R.note || ''}</span><button class="view-psg" id="viewPsg">View passage</button></div>`;
-  } else {   // cards (2–3)
-    html = `
-      <div class="rv-top"><div class="luna-avatar"><img src="luna.png" alt="Luna"></div><div class="bubble">${R.greeting}</div></div>
-      <div class="rv-tabs">${tabs.map(x => `<button class="rv-tab rv-tabbtn ${x === t ? 'on' : ''} ${count(x) === x.items.length ? 'done' : ''}" data-key="${x.key}"><span class="ck">${CHECK}</span>${x.label}</button>`).join('')}</div>
-      <p class="rv-q">${t.question}</p>
-      <ul class="rv-items">${t.items.map((it, i) => `<li class="rv-item rv-toggle ${rv.checked[key(t.key, i)] ? 'on' : ''}" data-i="${i}" role="checkbox" aria-checked="${!!rv.checked[key(t.key, i)]}">
-        <span class="rv-letter">${it.letter}</span><span class="rv-text">${it.text}</span><span class="rv-box">${CHECK}</span></li>`).join('')}</ul>
-      <div class="rv-stars">${t.items.map((_, i) => STAR.replace('<svg', `<svg class="${i < n ? 'lit' : ''}"`)).join('')} ${n} of ${t.items.length}</div>
-      ${isLast ? '' : `<button class="rv-next" id="rvNext">${all ? 'Go' : 'Skip'} to ${tabs[ti + 1].label} →</button>`}
-      <button class="view-psg" id="viewPsg">View Passage Again</button>`;
+      <p class="ret-ask">${lead(stage)}</p>
+      <div class="ret-cards">${list.map((t, i) => { const k = stage + i, d = isDone(stage, i); sayText[k] = t.value + (t.hint ? '. ' + t.hint : '');
+        return `<div class="ret-tip${d ? ' ret-done' : ''}${t.letter ? '' : ' ret-nobadge'}">
+          ${t.letter ? `<div class="ret-letter" aria-hidden="true">${t.letter}</div>` : ''}
+          <div class="ret-txt"><b>${t.value}</b>${t.hint ? `<span>${t.hint}</span>` : ''}${listen(sayText[k], k)}</div>
+          <button type="button" class="ret-check" data-toggle="${stage}:${i}" aria-pressed="${d}" aria-label="${d ? 'I did this. Tap to undo.' : 'I did this'}">${d ? ICON.check('#fff', 30) : ''}</button>
+        </div>`; }).join('')}${list.length ? '' : '<p class="ret-empty">No tips for this step yet.</p>'}</div>
+      <div class="ret-stars" aria-label="${n} of ${list.length} done">${list.map((_, i) => ICON.star(i < n)).join('')} <span>${n} of ${list.length}</span></div>
+      ${all && stage === 'revise' ? `<button type="button" class="ret-next" data-stage="edit">Great revising! Now let&apos;s edit →</button>` : ''}
+      ${all && stage === 'edit' && hasFinal ? `<button type="button" class="ret-next ret-next-final" data-stage="final">Great editing! One last check →</button>` : ''}
+      ${all && ((stage === 'edit' && !hasFinal) || stage === 'final') ? '<div class="ret-cheer">You checked everything! Read your writing one more time, then you are done.</div>' : ''}
+      ${!all ? `<button type="button" class="ret-next ${stage === 'revise' ? 'ret-next-rev' : stage === 'edit' ? 'ret-next-ed' : 'ret-next-final'}" data-stage="${stage === 'revise' ? 'edit' : stage === 'edit' ? 'revise' : 'edit'}">${stage === 'revise' ? 'Skip to Edit →' : stage === 'edit' ? '← Back to Revise' : '← Back to Edit'}</button>` : ''}
+      <button type="button" class="ret-view" data-view>View Passage Again</button>
+    </div></div>`;
+  } else {
+    const numbered = band === 'Writer';
+    const strip = `<div class="ret-stage${hasFinal ? ' ret-stage-3' : ''}" role="tablist" aria-label="Stage">
+      ${[['revise', 'rev', 'Revise', '#2f80ed', 1], ['edit', 'ed', 'Edit', '#2f9e63', 2], ...(hasFinal ? [['final', 'final', 'Final Check', '#7c3aed', 3]] : [])].map(([st, c, label, col, num]) =>
+        `<button type="button" role="tab" data-stage="${st}" aria-selected="${stage === st}" class="ret-stage-${c}${complete(st) ? ' ret-complete' : ''}"><span>${complete(st) ? ICON.check(col, 16) : ''}${numbered ? num + ' · ' : ''}${label}</span><span class="ret-k">${count(st)}/${lists[st].length}</span></button>`).join('')}
+    </div>`;
+    if (band === 'Guided') {
+      const total = set.revise.length + set.edit.length + set.final.length, n = count('revise') + count('edit') + count('final');
+      const sub = { revise: 'ARMS', edit: 'CUPS', final: 'Final Check' }[stage], c = { revise: 'rev', edit: 'ed', final: 'final' }[stage];
+      const rows = lists[stage];
+      sayText.all = [lead(stage), ...rows.map(t => t.value)].join('. ');
+      html = `<div class="ret-root"><div class="ret ret-guided ret-step-${stage}" data-band="Guided">
+        <div class="ret-hd"><h4>Revise and edit your paragraph</h4><span class="ret-cnt">${n} of ${total} checks</span></div>
+        <div class="ret-prog" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${n}"><i style="width:${total ? Math.round(n / total * 100) : 0}%"></i></div>
+        ${strip}
+        <div class="ret-sec ret-sec-${c}">
+          <div class="ret-sec-head"><span>${lead(stage)} <span class="ret-cnt">· ${sub}</span></span><span class="ret-cnt">${count(stage)} of ${rows.length}</span></div>
+          <div class="ret-sec-body">${rows.map((t, i) => { const d = isDone(stage, i);
+            return `<div class="ret-row${d ? ' ret-done' : ''}${t.letter ? '' : ' ret-nobadge'}">
+              <button type="button" class="ret-cb" data-toggle="${stage}:${i}" aria-pressed="${d}" aria-label="${d ? 'Done. Click to undo.' : 'Mark done'}">${d ? ICON.check('#fff', 18) : ''}</button>
+              ${t.letter ? `<span class="ret-lt" aria-hidden="true">${t.letter}</span>` : ''}
+              <div><div class="ret-q">${t.value}</div>${t.hint ? `<div class="ret-try">${t.hint}</div>` : ''}</div>
+            </div>`; }).join('')}</div>
+          ${rows.length ? '' : '<p class="ret-empty">No tips for this section yet.</p>'}
+        </div>
+        ${stage === 'revise' ? `<button type="button" class="ret-advance ret-advance-ed" data-stage="edit">${complete('revise') ? 'Great revising! Check Editing next →' : 'Check Editing next →'}</button>` : ''}
+        ${stage === 'edit' && hasFinal ? `<button type="button" class="ret-advance ret-advance-final" data-stage="final">${complete('edit') ? 'Great editing! Final Check next →' : 'Final Check next →'}</button>` : ''}
+        ${((stage === 'edit' && !hasFinal) || stage === 'final') && complete(stage) ? '<p class="ret-complete-note">All checks done. Read your paragraph once more, then you are ready.</p>' : ''}
+        ${stage === 'edit' && !hasFinal && !complete('edit') ? '<button type="button" class="ret-advance ret-advance-back" data-stage="revise">← Back to Revise</button>' : ''}
+        ${stage === 'final' && !complete('final') ? '<button type="button" class="ret-advance ret-advance-back" data-stage="edit">← Back to Edit</button>' : ''}
+        <div class="ret-foot"><button type="button" class="ret-link" data-say="all" aria-pressed="${speakingKey === 'all'}">${ICON.speaker} ${speakingKey === 'all' ? 'Stop' : 'Read this list aloud'}</button><button type="button" class="ret-link" data-view>View Passage Again</button></div>
+      </div></div>`;
+    } else {
+      const nAll = count('revise') + count('edit') + count('final'), tot = set.revise.length + set.edit.length + set.final.length;
+      const rows = lists[stage];
+      html = `<div class="ret-root"><div class="ret ret-writer ret-step-${stage}" data-band="Writer">
+        <div class="ret-hd"><h4>Revise and edit · ${bandLabel(document.body.dataset.band)}</h4><span class="ret-n">${nAll} of ${tot} done</span></div>
+        ${strip}
+        <div class="ret-sec"><h5>${lead(stage)}</h5><div class="ret-items">${rows.map((t, i) => { const id = stage + ':' + i, d = isDone(stage, i), open = rv.openHow.includes(id);
+          return `<div class="ret-item${d ? ' ret-done' : ''}${open ? ' ret-open' : ''}">
+            <div class="ret-top"><div><div class="ret-move">${t.value}</div>${t.hint ? `<div class="ret-what">${t.hint}</div>` : ''}</div>
+              <button type="button" class="ret-donebtn" data-toggle="${stage}:${i}" aria-pressed="${d}">${d ? ICON.check('#2f9e63', 14) : ''} Done</button></div>
+            ${t.detail ? `<button type="button" class="ret-more" data-how="${id}" aria-expanded="${open}">${open ? 'Hide how' : 'How'}</button><div class="ret-how">${t.detail}</div>` : ''}
+          </div>`; }).join('')}</div>${rows.length ? '' : '<p class="ret-empty">No checks for this stage yet.</p>'}</div>
+        ${stage === 'revise' && complete('revise') ? '<button type="button" class="ret-advance ret-advance-ed" data-stage="edit">Revising done. Move to editing →</button>' : ''}
+        ${stage === 'edit' && complete('edit') && hasFinal ? '<button type="button" class="ret-advance ret-advance-final" data-stage="final">Editing done. One final check →</button>' : ''}
+        ${((stage === 'edit' && !hasFinal) || stage === 'final') && complete(stage) ? '<p class="ret-complete-note">All checks done. Read your draft once more from the top, then submit.</p>' : ''}
+        <div class="ret-foot"><span>Checks stay in this session and are not scored.</span><button type="button" class="ret-btn" data-view>View passage</button></div>
+      </div></div>`;
+    }
   }
-  $('revise').dataset.tab = t.key;
-  $('revise').dataset.layout = R.layout;
   $('revise').innerHTML = html;
-  $('revise').querySelectorAll('.rv-toggle').forEach(el => el.onclick = () => {
-    const k = key(t.key, el.dataset.i); rv.checked[k] = !rv.checked[k]; renderRevise(s);
+  const R = $('revise');
+  R.querySelectorAll('[data-stage]').forEach(b => b.onclick = () => { rv.tab = b.dataset.stage; renderRevise(s); });
+  R.querySelectorAll('[data-toggle]').forEach(b => b.onclick = () => {
+    const [st, i] = b.dataset.toggle.split(':'), k = key(st, +i);
+    rv.checked[k] = !rv.checked[k];
+    // Grades 4–8: finishing a list moves straight into the next stage
+    const nxt = st === 'revise' ? 'edit' : st === 'edit' && hasFinal ? 'final' : null;
+    if (band !== 'Luna' && nxt && complete(st)) rv.tab = nxt;
+    renderRevise(s);
   });
-  $('revise').querySelectorAll('.rv-tabbtn').forEach(b => b.onclick = () => { rv.tab = b.dataset.key; renderRevise(s); });
-  if ($('rvNext')) $('rvNext').onclick = () => { rv.tab = tabs[ti + 1].key; renderRevise(s); };
-  $('viewPsg').onclick = () => { rv.showPassage = true; renderRevise(s); };
+  R.querySelectorAll('[data-how]').forEach(b => b.onclick = () => {
+    const id = b.dataset.how; rv.openHow = rv.openHow.includes(id) ? rv.openHow.filter(x => x !== id) : [...rv.openHow, id]; renderRevise(s);
+  });
+  R.querySelectorAll('[data-say]').forEach(b => b.onclick = () => speakTip(sayText[b.dataset.say], b.dataset.say, s));
+  R.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { rv.showPassage = true; renderRevise(s); });
 }
 
 // ---------- Question set (ECR + Q) ----------
@@ -1355,7 +1639,20 @@ $('fbOverlay').addEventListener('click', e => { if (e.target === $('fbOverlay'))
 addEventListener('keydown', e => { if (e.key === 'Escape') closeFeedback(); });
 document.querySelectorAll('.fb-demo button').forEach(b => b.onclick = () => { fbDemo = b.dataset.demo; fbSel = {}; renderFeedback(); });
 
+function useStarters(which) {
+  const i = assignment.steps.findIndex(st => st.organizer), list = startersFor(document.body.dataset.band);
+  (which === 'all' ? list.map((_, j) => j) : [which]).forEach(j => {
+    const k = ansKey(i, j), cur = answers[k] || '';
+    if (!list[j]) return;
+    const plain = cur.replace(/<[^>]+>/g, '').trim();
+    if (!plain.startsWith(list[j])) answers[k] = list[j] + ' ' + (plain ? cur : '');
+  });
+  if (current !== i) current = i;
+  renderStep();
+}
+$('step').addEventListener('click', e => { const b = e.target.closest('[data-starter]'); if (b) useStarters(+b.dataset.starter); });
 $('supports').addEventListener('click', e => {
+  if (e.target.closest('[data-fill-starters]')) return useStarters('all');
   const b = e.target.closest('.support'); if (!b) return;
   const item = b.parentElement, opening = !item.classList.contains('open');
   // one open at a time
@@ -1370,7 +1667,7 @@ $('supports').addEventListener('click', e => {
 // Select text in the passage → pick a color. Click a highlight → recolor or remove.
 // One highlight can span paragraphs, so its pieces share a data-hid.
 let hid = 0, pendingRange = null, editing = null;
-const hlConfig = () => forBand(assignment.steps.find(st => st.highlights)).highlights;
+const hlConfig = () => { const i = assignment.steps.findIndex(st => st.highlights); return withType(forBand(assignment.steps[i]), i).highlights; };
 
 function wrapRange(range, color) {
   const id = ++hid;
@@ -1455,6 +1752,20 @@ $('band').addEventListener('click', e => { const b = e.target.closest('button');
 let savedMode = 'ecr';
 try { savedMode = localStorage.getItem('lscr-mode') || 'ecr'; } catch (e) {}
 setMode(LSCR ? (LSCR.questions.length ? 'ecrq' : 'ecr') : savedMode === 'ecrq' ? 'ecrq' : 'ecr');
+const setPtype = t => {
+  ptype = t;
+  document.querySelectorAll('#ptype button').forEach(x => x.classList.toggle('on', x.dataset.ptype === t));
+  try { localStorage.setItem('lscr-ptype', t); } catch (e) {}
+  if (!LSCR) assignment.prompt = t === 'info' ? infoPrompt : argPrompt;
+  $('promptQ').innerHTML = assignment.prompt.question;
+  $('promptDirections').innerHTML = assignment.prompt.directions;
+  rv.tab = 'revise';
+  renderStep();
+};
+let savedPtype = 'arg';
+try { savedPtype = localStorage.getItem('lscr-ptype') || 'arg'; } catch (e) {}
+setPtype(LSCR ? (/inform/i.test(LSCR.writingType || '') ? 'info' : 'arg') : savedPtype === 'info' ? 'info' : 'arg');
+$('ptype').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setPtype(b.dataset.ptype); });
 $('mode').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setMode(b.dataset.mode); });
 
 // Zoom only scales the passage text
