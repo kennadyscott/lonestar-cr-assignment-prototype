@@ -273,6 +273,24 @@
   .claim-strip.empty { background: #fff8e6; border-color: #f0dcb8; }
   .claim-strip.empty .cs-label, .claim-strip.empty .cs-edit { color: #8a6a1c; }
   .claim-strip.empty .cs-text { font-weight: 400; color: var(--muted); cursor: default; }
+  /* Word tools */
+  .wt-ask { margin: 0 0 6px; font-weight: 700; color: var(--navy); }
+  .wt-purposes { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .wt-purpose { border: 1px solid var(--border); background: var(--surface); color: var(--navy); border-radius: 999px; padding: 5px 10px; font: inherit; font-size: calc(13px * var(--fs)); font-weight: 600; cursor: pointer; }
+  .wt-purpose.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .wt-pick { padding: 8px 10px; border-radius: 8px; background: var(--cyan-softer); margin-bottom: 6px; }
+  .wchips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; }
+  .wchip { border: 1.5px solid #9fd3b1; background: #fff; color: #1f5f3a; border-radius: 8px; padding: 4px 10px; font: inherit; font-size: calc(13.5px * var(--fs)); font-weight: 700; cursor: pointer; }
+  .wchip:hover { background: #eaf8ee; }
+  .wchip.plain { border-color: var(--border); color: var(--navy); font-weight: 600; }
+  .wt-ex { margin: 4px 0 0; font-size: calc(13px * var(--fs)); } .wt-ex span { font-weight: 700; color: var(--muted); }
+  .wt-note { margin: 4px 0 0; font-size: calc(12.5px * var(--fs)); color: var(--muted); font-style: italic; }
+  .wt-sub { margin: 6px 0 2px; font-size: calc(13px * var(--fs)); }
+  .wt-swap { display: flex; gap: 6px; margin-bottom: 4px; }
+  .wt-swap input { flex: 1; min-width: 0; height: 32px; border: 1px solid var(--border); border-radius: 8px; padding: 0 10px; font: inherit; font-size: calc(13.5px * var(--fs)); }
+  .wt-swap button { height: 32px; padding: 0 12px; border-radius: 8px; border: 0; background: var(--navy); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .wt-tip { margin: 6px 0 0; font-size: calc(12px * var(--fs)); color: var(--muted); }
+  .wt-tip.warn { color: #a8352a; font-weight: 600; }
   /* Highlighting */
   mark.hl { color: inherit; border-radius: 3px; padding: 1px 0; cursor: pointer; }
   .hl-green { background: #bff0c9; }
@@ -1263,6 +1281,116 @@ scaffold("example-transitions", "Example Transition Words", {
 scaffold("example-description", "Example Description Words", {
   "2-3": "Try a stronger word:" + wbTable([["Size", "huge, tiny, giant"], ["Sound", "loud, quiet, soft, noisy"], ["Feelings", "happy, calm, scared, excited"], ["Speed", "fast, slow, quick"], ["Instead of “good”", "helpful, important, useful"]]),
   "4-5": fullDescription });
+// ---------- Word tools (Transition Words, Description Words) ----------
+// Transition Words: pick what you want to do → 3–5 word chips + an example sentence (static, by band).
+// Description Words: "Swap a word" (static, by band) + "Words from your passage" (AI per passage).
+// Tapping any chip adds the word where the student is typing (organizer box, essay or claim box).
+const TRANSITIONS = {   // [Draft wording] Kennady's full word banks remain the source lists
+  "2-3": [
+    { key: "add", label: "Add more", words: ["Also,", "Next,", "Another"], ex: "I like the park. <b>Also,</b> I like the library." },
+    { key: "example", label: "Give an example", words: ["For example,", "Like"], ex: "Some sounds help us. <b>For example,</b> an alarm tells us to leave." },
+    { key: "order", label: "Tell the order", words: ["First,", "Next,", "Then,", "Last,"], ex: "<b>First,</b> I heard a bell. <b>Then,</b> we lined up." },
+    { key: "why", label: "Tell why", words: ["because", "so"], ex: "Quiet is good <b>because</b> it helps us think." },
+    { key: "end", label: "Finish", words: ["In the end,", "That is why"], ex: "<b>That is why</b> loud sounds are important." }
+  ],
+  "4-5": [
+    { key: "add", label: "Add another idea", words: ["Also,", "In addition,", "Another reason", "Besides,"], ex: "Alarms keep us safe. <b>In addition,</b> whistles keep games fair." },
+    { key: "example", label: "Give an example", words: ["For example,", "For instance,", "such as"], ex: "Sounds warn us. <b>For instance,</b> a fire alarm tells us to leave." },
+    { key: "order", label: "Show order", words: ["First,", "Next,", "Then,", "Finally,"], ex: "<b>First,</b> the alarm rang. <b>Finally,</b> everyone was outside." },
+    { key: "compare", label: "Compare", words: ["Similarly,", "Likewise,", "In the same way,"], ex: "A whistle stops a game. <b>Similarly,</b> an alarm stops class." },
+    { key: "contrast", label: "Show a contrast", words: ["However,", "But", "On the other hand,"], ex: "Loud sounds warn us. <b>However,</b> soft sounds help us focus." },
+    { key: "why", label: "Explain why", words: ["because", "since", "As a result,"], ex: "We left quickly <b>because</b> the alarm was loud." },
+    { key: "end", label: "Wrap up", words: ["In conclusion,", "To sum up,", "That is why"], ex: "<b>In conclusion,</b> loud sounds keep people safe." }
+  ],
+  "6-8": [
+    { key: "add", label: "Add another idea", words: ["Furthermore,", "In addition,", "Moreover,", "Additionally,"], ex: "Alarms protect whole buildings. <b>Moreover,</b> they work even when people are distracted.", note: "Moreover adds a stronger, related point." },
+    { key: "example", label: "Give an example", words: ["For instance,", "To illustrate,", "Specifically,"], ex: "Loud signals coordinate groups. <b>Specifically,</b> a referee’s whistle stops play instantly." },
+    { key: "order", label: "Show order or time", words: ["Initially,", "Subsequently,", "Meanwhile,", "Ultimately,"], ex: "<b>Initially,</b> the room was silent. <b>Subsequently,</b> the alarm changed everything." },
+    { key: "compare", label: "Compare", words: ["Similarly,", "Likewise,", "In the same way,"], ex: "Libraries protect focus. <b>Likewise,</b> quiet classrooms help students learn." },
+    { key: "contrast", label: "Show a contrast", words: ["However,", "On the other hand,", "Nevertheless,", "Conversely,"], ex: "Quiet helps us focus. <b>Nevertheless,</b> loud warnings save lives.", note: "However turns the idea; on the other hand weighs two sides; nevertheless keeps your point despite the other one." },
+    { key: "concede", label: "Admit the other side", words: ["Admittedly,", "Granted,", "Although"], ex: "<b>Admittedly,</b> quiet has real value, but safety comes first.", note: "Use these to introduce a counterclaim before you answer it." },
+    { key: "why", label: "Show cause and effect", words: ["Consequently,", "Therefore,", "As a result,"], ex: "The alarm was loud. <b>As a result,</b> everyone reacted within seconds.", note: "Therefore = a conclusion from your reasoning; as a result = the effect of an event." },
+    { key: "end", label: "Wrap up", words: ["Ultimately,", "In conclusion,", "Overall,"], ex: "<b>Ultimately,</b> loud sounds protect people in ways quiet cannot." }
+  ]
+};
+const SWAPS = {   // plain word → stronger choices; 6–8 entries include a short meaning
+  "2-3": { good: ["great", "helpful", "kind"], bad: ["awful", "unsafe", "mean"], big: ["huge", "giant"], small: ["tiny", "little"], loud: ["noisy", "booming"], quiet: ["soft", "calm", "still"], nice: ["kind", "friendly"], "a lot": ["many", "lots of"], thing: ["object", "idea"], said: ["told", "asked", "yelled"], happy: ["glad", "cheerful"], sad: ["upset", "unhappy"], fast: ["quick", "speedy"], important: ["needed", "big deal"], very: ["really", "super"] },
+  "4-5": { good: ["helpful", "useful", "important", "excellent"], bad: ["harmful", "unpleasant", "dangerous"], big: ["enormous", "large", "massive"], small: ["tiny", "slight"], loud: ["blaring", "booming", "deafening"], quiet: ["hushed", "peaceful", "silent"], nice: ["pleasant", "thoughtful"], "a lot": ["plenty of", "countless", "a great deal of"], thing: ["item", "detail", "reason"], said: ["explained", "shouted", "whispered"], happy: ["joyful", "delighted"], sad: ["gloomy", "disappointed"], fast: ["rapid", "swift"], important: ["necessary", "key", "major"], very: ["extremely", "truly"] },
+  "6-8": { good: ["beneficial (it helps)", "valuable (worth a lot)", "effective (it works)", "essential (it’s needed)"], bad: ["detrimental (causes harm)", "hazardous (dangerous)", "disruptive (interrupts)"], big: ["substantial", "significant", "vast"], small: ["minimal", "modest", "negligible"], loud: ["piercing", "thunderous", "jarring"], quiet: ["tranquil", "muted", "subdued"], nice: ["considerate", "gracious", "agreeable"], "a lot": ["numerous", "abundant", "a multitude of"], thing: ["factor", "element", "aspect"], said: ["stated", "argued", "emphasized"], happy: ["elated", "content"], sad: ["dejected", "somber"], fast: ["immediate", "brisk"], important: ["crucial", "essential", "significant"], very: ["remarkably", "exceptionally"] }
+};
+const PASSAGE_WORDS = {   // AI per passage [Sample text for the Sounds passages]
+  "2-3": ["loud", "soft", "calm", "quiet", "sharp", "whisper"],
+  "4-5": ["blaring", "rustling", "calm", "focused", "sharp", "chirping"],
+  "6-8": ["blaring", "alarming", "rustling", "focused", "disturbing", "rhythms"]
+};
+const wordBand = map => pickBand(map, document.body.dataset.band);
+const wt = { purpose: null, swap: '' };
+const chip = w => `<button type="button" class="wchip" data-word="${esc(w.replace(/\s*\(.*\)$/, ''))}">${esc(w)}</button>`;
+
+function transitionsUI() {
+  const list = wordBand(TRANSITIONS), p = list.find(x => x.key === wt.purpose);
+  return `<p class="wt-ask">What do you want to do next?</p>
+    <div class="wt-purposes">${list.map(x => `<button type="button" class="wt-purpose${x === p ? ' on' : ''}" data-purpose="${x.key}">${x.label}</button>`).join('')}</div>
+    ${p ? `<div class="wt-pick"><div class="wchips">${p.words.map(chip).join('')}</div>
+      <p class="wt-ex"><span>Example:</span> ${p.ex}</p>${p.note ? `<p class="wt-note">${p.note}</p>` : ''}</div>` : ''}
+    <p class="wt-tip" data-tip>Tap a word to add it where you’re typing.</p>`;
+}
+function describeUI() {
+  const swaps = wordBand(SWAPS), q = wt.swap.trim().toLowerCase(), hit = q && swaps[q];
+  return `<p class="wt-ask">Swap a word</p>
+    <form class="wt-swap" data-swap-form><input id="swapWord" placeholder="Type a plain word, like good" value="${esc(wt.swap)}" autocomplete="off" aria-label="Word to swap"><button type="submit">Find</button></form>
+    ${q ? (hit ? `<p class="wt-sub">Instead of <b>${esc(q)}</b>, try:</p><div class="wchips">${hit.map(chip).join('')}</div>`
+             : `<p class="wt-sub">No swaps for “${esc(q)}” yet. Try one of these:</p><div class="wchips">${Object.keys(swaps).map(k => `<button type="button" class="wchip plain" data-swap="${k}">${k}</button>`).join('')}</div>`)
+        : `<div class="wchips">${Object.keys(swaps).slice(0, 8).map(k => `<button type="button" class="wchip plain" data-swap="${k}">${k}</button>`).join('')}</div>`}
+    <p class="wt-ask" style="margin-top:12px">${aiTag}Words from your passage</p>
+    <div class="wchips">${wordBand(PASSAGE_WORDS).map(chip).join('')}</div>
+    <p class="wt-tip" data-tip>Tap a word to add it where you’re typing.</p>`;
+}
+const WORD_TOOLS = { "example-transitions": transitionsUI, "example-description": describeUI };
+scaffold("example-transitions", "Transition Words", { "2-3": "{{WORDTOOL}}", "4-5": "{{WORDTOOL}}", "6-8": "{{WORDTOOL}}", "9-12": "{{WORDTOOL}}" });
+scaffold("example-description", "Description Words", { "2-3": "{{WORDTOOL}}", "4-5": "{{WORDTOOL}}", "6-8": "{{WORDTOOL}}", "9-12": "{{WORDTOOL}}" });
+
+// Remember where the student was typing, so a tapped word lands there
+let lastEdit = null, lastRange = null;
+document.addEventListener('focusin', e => { const el = e.target.closest?.('#step .rte, #step textarea'); if (el) lastEdit = el; });
+document.addEventListener('selectionchange', () => {
+  const sel = getSelection(); if (!sel.rangeCount) return;
+  const n = sel.anchorNode, host = n && (n.nodeType === 1 ? n : n.parentElement)?.closest?.('#step .rte');
+  if (host) { lastEdit = host; lastRange = sel.getRangeAt(0).cloneRange(); }
+});
+function insertWord(word, tipEl) {
+  const el = lastEdit && document.contains(lastEdit) ? lastEdit : null;
+  if (!el) { if (tipEl) { tipEl.textContent = 'Click in your writing first, then tap a word.'; tipEl.classList.add('warn'); } return; }
+  if (el.tagName === 'TEXTAREA') {
+    const a = el.selectionStart ?? el.value.length, b = el.selectionEnd ?? a, before = el.value.slice(0, a);
+    const text = (before && !/\s$/.test(before) ? ' ' : '') + word + ' ';
+    el.value = before + text + el.value.slice(b); el.focus(); el.selectionStart = el.selectionEnd = a + text.length;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  } else {
+    el.focus();
+    const sel = getSelection();
+    if (lastRange && el.contains(lastRange.startContainer)) { sel.removeAllRanges(); sel.addRange(lastRange); }
+    else { const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); sel.removeAllRanges(); sel.addRange(r); }
+    const r0 = sel.getRangeAt(0), upTo = document.createRange(); upTo.selectNodeContents(el); upTo.setEnd(r0.startContainer, r0.startOffset);
+    const pre = upTo.toString();
+    document.execCommand('insertText', false, (pre && !/\s$/.test(pre) ? ' ' : '') + word + ' ');
+  }
+  if (tipEl) { tipEl.textContent = `Added “${word}”.`; tipEl.classList.remove('warn'); }
+}
+function wordToolClick(e) {
+  const body = e.target.closest('.support-body'); if (!body) return false;
+  const id = body.closest('.support-item')?.querySelector('.support')?.dataset.id; if (!WORD_TOOLS[id]) return false;
+  const p = e.target.closest('[data-purpose]'), w = e.target.closest('[data-word]'), sw = e.target.closest('[data-swap]');
+  if (p) { wt.purpose = wt.purpose === p.dataset.purpose ? null : p.dataset.purpose; body.innerHTML = WORD_TOOLS[id](); return true; }
+  if (sw) { wt.swap = sw.dataset.swap; body.innerHTML = WORD_TOOLS[id](); return true; }
+  if (w) { e.preventDefault(); insertWord(w.dataset.word, body.querySelector('[data-tip]')); return true; }
+  return !!e.target.closest('.wt-swap, .wchips, .wt-pick');
+}
+document.addEventListener('submit', e => {
+  const f = e.target.closest?.('[data-swap-form]'); if (!f) return;
+  e.preventDefault(); wt.swap = f.querySelector('input').value; f.closest('.support-body').innerHTML = describeUI();
+});
+
 
 // Informational (✦ AI per passage)
 scaffold("hint-audience", "Hint: Audience", {
@@ -1552,7 +1680,7 @@ function renderStep() {
     const sp = forBand(assignment.luna.supports[id]);
     return `<div class="support-item ${i % 2 ? 'blue' : ''}">
       <button class="support" data-id="${id}" aria-expanded="false"><span class="ic">${ICON_LIST}</span><span>${sp.title}</span>${chev}</button>
-      <div class="support-body" hidden>${id === 'ai-starters' ? sp.reply.replace('{{STARTERS}}', startersList()) : sp.reply}</div></div>`;
+      <div class="support-body" hidden>${id === 'ai-starters' ? sp.reply.replace('{{STARTERS}}', startersList()) : WORD_TOOLS[id] ? WORD_TOOLS[id]() : sp.reply}</div></div>`;
   }).join('');
 }
 // ---------- Step 4: combine organizer → essay, Revise / Edit checklist ----------
@@ -2040,7 +2168,9 @@ function useStarters(which) {
   renderStep();
 }
 $('step').addEventListener('click', e => { const b = e.target.closest('[data-starter]'); if (b) useStarters(+b.dataset.starter); });
+$('supports').addEventListener('mousedown', e => { if (e.target.closest('[data-word]')) e.preventDefault(); });   // keep the student's cursor
 $('supports').addEventListener('click', e => {
+  if (wordToolClick(e)) return;
   if (e.target.closest('[data-fill-starters]')) return useStarters('all');
   const b = e.target.closest('.support'); if (!b) return;
   const item = b.parentElement, opening = !item.classList.contains('open');
