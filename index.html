@@ -177,6 +177,41 @@
   .btn:disabled { opacity: .4; cursor: default; }
   .wc { font-size: calc(13px * var(--fs)); color: var(--muted); }
 
+  /* ---------- Question set (ECR + Q): runs before the writing steps, no Writing Support panel ---------- */
+  body.in-q .workspace { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr); }
+  body.in-q .luna, body.in-q .prompt-card, body.in-q .stepper { display: none; }
+  .qs-head { border: 1px solid var(--border); border-radius: 12px; padding: 14px 12px 4px; margin: 0 0 18px; text-align: center; background: var(--surface); }
+  .qs-head h3 { margin: 0 0 12px; font-size: calc(16px * var(--fs)); color: var(--navy); }
+  .qs-head .qs-count { margin-bottom: 8px; }
+  .qs-steps { display: flex; flex-wrap: wrap; row-gap: 8px; align-items: center; justify-content: center; margin: 0 0 6px; }
+  .qs-steps button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border); background: var(--surface); color: var(--muted); font-weight: 700; font-size: calc(13px * var(--fs)); padding: 0; }
+  .qs-steps button.done { border-color: var(--navy-2); background: var(--navy-2); color: #fff; }
+  .qs-steps button.active { border-color: var(--cyan); color: var(--navy); box-shadow: 0 0 0 3px var(--cyan-soft); }
+  .qs-steps i { width: clamp(10px, 3vw, 28px); height: 2px; background: var(--border); }
+  .qs-count { text-align: center; font-size: calc(12.5px * var(--fs)); color: var(--muted); margin: 0 0 18px; }
+  .qs-kind { font-size: calc(11px * var(--fs)); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); margin: 0 0 6px; }
+  .qs-intro { margin: 0 0 12px; }
+  .qs-q { font-weight: 600; color: var(--navy); margin: 0 0 14px; }
+  .qs-task { background: #e4dcfb; border-radius: 6px; padding: 8px 12px; font-weight: 600; color: #2a2150; margin: 0 0 14px; }
+  .qs-para { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 0 0 14px; line-height: 1.8; }
+  .qs-blank { display: inline-block; min-width: 150px; border-bottom: 2px solid var(--muted); margin: 0 4px; padding: 0 4px; color: var(--muted); }
+  .qs-blank.filled { border-bottom-color: var(--cyan); background: var(--cyan-softer); color: var(--navy); cursor: pointer; border-radius: 4px 4px 0 0; }
+  .qs-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 14px; }
+  .qs-opts.one-col { grid-template-columns: 1fr; }
+  .qs-opt { display: flex; gap: 10px; align-items: flex-start; text-align: left; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--surface); font-size: calc(14.5px * var(--fs)); line-height: 1.45; color: var(--text); }
+  .qs-opt:hover { border-color: var(--cyan); }
+  .qs-opt.on { border-color: var(--navy-2); background: var(--cyan-softer); }
+  .qs-opt.right { border-color: #38a861; background: #f2faf5; }
+  .qs-opt.wrong { border-color: #ef5a45; background: #fff6f4; }
+  .qs-opt:disabled { cursor: default; }
+  .qs-box { width: 18px; height: 18px; flex: none; margin-top: 2px; border: 2px solid #b7c3cc; border-radius: 4px; display: grid; place-items: center; color: transparent; font-size: 12px; font-weight: 800; }
+  .qs-opts.single .qs-box { border-radius: 50%; }
+  .qs-opt.on .qs-box { background: var(--navy-2); border-color: var(--navy-2); color: #fff; }
+  .qs-fb { border-radius: 10px; padding: 10px 14px; margin: 0 0 8px; font-size: calc(14px * var(--fs)); }
+  .qs-fb.right { background: #eaf6ef; color: #256b41; }
+  .qs-fb.wrong { background: #fdeeec; color: #a8352a; }
+  @media (max-width: 760px) { .qs-opts { grid-template-columns: 1fr; } }
+
   /* Highlighting */
   mark.hl { color: inherit; border-radius: 3px; padding: 1px 0; cursor: pointer; }
   .hl-green { background: #bff0c9; }
@@ -426,6 +461,11 @@
     <button data-band="9-12">9–12</button>
   </div>
 
+  <div class="band" id="mode" title="Prototype only: with or without a question set before writing">
+    <button data-mode="ecr">ECR</button>
+    <button data-mode="ecrq">ECR + Q</button>
+  </div>
+
   <div style="flex: 1"></div>
 
   <button class="cc-btn" title="Switch to ClassCade">
@@ -484,7 +524,7 @@
   <!-- Prompt + guided steps -->
   <section class="panel">
     <div class="panel-head">
-      <span class="eyebrow">Your response</span>
+      <span class="eyebrow" id="midEyebrow">Your response</span>
       <div class="spacer"></div>
       <span class="wc" id="stepCount"></span>
     </div>
@@ -547,6 +587,13 @@
 <div class="hl-pop" id="hlPop" role="toolbar" aria-label="Highlight color"></div>
 
 <script>
+// When this template runs inside CMS (CR Student → Student UX → Student Preview), the signed-in
+// parent page embeds one Master ECR Set as JSON. All strings in it arrive HTML-escaped.
+// Opened on its own, the template runs the built-in Sounds demo below.
+const LSCR = (() => {
+  try { const el = window.parent !== window && window.parent.document.getElementById('lscr-data'); return el ? JSON.parse(el.textContent) : null; }
+  catch (e) { return null; }
+})();
 /* ------------------------------------------------------------------
    Content model — shaped like what CMS would eventually serve.
    Assignment → passages[], prompt, steps[], Luna supports[] (scoped per step).
@@ -826,6 +873,13 @@ const assignment = {
     }
   }
 };
+if (LSCR) {
+  assignment.passages = LSCR.passages;
+  assignment.prompt = LSCR.prompt;
+  for (const sp of LSCR.supports) assignment.luna.supports[sp.key] = { title: sp.title, reply: sp.reply };
+}
+// The set's own hints / sentence starters for a step (1-based), shown after the Student UX scaffolds
+const setSupports = step => (LSCR ? LSCR.supports.filter(sp => sp.steps.includes(step)).map(sp => sp.key) : []);
 
 /* ---------------- Render ---------------- */
 const ICON_LIST = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6"/><path d="M12 17h.01" stroke-width="2.6"/></svg>';
@@ -867,8 +921,8 @@ if (psgs.length === 1) {
   $('psgToggle').onclick = () => { const open = !all().every(d => d.open); all().forEach(d => d.open = open); };
   syncToggle();
 }
-$('promptQ').textContent = assignment.prompt.question;
-$('promptDirections').textContent = assignment.prompt.directions;
+$('promptQ').innerHTML = assignment.prompt.question;
+$('promptDirections').innerHTML = assignment.prompt.directions;
 $('lunaGreeting').textContent = assignment.luna.greeting;
 
 // Resolve a step or scaffold for the current grade band. Bands cascade: start from the
@@ -880,9 +934,12 @@ const forBand = obj => {
 };
 
 function renderStep() {
+  if (inQuestions()) return renderQuestions();
+  document.body.classList.remove('in-q');
+  $('midEyebrow').textContent = 'Your response';
   const steps = assignment.steps, s = forBand(steps[current]);
   $('stepCount').textContent = `Step ${current + 1} of ${steps.length}`;
-  $('stepper').innerHTML = steps.map((st, i) =>
+  $('stepper').innerHTML = (mode === 'ecrq' ? `<button class="done" data-q="1"><div class="bar"></div>Questions ✓</button>` : '') + steps.map((st, i) =>
     `<button class="${i < current ? 'done' : i === current ? 'active' : ''}" data-i="${i}"><div class="bar"></div>${i + 1}. ${st.label}</button>`).join('');
   let html = `<h3>${s.title}</h3><p class="instr">${s.instruction}</p>`;
   if (s.checklist) html += `<ul class="checklist">${s.checklist.map((c, i) =>
@@ -950,12 +1007,12 @@ function renderStep() {
     answers[essayKey()] = buildEssay(s.essay.combine); renderStep();
   };
   renderRevise(s);
-  $('prevBtn').disabled = current === 0;
+  $('prevBtn').disabled = current === 0 && mode !== 'ecrq';
   $('nextBtn').textContent = current === steps.length - 1 ? 'Submit' : `Go to Step ${current + 2}`;
   // Last step: Submit unlocks only after the student has gone through Revise and Edit
   $('nextBtn').disabled = current === steps.length - 1 && !rv.finished;
   $('nextBtn').title = $('nextBtn').disabled ? 'Finish Revise and Edit first' : '';
-  $('supports').innerHTML = s.supports.map((id, i) => {
+  $('supports').innerHTML = [...s.supports, ...setSupports(current + 1)].map((id, i) => {
     const sp = forBand(assignment.luna.supports[id]);
     return `<div class="support-item ${i % 2 ? 'blue' : ''}">
       <button class="support" data-id="${id}" aria-expanded="false"><span class="ic">${ICON_LIST}</span><span>${sp.title}</span>${chev}</button>
@@ -1037,11 +1094,140 @@ function renderRevise(s) {
   $('viewPsg').onclick = () => { rv.showPassage = true; renderRevise(s); };
 }
 
+// ---------- Question set (ECR + Q) ----------
+// Comprehension questions and/or a peer revision task tied to the passage, answered BEFORE the
+// writing steps. No Writing Support panel while students work on it. [Sample questions]
+const questionSet = LSCR ? LSCR.questions : [
+  { kind: "Reading Comprehension", type: "single",
+    q: "According to paragraph 2 of Passage 1, why is whispering helpful in a classroom?",
+    options: ["It helps students hear the fire alarm.", "It keeps the classroom calm and focused.", "It lets the teacher talk louder.", "It shows that a game is starting."],
+    correct: [1], explain: "Paragraph 2 says whispering “helps keep the classroom calm and focused.”" },
+  { kind: "Reading Comprehension", type: "multi", pick: 2,
+    q: "Which TWO details from Passage 1 show that loud sounds can keep people safe?",
+    options: ["A fire alarm tells us to leave the building quickly and safely.", "A ball bouncing tells you someone is playing nearby.", "A referee’s whistle keeps the game fair and safe.", "Music can make us feel happy, sad, or excited."],
+    correct: [0, 2], explain: "The fire alarm (paragraph 3) and the referee’s whistle (paragraph 5) both keep people safe." },
+  { kind: "Reading Comprehension", type: "single",
+    q: "In paragraph 3 of Passage 1, the fire alarm makes a “blaring” sound. What does blaring mean?",
+    options: ["Very quiet", "Loud and harsh", "Slow and steady", "Soft and gentle"],
+    correct: [1], explain: "A blaring sound is loud and harsh, so everyone notices it." },
+  { kind: "Reading Comprehension", type: "single",
+    q: "What is the central idea of Passage 2, “The Power of Quiet”?",
+    options: ["Quiet places help people rest, focus, and stay safe.", "Libraries should allow loud music.", "Animals do not need quiet to find food.", "Loud noises help people sleep at night."],
+    correct: [0], explain: "Each paragraph of Passage 2 explains a way quiet helps people or animals." },
+  { kind: "Reading Comprehension", type: "single",
+    q: "How are Passage 1 and Passage 2 alike?",
+    options: ["Both explain how sounds, or the lack of sound, affect people.", "Both tell a story about a fire drill.", "Both say loud sounds are always bad.", "Both describe how to play a sport."],
+    correct: [0], explain: "Passage 1 is about how sounds help us; Passage 2 is about how quiet helps us." },
+  { kind: "Peer Revision Task", type: "blanks",
+    intro: "While revising a paragraph of your group’s draft argument, you notice that two blank lines need sentences that BEST build on the idea that loud sounds warn people. Read the draft paragraph.",
+    para: ["Loud sounds are important because they warn people when something is wrong. A fire alarm tells everyone to leave the building quickly.", "", "", "Without these sounds, people might not know when to act."],
+    task: "Move the TWO sentences that BEST build on this idea onto the blank lines.",
+    options: ["A referee blows a whistle to stop the game when a player is hurt.", "Soft music can help people fall asleep at night.", "Birds chirp quietly in the trees.", "A car horn warns people who are crossing the street."],
+    correct: [0, 3], explain: "The whistle and the car horn both warn people. The other two sentences are about quiet sounds." },
+  { kind: "Peer Revision Task", type: "blanks",
+    intro: "While revising a paragraph of your group’s draft argument, you notice that two blank lines need sentences that BEST build on the idea that quiet helps people. Read the draft paragraph.",
+    para: ["Quiet places help people think and rest. In a library, readers can focus on their books for a long time.", "", "", "Without quiet, it would be harder to learn and feel rested."],
+    task: "Move the TWO sentences that BEST build on this idea onto the blank lines.",
+    options: ["At night, silence helps our bodies get deep, healthy sleep.", "A fire alarm makes a loud, blaring sound.", "Calm rooms make it easier to pay attention in class.", "A referee blows a whistle during the game."],
+    correct: [0, 2], explain: "Sleep and paying attention both show how quiet helps people. The alarm and whistle are loud sounds." },
+  { kind: "Peer Revision Task", type: "single",
+    intro: "Your group wants to connect two ideas in its draft.",
+    q: "“Soft sounds keep a classroom calm. _______, loud sounds like alarms keep people safe.” Which transition BEST completes the sentence?",
+    options: ["On the other hand", "For example", "As a result", "First"],
+    correct: [0], explain: "“On the other hand” shows the second sentence gives a contrasting idea." },
+  { kind: "Peer Revision Task", type: "single",
+    intro: "Your group’s draft argues that loud sounds are more important in our daily lives.",
+    q: "Which sentence would make the BEST conclusion for the draft?",
+    options: ["In conclusion, loud sounds matter most because they warn people and keep them safe.", "Birds chirp in the morning.", "Some people like to listen to music.", "Libraries are quiet places."],
+    correct: [0], explain: "A strong conclusion restates the claim and the main reason." }
+];
+let mode = 'ecr', phase = 'writing', qi = 0;
+const qa = questionSet.map(() => ({ sel: [], checked: false }));
+const inQuestions = () => mode === 'ecrq' && phase === 'questions';
+const sameSet = (a, b) => a.length === b.length && a.every(x => b.includes(x));
+
+function renderQuestions() {
+  document.body.classList.add('in-q');
+  $('passage').hidden = false; $('revise').hidden = true;
+  if ($('backRv')) $('backRv').remove();
+  const q = questionSet[qi], st = qa[qi], n = questionSet.length;
+  const right = st.checked && !!q.correct && sameSet(st.sel, q.correct);
+  $('midEyebrow').textContent = 'Question set';
+  $('stepCount').textContent = `Question ${qi + 1} of ${n}`;
+  let html = `<div class="qs-head"><h3>${q.kind.replace(/ · Part .*/, '')}</h3><div class="qs-steps">${questionSet.map((_, i) => `${i ? '<i></i>' : ''}<button data-q="${i}" class="${qa[i].checked ? 'done' : ''} ${i === qi ? 'active' : ''}" aria-label="Question ${i + 1}">${i + 1}</button>`).join('')}</div>
+    <p class="qs-count">Question ${qi + 1} of ${n}</p></div>`;
+  if (q.type === 'blanks') {
+    let b = 0;
+    const para = q.para.map(t => t ? t : (() => { const o = st.sel[b++]; return o === undefined ? '<span class="qs-blank">&nbsp;</span>' : `<span class="qs-blank filled" data-unfill="${o}" title="Click to remove">${q.options[o]}</span>`; })()).join(' ');
+    html += `<p class="qs-intro">${q.intro}</p><div class="qs-para">${para}</div><p class="qs-task">${q.task}</p><p class="qs-kind">Sentence options</p>`;
+  } else {
+    if (q.intro) html += `<p class="qs-intro">${q.intro}</p>`;
+    html += `<div class="qs-q">${q.q}</div>`;
+    if (q.type === 'multi') html += `<p class="qs-kind">Choose ${q.pick || 'all that apply'}</p>`;
+  }
+  if (q.type === 'text') html += `<textarea id="qtext-${qi}" rows="5" placeholder="Write your answer here…" ${st.checked ? 'disabled' : ''} style="margin-bottom:14px">${st.text || ''}</textarea>`;
+  if (q.type === 'note') html += `<div class="qs-fb wrong">${q.explain}</div>`;
+  const cls = i => (st.checked ? (q.correct.includes(i) ? 'right' : st.sel.includes(i) ? 'wrong' : '') : '') + (st.sel.includes(i) ? ' on' : '');
+  if (q.options) html += `<div class="qs-opts ${q.type === 'single' ? 'single one-col' : ''}">${q.options.map((o, i) =>
+    `<button class="qs-opt ${cls(i)}" data-opt="${i}" ${st.checked ? 'disabled' : ''} aria-pressed="${st.sel.includes(i)}"><span class="qs-box">✓</span><span>${o}</span></button>`).join('')}</div>`;
+  if (st.checked && q.type === 'text') html += q.explain ? `<div class="qs-fb right">${q.explain}</div>` : '';
+  else if (st.checked && q.type !== 'note') html += `<div class="qs-fb ${right ? 'right' : 'wrong'}"><b>${right ? 'Correct!' : 'Not quite.'}</b> ${q.explain}</div>`;
+  $('step').innerHTML = html;
+
+  if (q.type === 'note') st.checked = true;
+  const need = q.type === 'single' ? 1 : q.type === 'multi' ? (q.pick || 1) : 0;
+  if ($('qtext-' + qi)) $('qtext-' + qi).oninput = e => { st.text = e.target.value; };
+  $('prevBtn').disabled = qi === 0;
+  $('nextBtn').disabled = !st.checked && st.sel.length < need;
+  $('nextBtn').title = $('nextBtn').disabled ? `Choose ${need === 1 ? 'an answer' : need + ' answers'} first` : '';
+  $('nextBtn').textContent = !st.checked ? 'Check answer' : qi < n - 1 ? 'Next question' : 'Start writing →';
+
+  $('step').querySelectorAll('.qs-opt').forEach(b => b.onclick = () => {
+    const i = +b.dataset.opt;
+    if (q.type === 'single') st.sel = [i];
+    else if (st.sel.includes(i)) st.sel = st.sel.filter(x => x !== i);
+    else if (st.sel.length < need) st.sel = [...st.sel, i];
+    renderQuestions();
+  });
+  $('step').querySelectorAll('[data-unfill]').forEach(b => b.onclick = () => {
+    if (st.checked) return;
+    st.sel = st.sel.filter(x => x !== +b.dataset.unfill); renderQuestions();
+  });
+  $('step').querySelectorAll('.qs-steps button').forEach(b => b.onclick = () => { qi = +b.dataset.q; renderQuestions(); });
+}
+
+const setMode = m => {
+  mode = m;
+  document.querySelectorAll('#mode button').forEach(x => x.classList.toggle('on', x.dataset.mode === m));
+  try { localStorage.setItem('lscr-mode', m); } catch (e) {}
+  phase = m === 'ecrq' ? 'questions' : 'writing';
+  qi = 0; current = 0;
+  renderStep();
+};
+
 renderStep();
 
-$('stepper').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { current = +b.dataset.i; renderStep(); } });
-$('prevBtn').onclick = () => { if (current > 0) { current--; renderStep(); } };
-$('nextBtn').onclick = () => { if (current < assignment.steps.length - 1) { current++; renderStep(); } else openFeedback(); };
+$('stepper').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.q) { phase = 'questions'; qi = questionSet.length - 1; } else current = +b.dataset.i;
+  renderStep();
+});
+$('prevBtn').onclick = () => {
+  if (inQuestions()) { if (qi > 0) qi--; }
+  else if (current > 0) current--;
+  else if (mode === 'ecrq') { phase = 'questions'; qi = questionSet.length - 1; }
+  renderStep();
+};
+$('nextBtn').onclick = () => {
+  if (inQuestions()) {
+    const st = qa[qi];
+    if (!st.checked) st.checked = true;
+    else if (qi < questionSet.length - 1) qi++;
+    else { phase = 'writing'; current = 0; }
+    return renderStep();
+  }
+  if (current < assignment.steps.length - 1) { current++; renderStep(); } else openFeedback();
+};
 
 // ---------- Extended Writing Feedback (shown on Submit) ----------
 // Rubric structure is content; scores + messages come from grading. Results below are SAMPLE data.
@@ -1233,8 +1419,12 @@ const setBand = b => {
 };
 let savedBand = '2-3';
 try { savedBand = localStorage.getItem('lscr-band') || '2-3'; } catch (e) {}
-setBand(savedBand);
+setBand(LSCR ? LSCR.band : savedBand);
 $('band').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setBand(b.dataset.band); });
+let savedMode = 'ecr';
+try { savedMode = localStorage.getItem('lscr-mode') || 'ecr'; } catch (e) {}
+setMode(LSCR ? (LSCR.questions.length ? 'ecrq' : 'ecr') : savedMode === 'ecrq' ? 'ecrq' : 'ecr');
+$('mode').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setMode(b.dataset.mode); });
 
 // Zoom only scales the passage text
 let size = 16;
@@ -1278,6 +1468,7 @@ const DEMO_WRITING = {
   ]
 };
 (() => {
+  if (LSCR) return;
   const orgIdx = assignment.steps.findIndex(st => st.organizer);
   Object.entries(DEMO_WRITING).forEach(([band, parts]) =>
     parts.forEach((t, i) => { answers[`o${orgIdx}-${band}-${i}`] = t; }));
