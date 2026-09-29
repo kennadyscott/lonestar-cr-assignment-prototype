@@ -679,6 +679,8 @@
     <span>PROMPT</span>
     <button data-ptype="arg">Argumentative</button>
     <button data-ptype="info">Informational</button>
+    <button data-ptype="narr">Narrative</button>
+    <button data-ptype="corr">Correspondence</button>
   </div>
 
   <div class="band" id="mode" title="With or without a question set before writing">
@@ -1025,54 +1027,270 @@ if (LSCR) {
 // The set's own hints / sentence starters for a step (1-based), shown after the Student UX scaffolds
 const setSupports = step => (LSCR ? LSCR.supports.filter(sp => sp.steps.includes(step)).map(sp => sp.key) : []);
 
-// ---------- Prompt type: Argumentative (default content above) or Informational ----------
-// Informational swaps the prompt, the step wording and each step's Luna scaffolds. Hints marked ai are
-// written by AI for each passage set (sample text here); word banks are static.
+// ---------- Prompt types: Argumentative (content above), Informational, Narrative, Correspondence ----------
+// Each non-argumentative type swaps the prompt, each step's wording, highlight colors, organizer,
+// AI sentence starters and Luna scaffolds. Everything is written per grade band: the 2–3 value is
+// the default and higher bands override it (cascade 2–3 → 4–5 → 6–8 → 9–12).
+// ✦ = AI-written per passage in the product (sample text here). [Draft wording for review]
 let ptype = 'arg';
+const TYPE_KEYS = ['arg', 'info', 'narr', 'corr'];
+const typeSuffix = () => (ptype === 'arg' ? '' : '-' + ptype);
 const argPrompt = { ...assignment.prompt };
-const infoPrompt = {
-  question: "How do different sounds help people in their daily lives? Use details from both passages to explain your answer.",
-  directions: "Read the articles The Sounds of a Busy Day and The Power of Quiet. Based on the information in the articles, write an informational response to the following:"
+const typePrompts = {
+  arg: argPrompt,
+  info: { question: "How do different sounds help people in their daily lives? Use details from both passages to explain your answer.",
+          directions: "Read the articles The Sounds of a Busy Day and The Power of Quiet. Based on the information in the articles, write an informational response to the following:" },
+  narr: { question: "Write a story about a character whose day changes because of a sound. Use details from the passages to describe the sounds in your story.",
+          directions: "Read the articles The Sounds of a Busy Day and The Power of Quiet. Then write a narrative that responds to the following:" },
+  corr: { question: "Write a letter to your principal about whether your school should have a quiet reading room. Use details from both passages to explain your ideas.",
+          directions: "Read the articles The Sounds of a Busy Day and The Power of Quiet. Then write a letter that responds to the following:" }
 };
-const infoSteps = [
-  { instruction: "Read the prompt and the passages. Then think about these questions.",
-    checklist: ["This is an informational prompt. This means you will teach your reader about a topic using facts from the passages.",
-                "What is the topic? What is the main idea?",
-                "What facts and details from the passages will help you explain it?"],
-    supports: ["hint-audience", "hint-topic"] },
-  { instruction: "Look back at the passages for facts that help you explain the topic. Select the words, then pick a color.",
-    highlights: [
-      { color: "green", label: "Main idea",     hint: "Sentences that tell what a passage is mostly about" },
-      { color: "blue",  label: "Key details",   hint: "Facts and examples that explain the main idea" },
-      { color: "red",   label: "Words to know", hint: "Topic words you want to use in your writing" }
-    ],
-    supports: ["hint-key-details", "hint-main-idea"] },
-  { supports: ["info-hint-evidence", "ai-starters", "example-transitions", "example-description"] },
-  { supports: ["example-description", "example-transitions"] }
-];
-// AI sentence starters, one per organizer section, by band (they go straight into the organizer)
-const infoStarters = {
-  "2-3": ["Sounds help us in many ways.", "The passage says that", "This shows that"],
-  "4-5": ["Sounds help people every day.", "One way sounds help us is", "According to Passage 1,", "This detail shows that", "In conclusion, sounds"],
-  "6-8": ["Every day, sounds help people understand the world around them.", "In “The Sounds of a Busy Day,” the author explains that", "“The Power of Quiet” adds that", "Together, these passages show that"]
+const readInstr = {
+  base: "Read the prompt and the passages. Then think about these questions.",
+  byBand: { "4-5": "Read both passages. As you read, think about:", "6-8": "Read the passages closely and annotate as you go.", "9-12": "Read the passages critically and consider how they work together." }
 };
-const argStarters = {   // [Sample text: AI-generated per passage]
-  "2-3": ["I think", "The passage says", "This shows that"],
-  "4-5": ["Some sounds are soft and some are loud, but", "I believe", "According to the passage,", "This shows that", "That is why"],
-  "6-8": ["Every day we hear sounds, but", "In “The Sounds of a Busy Day,” the author explains that", "Another reason is that", "In conclusion,"]
+const R = b => (b === '2-3' ? readInstr.base : readInstr.byBand[b]);
+const HL = (g, bl, r) => [{ color: "green", label: g[0], hint: g[1] }, { color: "blue", label: bl[0], hint: bl[1] }, { color: "red", label: r[0], hint: r[1] }];
+const SEC = (keyword, color, text, ask) => (ask ? { keyword, color, text, ask } : { keyword, color, text });
+
+const typeSteps = {
+  info: [
+    { instruction: R('2-3'),
+      checklist: ["This is an informational prompt. This means you will teach your reader about a topic using facts from the passages.", "What is the topic? What is the main idea?", "What facts and details from the passages will help you explain it?"],
+      supports: ["hint-audience", "hint-topic"],
+      byBand: {
+        "4-5": { instruction: R('4-5'), checklist: ["This is an informational prompt. You will explain a topic using facts, not your opinion.", "What is the topic, and what is the main idea of each passage?", "Which facts and details from the passages will you use to explain it?"] },
+        "6-8": { instruction: R('6-8'), checklist: ["Genre: informational. Explain and inform; keep your opinion out.", "Identify the central idea of each passage and how the passages connect.", "Plan which facts, examples and quotations will develop each idea."] },
+        "9-12": { instruction: R('9-12'), checklist: ["Task: informational/explanatory response. Synthesize the sources; don’t argue.", "Determine each source’s central idea and how the sources relate.", "Select the most relevant evidence and plan how to organize it for your reader."] } } },
+    { instruction: "Look back at the passages for facts that help you explain the topic. Select the words, then pick a color.",
+      highlights: HL(["Main idea", "Sentences that tell what a passage is mostly about"], ["Key details", "Facts and examples that explain the main idea"], ["Words to know", "Topic words you want to use in your writing"]),
+      supports: ["hint-key-details", "hint-main-idea"],
+      byBand: {
+        "4-5": { title: "Highlight the passage", instruction: "Highlight facts that will help you explain the topic. Select text, then choose a color.",
+                 highlights: HL(["Main idea", "What each passage is mostly about"], ["Key details", "Facts and examples that explain the main idea"], ["Topic words", "Important vocabulary to use in your response"]) },
+        "6-8": { instruction: "Annotate the passages for information you will use to explain the topic.",
+                 highlights: HL(["Central idea", "The key point each passage develops"], ["Supporting details", "Facts, examples or quotations that develop the central idea"], ["Domain vocabulary", "Precise topic words to use and define"]) },
+        "9-12": { instruction: "Annotate for evidence you can synthesize across the sources.",
+                  highlights: HL(["Central idea", "Each source’s central point about the topic"], ["Relevant evidence", "Facts, data or quotations you can synthesize"], ["Connections", "Where the sources agree, differ or build on each other"]) } } },
+    { organizer: [SEC("Topic", "green", "Name your topic.", "What am I teaching about?"), SEC("Says", "purple", "Give a fact from the passage.", "What does the passage tell me?"), SEC("Means", "blue", "Tell what the fact shows.", "Why is this fact important?")],
+      supports: ["info-hint-evidence", "ai-starters", "example-transitions", "example-description"],
+      byBand: {
+        "4-5": { organizer: [SEC("Introduce the topic", "green", "Tell what you will explain."), SEC("Main idea", "red", "State the main idea."), SEC("Key details", "purple", "Give facts and examples from the text."), SEC("Explain", "blue", "Tell how the details explain the main idea."), SEC("Sum it up", "orange", "End with a concluding sentence.")] },
+        "6-8": { organizer: [SEC("Introduction Paragraph", "green", "Introduce the topic and state your central idea (2–3 sentences)."), SEC("Supporting paragraph", "purple", "Develop one idea with facts and examples, and explain them."), SEC("Supporting paragraph", "purple", "Develop a second idea with facts and examples, and explain them."), SEC("Conclusion paragraph", "blue", "Sum up the information and why it matters (2–3 sentences).")] } } },
+    { supports: ["example-description", "example-transitions"] }
+  ],
+  narr: [
+    { instruction: R('2-3'),
+      checklist: ["This is a narrative prompt. This means you will write a story.", "Who is your character? Where does your story happen?", "What sound will change your character’s day?"],
+      supports: ["narr-character", "narr-setting"],
+      byBand: {
+        "4-5": { instruction: R('4-5'), checklist: ["This is a narrative prompt. You will write a story with characters, a setting and events.", "Who is your main character, and where and when does the story take place?", "What sound causes the problem, and how will it be solved?"] },
+        "6-8": { instruction: R('6-8'), checklist: ["Genre: narrative. Develop a real or imagined experience with descriptive details.", "Establish a narrator or point of view, characters and a setting.", "Plan a clear sequence of events: what sound drives the conflict, and how is it resolved?"] },
+        "9-12": { instruction: R('9-12'), checklist: ["Task: narrative. Craft a story with a purposeful structure and vivid, precise language.", "Decide on point of view and how you will reveal character.", "Plan how the sound builds tension or reflection toward a meaningful resolution."] } } },
+    { title: "Find story ideas", instruction: "Look back at the passages for sounds and words you can use in your story. Select the words, then pick a color.",
+      highlights: HL(["Sound ideas", "Sounds your story could use"], ["Describing words", "Words that help readers hear and see"], ["Story ideas", "Things that could happen in your story"]),
+      supports: ["narr-problem", "narr-sequence"],
+      byBand: {
+        "4-5": { title: "Highlight the passage", instruction: "Highlight details you can borrow for your story. Select text, then choose a color.",
+                 highlights: HL(["Sound ideas", "Sounds that could start or solve the problem"], ["Sensory details", "Words that help readers hear, see and feel"], ["Setting ideas", "Places where your story could happen"]) },
+        "6-8": { instruction: "Annotate for details that will make your story vivid and believable.",
+                 highlights: HL(["Conflict ideas", "Sounds that could drive the conflict"], ["Sensory language", "Vivid details and precise words to show, not tell"], ["Setting details", "Details that establish time and place"]) },
+        "9-12": { instruction: "Annotate for language and ideas your narrative can transform.",
+                  highlights: HL(["Conflict and tension", "Sounds or silences that could build tension"], ["Imagery", "Precise sensory language to adapt"], ["Theme ideas", "Ideas about sound and silence your story could explore"]) } } },
+    { organizer: [SEC("Beginning", "green", "Tell who, where and what is happening.", "Who is my character? Where are they?"), SEC("Middle", "purple", "Tell about the sound and the problem.", "What happens next?"), SEC("End", "blue", "Tell how the problem is solved.", "How does my story end?")],
+      supports: ["narr-details", "ai-starters", "example-transitions", "example-description"],
+      byBand: {
+        "4-5": { organizer: [SEC("Characters and setting", "green", "Introduce your character and where the story happens."), SEC("Problem", "red", "Tell what sound causes a problem."), SEC("Events", "purple", "Tell what happens, in order."), SEC("Solution", "blue", "Tell how the problem is solved."), SEC("Ending", "orange", "End with how your character feels or what they learned.")] },
+        "6-8": { organizer: [SEC("Exposition", "green", "Introduce the narrator, characters and setting."), SEC("Rising action", "purple", "Build the conflict with a sequence of events and sensory details."), SEC("Climax", "red", "Show the turning point."), SEC("Resolution", "blue", "Resolve the conflict and reflect on the experience.")] } } },
+    { title: "Here is your story. Let’s make it even better!",
+      instruction: "Read your story out loud. Does it have a beginning, middle and end? Did you use describing words? Then check your capital letters, end marks and spelling.",
+      supports: ["example-description", "example-transitions"],
+      byBand: { "4-5": { title: "Here is your story. Let’s revise and edit.", instruction: "Check that your story has a clear beginning, middle and end, sensory details and transitions. Then check spelling and punctuation." } } }
+  ],
+  corr: [
+    { instruction: R('2-3'),
+      checklist: ["This is a letter prompt. This means you will write to a person.", "Who are you writing to? What do you want to tell them?", "Which facts from the passages will help your letter?"],
+      supports: ["corr-audience", "corr-parts"],
+      byBand: {
+        "4-5": { instruction: R('4-5'), checklist: ["This is a correspondence prompt. You will write a letter with a greeting, body and closing.", "Who is your audience, and what is your purpose for writing?", "Which facts from the passages will support your message?"] },
+        "6-8": { instruction: R('6-8'), checklist: ["Genre: correspondence. Write a purposeful letter to a specific audience.", "Identify your audience and purpose, and choose a respectful tone.", "Plan which evidence from the passages will persuade or inform your reader."] },
+        "9-12": { instruction: R('9-12'), checklist: ["Task: formal correspondence. Address a real audience with a clear purpose.", "Consider what your reader values and which tone and register fit.", "Select the evidence most compelling to this reader and plan a specific request."] } } },
+    { instruction: "Look back at the passages for facts to share in your letter. Select the words, then pick a color.",
+      highlights: HL(["My main idea", "Words that help you decide what to ask for"], ["Facts to share", "Facts that help your reader understand"], ["Words to use", "Good words for your letter"]),
+      supports: ["corr-details", "corr-message"],
+      byBand: {
+        "4-5": { title: "Highlight the passage", instruction: "Highlight details that will help you write your letter. Select text, then choose a color.",
+                 highlights: HL(["Main message", "Details that help you decide what to tell your reader"], ["Supporting facts", "Facts and examples that support your message"], ["Reader questions", "Things your reader may want to know"]) },
+        "6-8": { instruction: "Annotate for evidence your reader will find convincing.",
+                 highlights: HL(["Purpose", "Details that shape your message or request"], ["Evidence", "Facts and examples that will convince your reader"], ["Audience concerns", "Points your reader may question or disagree with"]) },
+        "9-12": { instruction: "Annotate for the evidence and concerns that matter most to your reader.",
+                  highlights: HL(["Purpose", "Details that sharpen your request"], ["Compelling evidence", "Facts most persuasive to this reader"], ["Objections", "Concerns to acknowledge respectfully"]) } } },
+    { organizer: [SEC("Greeting", "green", "Say hello to your reader.", "Who am I writing to?"), SEC("Message", "purple", "Tell what you want to say and give a fact from the passage.", "What do I want them to know?"), SEC("Closing", "blue", "Say thank you and sign your name.", "How do I end my letter?")],
+      supports: ["ai-starters", "example-transitions", "example-description"],
+      byBand: {
+        "4-5": { organizer: [SEC("Greeting", "green", "Write the greeting (Dear ___,)."), SEC("Purpose", "red", "Tell why you are writing."), SEC("Details", "purple", "Give facts from the text that support your message."), SEC("Request", "blue", "Tell what you want your reader to do."), SEC("Closing", "orange", "End politely and sign your name.")] },
+        "6-8": { organizer: [SEC("Greeting and introduction", "green", "Greet your reader and state your purpose (2–3 sentences)."), SEC("Body paragraph", "purple", "Support your message with evidence and explanation."), SEC("Body paragraph", "purple", "Add a second reason with evidence and explanation."), SEC("Closing", "blue", "Restate your request, thank your reader and sign off.")] } } },
+    { title: "Here is your letter. Let’s make it even better!",
+      instruction: "Read your letter out loud. Did you greet your reader? Did you say what you want and why? Then check your capital letters, end marks and spelling.",
+      supports: ["example-description", "example-transitions"],
+      byBand: { "4-5": { title: "Here is your letter. Let’s revise and edit.", instruction: "Check that your letter has a greeting, a clear purpose, supporting details and a polite closing. Then check spelling and punctuation." } } }
+  ]
 };
-const startersFor = band => { const set = ptype === 'info' ? infoStarters : argStarters; return set[band] || set["6-8"]; };
+
+// AI sentence starters: one per organizer section, by type and band (they go straight into the organizer)
+const typeStarters = {
+  arg: { "2-3": ["I think", "The passage says", "This shows that"],
+         "4-5": ["Some sounds are soft and some are loud, but", "I believe", "According to the passage,", "This shows that", "That is why"],
+         "6-8": ["Every day we hear sounds, but", "In “The Sounds of a Busy Day,” the author explains that", "Another reason is that", "In conclusion,"],
+         "9-12": ["Although quiet has real value,", "“The Sounds of a Busy Day” shows that", "Critics might argue that", "Ultimately,"] },
+  info: { "2-3": ["Sounds help us in many ways.", "The passage says that", "This shows that"],
+          "4-5": ["Sounds help people every day.", "One way sounds help us is", "According to Passage 1,", "This detail shows that", "In conclusion, sounds"],
+          "6-8": ["Every day, sounds help people understand the world around them.", "In “The Sounds of a Busy Day,” the author explains that", "“The Power of Quiet” adds that", "Together, these passages show that"],
+          "9-12": ["Sound shapes daily life in ways people rarely notice.", "“The Sounds of a Busy Day” explains that", "Building on this, “The Power of Quiet” shows that", "Taken together, these sources suggest that"] },
+  narr: { "2-3": ["One day,", "Then, I heard", "In the end,"],
+          "4-5": ["Maya loved quiet mornings until", "The problem started when", "First,", "Finally,", "After that day, Maya knew"],
+          "6-8": ["The morning began like any other, until", "The sound grew louder as", "At that moment,", "Looking back,"],
+          "9-12": ["Silence had always been my refuge, until", "Each time the sound returned,", "Then, without warning,", "Only later did I understand"] },
+  corr: { "2-3": ["Dear Principal,", "I think our school should", "Thank you for reading my letter. Sincerely,"],
+          "4-5": ["Dear Principal Lee,", "I am writing to ask", "According to “The Power of Quiet,”", "I hope you will", "Thank you for your time. Sincerely,"],
+          "6-8": ["Dear Principal Lee, I am writing to propose", "“The Power of Quiet” explains that", "Some may worry that", "I respectfully ask that you consider"],
+          "9-12": ["Dear Principal Lee, I am writing on behalf of students to propose", "Evidence from “The Power of Quiet” suggests", "I recognize that", "I would welcome the chance to discuss"] }
+};
+const pickBand = (map, band) => { const order = ['2-3', '4-5', '6-8', '9-12']; for (let i = order.indexOf(band); i >= 0; i--) if (map[order[i]]) return map[order[i]]; return map['2-3']; };
+const startersFor = band => pickBand(typeStarters[ptype], band);
+
+// ---------- Luna scaffolds: every band, every type ----------
 const aiTag = '<span class="ai-tag">✦ AI hint for this passage</span>';
-Object.assign(assignment.luna.supports, {
-  "hint-audience":    { title: "Hint: Audience", reply: aiTag + "Your readers are students who may not know much about sounds. Explain each idea clearly, like you are teaching a friend." },
-  "hint-topic":       { title: "Hint: Topic & Subtopics", reply: aiTag + "<b>Topic:</b> how sounds help us every day.<ul><li>Soft sounds, like whispers and quiet places</li><li>Loud sounds, like fire alarms and whistles</li><li>Sounds that help us learn, like music</li></ul>" },
-  "hint-key-details": { title: "Hint: Key Details", reply: aiTag + "Look for facts that explain how a sound helps:<ul><li>Whispering keeps the classroom calm (Passage 1, paragraph 2)</li><li>A fire alarm tells us to leave safely (Passage 1, paragraph 3)</li><li>Quiet helps us sleep (Passage 2, paragraph 3)</li></ul>" },
-  "hint-main-idea":   { title: "Hint: Main Idea", reply: aiTag + "<b>Passage 1:</b> Sounds help us understand what is happening around us.<br><b>Passage 2:</b> Quiet helps people rest, focus and stay safe." },
-  "info-hint-evidence": { title: "Hint: Evidence", reply: aiTag + "Choose one fact for each idea. Say which passage and paragraph it came from, then explain what it shows about how sounds help people." },
-  "ai-starters":      { title: "Sentence Starters", reply: '<span class="ai-tag">✦ AI starters for this passage</span>Each box in your graphic organizer has a starter. Click <b>Use starter</b> to add it, then finish the sentence.<p style="margin:8px 0 0"><button class="btn primary" type="button" data-fill-starters style="height:32px;padding:0 12px">Add all starters to my organizer</button></p>' }
-});
-const withType = (s, stepIdx) => (ptype === 'info' ? { ...s, ...infoSteps[stepIdx] } : s);
-const ansKey = (step, i) => `o${step}-${document.body.dataset.band}${ptype === 'info' ? '-info' : ''}-${i}`;
+const kidAi = (t = 'Luna’s hint for this passage') => `<span class="ai-tag">✦ ${t}</span>`;
+const wbTable = rows => '<table class="wb">' + rows.map(([a, b]) => `<tr><th>${a}</th><td>${b}</td></tr>`).join('') + '</table>';
+/** Sets a scaffold's text for every band: base = 2–3; the rest go in byBand (existing band text is replaced). */
+const scaffold = (key, title, texts) => {
+  const sp = assignment.luna.supports[key] || (assignment.luna.supports[key] = { title });
+  sp.title = title;
+  if (texts['2-3'] !== undefined) sp.reply = texts['2-3'];
+  sp.byBand = { ...(sp.byBand || {}) };
+  for (const b of ['4-5', '6-8', '9-12']) if (texts[b] !== undefined) sp.byBand[b] = { reply: texts[b] };
+};
+
+// Argumentative (static unless marked ✦)
+scaffold("claim-def", "Claim Definition", {
+  "2-3": "A <b>claim</b> is what you think. It is your answer to the question.<br><i>Example: I think recess should be longer.</i>",
+  "4-5": "A <b>claim</b> is a sentence that states your position on the question. It should be clear and something you can prove with evidence.",
+  "6-8": "A <b>claim</b> is an arguable statement that answers the prompt. It takes a position, can be supported with text evidence, and sets up the reasons you will develop.",
+  "9-12": "A <b>claim</b> is a precise, defensible thesis that responds directly to the prompt and sets the scope of your argument." });
+scaffold("evidence-def", "Details and Evidence", {
+  "2-3": "<b>Evidence</b> is proof. It is a fact or example from the passage that shows your claim is right.",
+  "4-5": "<b>Evidence</b> is a fact, detail or example from a passage that supports your claim.",
+  "6-8": "<b>Evidence</b> is specific support from the text, either a quotation or a paraphrase, that proves your reasoning.",
+  "9-12": "<b>Evidence</b> is relevant, credible support from the text that substantiates your reasoning." });
+scaffold("what-is-claim", "What is a Claim?", {
+  "2-3": "The passage will not tell you what to think. <b>You</b> get to pick a side! That side is your <b>claim</b>. Highlight the parts that help you choose.",
+  "4-5": "Your <b>claim</b> is the position you choose to argue. The passage may just give information, so the decision is yours. Highlight details that help you decide, then pick the position you can support best.",
+  "6-8": "Your <b>claim</b> is the position you take on the prompt. Informational texts don’t argue for you, so weigh the evidence, then commit to the position with the strongest support.",
+  "9-12": "Your <b>claim</b> is a defensible position on the prompt. When the sources are informational, weigh the evidence on both sides before you commit, and be ready to answer the other side." });
+scaffold("find-evidence-ai", "Find Details & Evidence", {
+  "2-3": kidAi() + "Look at these parts:<ul><li>Passage 1, paragraph 2: Whispering keeps the class calm.</li><li>Passage 1, paragraph 3: A fire alarm helps us get out safely.</li><li>Passage 2, paragraph 3: Quiet helps us sleep.</li></ul>Which ones help <i>your</i> side?",
+  "4-5": aiTag + "Look for details that could help either side:<ul><li><b>Soft sounds:</b> whispering keeps the classroom calm (Passage 1, paragraph 2); quiet helps us sleep (Passage 2, paragraph 3)</li><li><b>Loud sounds:</b> the fire alarm tells us to leave safely (Passage 1, paragraph 3); the referee’s whistle keeps games safe (Passage 1, paragraph 5)</li></ul>Which details help <i>your</i> side?",
+  "6-8": aiTag + "Relevant evidence for each position: whispering “helps keep the classroom calm and focused” (P1 ¶2); a fire alarm “tells us to leave the building quickly and safely” (P1 ¶3); quiet supports “deep, healthy sleep” (P2 ¶3). Which best supports your claim, and which could a counterclaim use?",
+  "9-12": aiTag + "Weigh the evidence on both sides. Safety (P1 ¶3, ¶5) makes a strong case for loud sounds; focus and health (P1 ¶2; P2 ¶2–3) make one for quiet. Choose sufficient evidence for your position and anticipate the strongest counterclaim." });
+scaffold("counterclaim", "Counterclaim", {
+  "6-8": "A <b>counterclaim</b> is what someone who disagrees with you might say. Strong arguments name it, then explain why your claim is still stronger.<ul><li>Some people might argue that…</li><li>However, the passages show…</li></ul>",
+  "9-12": "Acknowledge the strongest opposing view fairly, then <b>rebut</b> it with evidence and reasoning.<ul><li>While some argue that…, this overlooks…</li><li>Admittedly…; however, …</li></ul>" });
+assignment.luna.supports["counterclaim"].reply = assignment.luna.supports["counterclaim"].byBand["6-8"].reply;
+
+// Shared by every type
+const fillBtn = label => `<p style="margin:8px 0 0"><button class="btn primary" type="button" data-fill-starters style="height:32px;padding:0 12px">${label}</button></p>`;
+scaffold("ai-starters", "Sentence Starters", {
+  "2-3": kidAi('Luna’s starters for this passage') + "Each box has a sentence starter. Click <b>Use starter</b>. Then finish the sentence with your own words." + fillBtn("Put all the starters in my boxes"),
+  "4-5": kidAi('AI starters for this passage') + "Each box in your graphic organizer has a starter. Click <b>Use starter</b> to add it, then finish the sentence." + fillBtn("Add all starters to my organizer"),
+  "6-8": kidAi('AI starters for this passage') + "Starters are ready in each organizer box. Use them to get going, then revise them into your own words." + fillBtn("Add all starters to my organizer"),
+  "9-12": kidAi('AI starters for this passage') + "Optional openers are in each organizer box. Adapt them so the voice and argument are yours." + fillBtn("Add all starters to my organizer") });
+const fullTransitions = assignment.luna.supports["example-transitions"].reply, fullDescription = assignment.luna.supports["example-description"].reply;
+scaffold("example-transitions", "Example Transition Words", {
+  "2-3": "Use these words to connect your ideas:" + wbTable([["To add more", "also, and, another, next"], ["To give an example", "for example, like"], ["To tell the order", "first, next, then, last"], ["To tell why", "because, so"], ["To finish", "in the end, that is why"]]),
+  "4-5": fullTransitions });
+scaffold("example-description", "Example Description Words", {
+  "2-3": "Try a stronger word:" + wbTable([["Size", "huge, tiny, giant"], ["Sound", "loud, quiet, soft, noisy"], ["Feelings", "happy, calm, scared, excited"], ["Speed", "fast, slow, quick"], ["Instead of “good”", "helpful, important, useful"]]),
+  "4-5": fullDescription });
+
+// Informational (✦ AI per passage)
+scaffold("hint-audience", "Hint: Audience", {
+  "2-3": kidAi() + "You are writing for a friend who does not know about sounds. Teach them! Use clear words and explain each idea.",
+  "4-5": aiTag + "Your readers are students who may not know much about sounds. Explain each idea clearly, like you are teaching a friend.",
+  "6-8": aiTag + "Your audience is readers your age who know little about the topic. Define key terms and explain why each detail matters.",
+  "9-12": aiTag + "Write for an informed general reader. Keep a formal, objective tone and anticipate what they need defined or explained." });
+scaffold("hint-topic", "Hint: Topic & Subtopics", {
+  "2-3": kidAi() + "Your <b>topic</b> is how sounds help us. You can write about:<ul><li>Soft sounds, like whispers</li><li>Loud sounds, like fire alarms</li><li>Sounds that help us learn, like music</li></ul>",
+  "4-5": aiTag + "<b>Topic:</b> how sounds help us every day.<ul><li>Soft sounds, like whispers and quiet places</li><li>Loud sounds, like fire alarms and whistles</li><li>Sounds that help us learn, like music</li></ul>",
+  "6-8": aiTag + "<b>Topic:</b> how sounds shape daily life.<ul><li>Warning sounds (alarms, whistles)</li><li>Quiet and focus (classrooms, libraries)</li><li>Sound and emotion (music)</li></ul>",
+  "9-12": aiTag + "<b>Topic:</b> the role of sound and silence in daily life. Consider organizing by function: safety, focus and rest, and communication and emotion." });
+scaffold("hint-key-details", "Hint: Key Details", {
+  "2-3": kidAi() + "<b>Key details</b> are facts that teach about the topic. Look for these:<ul><li>Whispering keeps a class calm.</li><li>A fire alarm tells us to get out.</li><li>Quiet helps us sleep.</li></ul>",
+  "4-5": aiTag + "Look for facts that explain how a sound helps:<ul><li>Whispering keeps the classroom calm (Passage 1, paragraph 2)</li><li>A fire alarm tells us to leave safely (Passage 1, paragraph 3)</li><li>Quiet helps us sleep (Passage 2, paragraph 3)</li></ul>",
+  "6-8": aiTag + "Strong details are specific: a fire alarm “gets everyone’s attention” (P1 ¶3); “our bodies need calm and silence to get deep, healthy sleep” (P2 ¶3).",
+  "9-12": aiTag + "Prioritize details that do the most explanatory work, and pair details across sources, such as alarms (P1 ¶3) with the need for quiet at night (P2 ¶3)." });
+scaffold("hint-main-idea", "Hint: Main Idea", {
+  "2-3": kidAi() + "The <b>main idea</b> is what a passage is mostly about.<br><b>Passage 1:</b> Sounds help us know what is happening.<br><b>Passage 2:</b> Quiet helps us rest.",
+  "4-5": aiTag + "<b>Passage 1:</b> Sounds help us understand what is happening around us.<br><b>Passage 2:</b> Quiet helps people rest, focus and stay safe.",
+  "6-8": aiTag + "<b>Central idea, Passage 1:</b> sounds give us information and help us act. <b>Passage 2:</b> quiet supports focus, rest and safety. Together, both sound and silence serve important purposes.",
+  "9-12": aiTag + "Synthesize: the sources present sound and silence as complementary, each meeting distinct human needs." });
+scaffold("info-hint-evidence", "Hint: Evidence", {
+  "2-3": kidAi() + "Pick one fact for each idea. Tell where you found it, like “In paragraph 3, it says…” Then tell what it shows.",
+  "4-5": aiTag + "Choose one fact for each idea. Say which passage and paragraph it came from, then explain what it shows about how sounds help people.",
+  "6-8": aiTag + "Introduce each piece of evidence, cite it (passage and paragraph), then explain how it develops your central idea.",
+  "9-12": aiTag + "Integrate evidence smoothly, cite it, and explain how each piece advances your explanation. Connect evidence across sources." });
+
+// Narrative (✦ AI per passage)
+scaffold("narr-character", "Hint: Character", {
+  "2-3": kidAi() + "Your <b>character</b> is who the story is about. It could be a kid in a busy classroom, like in Passage 1. Give them a name!",
+  "4-5": aiTag + "Your main character could be a student, a referee or a firefighter from the passages. Show what they want and how they feel.",
+  "6-8": aiTag + "Develop a character whose relationship with sound matters: someone who craves quiet (Passage 2) or depends on alarms (Passage 1). Reveal traits through actions and thoughts.",
+  "9-12": aiTag + "Consider a character whose perception of sound reveals something deeper, such as anxiety, focus or belonging. Let the reader infer traits through detail." });
+scaffold("narr-setting", "Hint: Setting", {
+  "2-3": kidAi() + "Your <b>setting</b> is where and when the story happens. Try a classroom, a playground or a library.",
+  "4-5": aiTag + "Pick a setting from the passages: a busy classroom, a sports game or a quiet library. Use details to help readers picture it.",
+  "6-8": aiTag + "Use the setting to shape the conflict. A silent library or a noisy game makes a sound stand out. Establish time and place early.",
+  "9-12": aiTag + "Let the setting create atmosphere and contrast, such as a hushed library interrupted by an alarm. Establish it efficiently and return to it at key moments." });
+scaffold("narr-problem", "Hint: Problem", {
+  "2-3": kidAi() + "The <b>problem</b> is what goes wrong. What sound causes trouble for your character?",
+  "4-5": aiTag + "The problem is the challenge your character faces. Maybe a fire alarm rings during a test, or noise keeps them from sleeping.",
+  "6-8": aiTag + "The conflict should grow from a sound (or a silence) and matter to your character. Raise the stakes as the story goes.",
+  "9-12": aiTag + "Ground the conflict in a meaningful tension, internal or external, that the sound reveals or intensifies." });
+scaffold("narr-sequence", "Hint: Sequence", {
+  "2-3": kidAi() + "Tell what happens in order: <b>first</b>, <b>next</b>, <b>then</b>, <b>last</b>.",
+  "4-5": aiTag + "Put events in an order that makes sense. Use time words like first, after that, later and finally.",
+  "6-8": aiTag + "Sequence events so they build to a climax. Use transitions to show shifts in time and cause and effect.",
+  "9-12": aiTag + "Structure events for effect, using pacing, pauses or a flashback. Every event should move the story toward its resolution." });
+scaffold("narr-details", "Hint: Details", {
+  "2-3": kidAi() + "Use <b>describing words</b> so readers can hear the sounds. Was it loud? Soft? Beeping?",
+  "4-5": aiTag + "Add sensory details: what your character hears, sees and feels. Borrow words from the passages, like blaring or rustling.",
+  "6-8": aiTag + "Show, don’t tell: use precise verbs, sensory language and dialogue to bring key moments to life.",
+  "9-12": aiTag + "Use precise, evocative language and figurative devices sparingly, so each detail carries tone and meaning." });
+
+// Correspondence (✦ AI per passage, except Parts of a Letter)
+scaffold("corr-audience", "Hint: Audience & Purpose", {
+  "2-3": kidAi() + "You are writing to your <b>principal</b>. Be polite! Tell them what you want and why.",
+  "4-5": aiTag + "Your audience is the principal. Your purpose is to explain why a quiet reading room would help. Use a polite, respectful voice.",
+  "6-8": aiTag + "Audience: your principal, who cares about learning and safety. Purpose: persuade them. Use a respectful, formal tone and connect your request to their goals.",
+  "9-12": aiTag + "Tailor your case to an administrator’s priorities, such as achievement, well-being and cost, in a formal, measured register." });
+scaffold("corr-parts", "Parts of a Letter", {
+  "2-3": "A letter has parts:<ul><li><b>Greeting:</b> Dear ___,</li><li><b>Body:</b> your message</li><li><b>Closing:</b> Sincerely,</li><li><b>Signature:</b> your name</li></ul>",
+  "4-5": "Every letter needs a greeting, a body with your message, a closing such as <i>Sincerely,</i> and your signature. Keep each paragraph focused.",
+  "6-8": "Use formal letter format: date, greeting, an introduction that states your purpose, body paragraphs, a closing and your signature.",
+  "9-12": "Follow formal business-letter conventions: date, salutation, purpose statement, supporting paragraphs, a specific request, complimentary close and signature." });
+scaffold("corr-details", "Hint: Key Details", {
+  "2-3": kidAi() + "Share these facts:<ul><li>Quiet helps people focus (Passage 2).</li><li>Quiet helps us rest (Passage 2).</li></ul>",
+  "4-5": aiTag + "Useful facts: libraries are quiet so readers can focus (Passage 2, paragraph 2); whispering keeps a classroom calm (Passage 1, paragraph 2).",
+  "6-8": aiTag + "Choose evidence your principal will value: quiet improves focus and learning (P2 ¶1–2) and supports rest (P2 ¶3). Cite each source.",
+  "9-12": aiTag + "Lead with evidence tied to learning (P2 ¶1–2), then address well-being (P2 ¶3). Integrate and cite concisely." });
+scaffold("corr-message", "Hint: Your Message", {
+  "2-3": kidAi() + "What do you want your principal to do? Say it clearly, like: <i>Please make a quiet reading room.</i>",
+  "4-5": aiTag + "State your main message in one clear sentence near the beginning of your letter.",
+  "6-8": aiTag + "Make your request specific and reasonable, such as one quiet room during reading time, and explain the benefit.",
+  "9-12": aiTag + "Frame a precise, actionable proposal and anticipate concerns about how it would work." });
+
+const withType = (s, stepIdx) => (ptype === 'arg' ? s : { ...s, ...forBand(typeSteps[ptype][stepIdx]) });
+const ansKey = (step, i) => `o${step}-${document.body.dataset.band}${typeSuffix()}-${i}`;
 
 /* ---------------- Render ---------------- */
 const ICON_LIST = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6"/><path d="M12 17h.01" stroke-width="2.6"/></svg>';
@@ -1214,10 +1432,10 @@ function renderStep() {
   }).join('');
 }
 // ---------- Step 4: combine organizer → essay, Revise / Edit checklist ----------
-function essayKey() { return `essay-${document.body.dataset.band}${ptype === 'info' ? '-info' : ''}`; }
+function essayKey() { return `essay-${document.body.dataset.band}${typeSuffix()}`; }
 function buildEssay(combine) {
   const i = assignment.steps.findIndex(st => st.organizer);
-  const org = forBand(assignment.steps[i]).organizer;
+  const org = withType(forBand(assignment.steps[i]), i).organizer;
   const parts = org.map((_, j) => answers[ansKey(i, j)] || '')
     .map(h => { const d = document.createElement('div'); d.innerHTML = h; return { html: h, text: d.innerText.trim() }; })
     .filter(x => x.text);
@@ -1772,7 +1990,7 @@ const setPtype = t => {
   ptype = t;
   document.querySelectorAll('#ptype button').forEach(x => x.classList.toggle('on', x.dataset.ptype === t));
   try { localStorage.setItem('lscr-ptype', t); } catch (e) {}
-  if (!LSCR) assignment.prompt = t === 'info' ? infoPrompt : argPrompt;
+  if (!LSCR) assignment.prompt = typePrompts[t];
   $('promptQ').innerHTML = assignment.prompt.question;
   $('promptDirections').innerHTML = assignment.prompt.directions;
   rv.tab = 'revise';
@@ -1780,7 +1998,7 @@ const setPtype = t => {
 };
 let savedPtype = 'arg';
 try { savedPtype = localStorage.getItem('lscr-ptype') || 'arg'; } catch (e) {}
-setPtype(LSCR ? (/inform/i.test(LSCR.writingType || '') ? 'info' : 'arg') : savedPtype === 'info' ? 'info' : 'arg');
+setPtype(LSCR ? (/inform/i.test(LSCR.writingType || '') ? 'info' : /narr/i.test(LSCR.writingType || '') ? 'narr' : 'arg') : TYPE_KEYS.includes(savedPtype) ? savedPtype : 'arg');
 $('ptype').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setPtype(b.dataset.ptype); });
 $('mode').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setMode(b.dataset.mode); });
 
