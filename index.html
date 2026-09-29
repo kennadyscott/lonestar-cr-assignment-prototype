@@ -71,6 +71,15 @@
   .topbar .band button:hover { background: #eef6fa; }
   .topbar .band button.on { background: var(--v1-navy); color: #fff; }
 
+  /* Prototype-only controls, kept out of the real student header */
+  .proto-bar { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 8px 20px; background: #fff8e6; border-bottom: 1px solid var(--v1-gold-line, #f0dcb8); font-family: 'Manrope', system-ui, sans-serif; }
+  .proto-bar > strong { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #8a6a1c; margin-right: 4px; }
+  .proto-bar .band { --v1-gold-line: rgba(245, 180, 0, 0.45); --v1-muted: #5c7285; --v1-ink: #14344a; --v1-navy: #02384d; display: flex; align-items: center; gap: 4px; background: #fff; border: 1px solid var(--v1-gold-line); border-radius: 999px; padding: 4px; margin: 0; }
+  .proto-bar .band span { font-size: 10px; font-weight: 800; letter-spacing: .7px; color: var(--v1-muted); padding: 0 6px 0 8px; }
+  .proto-bar .band button { height: 28px; padding: 0 11px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: var(--v1-ink); border: 0; background: none; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .proto-bar .band button:hover { background: #eef6fa; }
+  .proto-bar .band button.on { background: var(--v1-navy); color: #fff; }
+
   /* ---------- Assignment bar (matches the current app: title left, Save And Exit right) ---------- */
   .assign-bar { flex: none; display: flex; align-items: center; gap: 12px; padding: 14px 20px 0; }
   .assign-bar h1 { margin: 0; font-size: 20px; font-weight: 500; color: var(--navy); line-height: 1.2; }
@@ -635,24 +644,6 @@
     <img src="lonestar-logo.png" alt="LoneStar CR" />
   </button>
 
-  <div class="band" id="band" title="Prototype only: preview by grade band">
-    <span>GRADE</span>
-    <button data-band="2-3">2–3</button>
-    <button data-band="4-5">4–5</button>
-    <button data-band="6-8">6–8</button>
-    <button data-band="9-12">9–12</button>
-  </div>
-
-  <div class="band" id="ptype" title="Prototype only: prompt type">
-    <button data-ptype="arg">Argumentative</button>
-    <button data-ptype="info">Informational</button>
-  </div>
-
-  <div class="band" id="mode" title="Prototype only: with or without a question set before writing">
-    <button data-mode="ecr">ECR</button>
-    <button data-mode="ecrq">ECR + Q</button>
-  </div>
-
   <div style="flex: 1"></div>
 
   <button class="cc-btn" title="Switch to ClassCade">
@@ -673,6 +664,30 @@
     <button class="pwr" title="Log out (demo)">⏻</button>
   </div>
 </header>
+
+<div class="proto-bar" role="toolbar" aria-label="Prototype controls">
+  <strong>Prototype controls</strong>
+  <div class="band" id="band" title="Preview by grade band">
+    <span>GRADE</span>
+    <button data-band="2-3">2–3</button>
+    <button data-band="4-5">4–5</button>
+    <button data-band="6-8">6–8</button>
+    <button data-band="9-12">9–12</button>
+  </div>
+
+  <div class="band" id="ptype" title="Prompt type">
+    <span>PROMPT</span>
+    <button data-ptype="arg">Argumentative</button>
+    <button data-ptype="info">Informational</button>
+  </div>
+
+  <div class="band" id="mode" title="With or without a question set before writing">
+    <span>TASK</span>
+    <button data-mode="ecr">ECR</button>
+    <button data-mode="ecrq">ECR + Q</button>
+  </div>
+
+</div>
 
 <div class="assign-bar">
   <h1>Assignment</h1>
