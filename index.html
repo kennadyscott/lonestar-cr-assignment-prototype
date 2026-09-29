@@ -256,6 +256,18 @@
   .claim-pin.empty { background: #fff8e6; border-color: #f0dcb8; }
   .claim-pin.empty span, .claim-pin.empty button { color: #8a6a1c; }
   .claim-pin.empty p { font-weight: 400; color: var(--muted); }
+  /* My claim, in the middle panel header on Steps 2–4 (one line; click to see it all) */
+  .claim-strip { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 auto; padding: 4px 6px 4px 10px; border-radius: 8px; background: #eaf8ee; border: 1px solid #bfe3cb; }
+  .claim-strip[hidden] { display: none; }
+  #stepCount { white-space: nowrap; flex: none; }
+  .claim-strip + .spacer { flex: 0 0 8px; }
+  .cs-label { flex: none; font-size: calc(10.5px * var(--fs)); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #256b41; }
+  .cs-text { flex: 1; min-width: 0; text-align: left; border: 0; background: none; padding: 0; font: inherit; font-size: calc(13.5px * var(--fs)); font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+  .claim-strip.open .cs-text { white-space: normal; }
+  .cs-edit { flex: none; height: 24px; padding: 0 9px; border-radius: 6px; border: 1px solid #9fd3b1; background: #fff; color: #256b41; font-weight: 700; font-size: calc(12px * var(--fs)); cursor: pointer; }
+  .claim-strip.empty { background: #fff8e6; border-color: #f0dcb8; }
+  .claim-strip.empty .cs-label, .claim-strip.empty .cs-edit { color: #8a6a1c; }
+  .claim-strip.empty .cs-text { font-weight: 400; color: var(--muted); cursor: default; }
   /* Highlighting */
   mark.hl { color: inherit; border-radius: 3px; padding: 1px 0; cursor: pointer; }
   .hl-green { background: #bff0c9; }
@@ -757,6 +769,7 @@
   <section class="panel">
     <div class="panel-head">
       <span class="eyebrow" id="midEyebrow">Your response</span>
+      <div class="claim-strip" id="claimStrip" hidden></div>
       <div class="spacer"></div>
       <span class="wc" id="stepCount"></span>
     </div>
@@ -1476,13 +1489,19 @@ function renderStep() {
              <textarea id="${k}" class="${f.big ? 'big' : ''}" placeholder="${f.placeholder}" style="margin-bottom:16px" ${f.maxChars ? `data-max="${f.maxChars}"` : ''}>${answers[k] || ''}</textarea>`;
     if (f.maxChars) html += `<div class="char-count" data-for="${k}"></div>`;
   });
-  // Steps 2–4: keep the student's claim pinned at the top
-  if (ptype === 'arg' && current > 0) html = (claimText()
-    ? `<div class="claim-pin"><span>My claim</span><p>${esc(claimText())}</p><button type="button" data-edit-claim>Edit</button></div>`
-    : `<div class="claim-pin empty"><span>My claim</span><p>You haven’t typed your claim yet.</p><button type="button" data-edit-claim>Go to Step 1</button></div>`) + html;
+  // Steps 2–4: the student's claim sits in the panel header, outside the scrolling area, so it never covers the work
+  const showClaim = ptype === 'arg' && current > 0, cs = $('claimStrip');
+  cs.hidden = !showClaim; $('midEyebrow').hidden = showClaim;
+  if (showClaim) {
+    cs.className = 'claim-strip' + (claimText() ? '' : ' empty');
+    cs.innerHTML = claimText()
+      ? `<span class="cs-label">My claim</span><button type="button" class="cs-text" title="Show full claim" aria-expanded="false">${esc(claimText())}</button><button type="button" class="cs-edit" data-edit-claim>Edit</button>`
+      : `<span class="cs-label">My claim</span><span class="cs-text">Not typed yet.</span><button type="button" class="cs-edit" data-edit-claim>Go to Step 1</button>`;
+    const t = cs.querySelector('button.cs-text');
+    if (t) t.onclick = () => { const open = cs.classList.toggle('open'); t.setAttribute('aria-expanded', open); };
+    cs.querySelector('[data-edit-claim]').onclick = () => { current = 0; renderStep(); setTimeout(() => $('claimBox') && $('claimBox').focus(), 0); };
+  }
   $('step').innerHTML = html;
-  const ec = $('step').querySelector('[data-edit-claim]');
-  if (ec) ec.onclick = () => { current = 0; renderStep(); setTimeout(() => $('claimBox') && $('claimBox').focus(), 0); };
   const syncCount = el => { const c = $('step').querySelector(`[data-for="${el.id}"]`); if (!c) return;
     const n = el.value.length, max = +el.dataset.max; c.textContent = `${n} / ${max} characters`; c.classList.toggle('over', n > max); };
   $('step').querySelectorAll('input,textarea').forEach(el => {
@@ -1791,6 +1810,7 @@ const sameSet = (a, b) => a.length === b.length && a.every(x => b.includes(x));
 
 function renderQuestions() {
   document.body.classList.add('in-q');
+  $('claimStrip').hidden = true; $('midEyebrow').hidden = false;
   $('passage').hidden = false; $('revise').hidden = true;
   if ($('backRv')) $('backRv').remove();
   const q = questionSet[qi], st = qa[qi], n = questionSet.length;
