@@ -1619,13 +1619,38 @@ const ICON = {
   speaker: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>',
 };
 let speakingKey = null;
+// Read-aloud: pick the most natural English voice the device has (neural/online voices first),
+// instead of the browser default. In the product this would be pre-recorded neural audio.
+function bestVoice() {
+  let vs = [];
+  try { vs = speechSynthesis.getVoices().filter(v => /^en(-|_|$)/i.test(v.lang)); } catch (e) { return null; }
+  if (!vs.length) return null;
+  const score = v => {
+    const n = v.name;
+    if (/natural/i.test(n)) return 100;                                  // Edge / Windows neural voices
+    if (/premium/i.test(n)) return 95;                                    // Apple premium
+    if (/enhanced/i.test(n)) return 90;                                   // Apple enhanced
+    if (/^Google US English/i.test(n)) return 85;                         // Chrome / Chromebook online voice
+    if (/^Google/i.test(n)) return 75;
+    if (/\b(Samantha|Ava|Allison|Susan|Zoe|Nicky|Evan|Joelle|Noelle)\b/i.test(n)) return 70;
+    if (/zira|david|mark|fred|albert|bad news|bells|boing|bubbles|cellos|jester|organ|trinoids|whisper|zarvox|wobble|superstar|junior|ralph|kathy|grandma|grandpa|rocko|shelley|flo|eddy|reed|sandy/i.test(n)) return 5;   // robotic or novelty
+    return (/en-US/i.test(v.lang) ? 40 : 30) + (v.localService ? 0 : 5);
+  };
+  return vs.sort((a, b) => score(b) - score(a))[0];
+}
+function speakText(text, onend) {
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = 0.95; u.pitch = 1.05;
+  const v = bestVoice(); if (v) u.voice = v;
+  if (onend) u.onend = onend;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+try { speechSynthesis.onvoiceschanged = () => {}; speechSynthesis.getVoices(); } catch (e) {}
 function speakTip(text, key, s) {
   try {
     speechSynthesis.cancel();
     if (speakingKey === key) { speakingKey = null; return renderRevise(s); }
-    const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US';
-    u.onend = () => { speakingKey = null; renderRevise(s); };
-    speakingKey = key; speechSynthesis.speak(u);
+    speakingKey = key; speakText(text, () => { speakingKey = null; renderRevise(s); });
   } catch (e) {}
   renderRevise(s);
 }
@@ -1993,7 +2018,7 @@ function renderFeedback() {
   $('fbView').onclick = () => { fbShowAnswer = !fbShowAnswer; renderFeedback(); };
   $('fbBody').querySelectorAll('.fb-crit').forEach(c => c.onclick = () => { fbSel[c.dataset.sec] = +c.dataset.i; renderFeedback(); });
   $('fbBody').querySelectorAll('.fb-say').forEach(b => b.onclick = () => {
-    try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance($(b.dataset.say).textContent)); } catch (e) {}
+    try { speakText($(b.dataset.say).textContent); } catch (e) {}
   });
 }
 const openFeedback = () => { fbSel = {}; fbShowAnswer = false; renderFeedback(); $('fbOverlay').classList.add('show'); $('fbClose').focus(); };
