@@ -243,6 +243,19 @@
   .left-tabs button.on[data-left="passage"] { background: var(--navy); color: #fff; }
   .left-tabs button.on[data-left="checklist"] { background: #ec7a2d; color: #fff; }
   .left-tabs button:not(.on):hover { background: #dbe6ec; }
+  /* Step 1 THINK note, claim box, and the claim pinned on Steps 2–4 */
+  .think-box { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; margin: 0 0 14px; border-radius: 10px; background: var(--cyan-softer); border: 1px solid var(--cyan-soft); }
+  .think-box span { flex: none; font-size: calc(11px * var(--fs)); font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--navy); border-radius: 6px; padding: 3px 8px; margin-top: 2px; }
+  .think-box p { margin: 0; color: var(--navy); }
+  .claim-box { margin: 0 0 14px; }
+  .claim-box textarea { min-height: 64px; }
+  .claim-pin { display: flex; gap: 10px; align-items: center; padding: 10px 12px; margin: 0 0 14px; border-radius: 10px; background: #eaf8ee; border: 1px solid #bfe3cb; position: sticky; top: 0; z-index: 2; }
+  .claim-pin span { flex: none; font-size: calc(11px * var(--fs)); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #256b41; }
+  .claim-pin p { margin: 0; flex: 1; font-weight: 600; color: var(--text); }
+  .claim-pin button { flex: none; height: 28px; padding: 0 10px; border-radius: 6px; border: 1px solid #9fd3b1; background: #fff; color: #256b41; font-weight: 700; font-size: calc(12.5px * var(--fs)); }
+  .claim-pin.empty { background: #fff8e6; border-color: #f0dcb8; }
+  .claim-pin.empty span, .claim-pin.empty button { color: #8a6a1c; }
+  .claim-pin.empty p { font-weight: 400; color: var(--muted); }
   /* Highlighting */
   mark.hl { color: inherit; border-radius: 3px; padding: 1px 0; cursor: pointer; }
   .hl-green { background: #bff0c9; }
@@ -1348,7 +1361,21 @@ const emph = t => {
   const re = new RegExp('\\b(' + KEY_TERMS[ptype].join('|') + ')\\b', 'gi');
   return String(t).split(/(<[^>]+>)/).map(part => (part.startsWith('<') ? part : part.replace(re, '<b>$1</b>'))).join('');
 };
-const withType = (s, stepIdx) => (ptype === 'arg' ? s : { ...s, ...forBand(typeSteps[ptype][stepIdx]) });
+// Reviewer feedback (Step 1, Sept 29): students type their claim in Step 1. For 4–12 the genre line is a
+// THINK note (not a checkbox) and the checklist checks the claim. The claim stays pinned on Steps 2–4
+// and fills the organizer's claim section in Step 3.
+{
+  const S1 = assignment.steps[0], two = ["Is your claim arguable?", "Is your claim specific?"];
+  S1.claimBox = { label: "Type your claim.", placeholder: "I think…" };
+  S1.byBand["4-5"] = { ...S1.byBand["4-5"], think: "This is an argumentative prompt. You will pick a side and defend it.", checklist: two,
+                       claimBox: { label: "What claim will you make?", placeholder: "Type your claim in one sentence." } };
+  S1.byBand["6-8"] = { ...S1.byBand["6-8"], think: "This is an argumentative prompt. You will take a clear position and support it with evidence from the passages.", checklist: two };
+  S1.byBand["9-12"] = { ...S1.byBand["9-12"], think: "This is an argumentative prompt. You will develop a precise, defensible claim and support it with evidence from the sources.", checklist: two };
+}
+const CLAIM_SECTION = { "2-3": 0, "4-5": 1, "6-8": 0, "9-12": 0 };   // Think · Answer the question · Introduction Paragraph
+const claimText = () => (ptype === 'arg' ? (answers.claimBox || '').trim() : '');
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const withType = (s, stepIdx) => (ptype === 'arg' ? s : { ...s, think: undefined, claimBox: undefined, ...forBand(typeSteps[ptype][stepIdx]) });
 const ansKey = (step, i) => `o${step}-${document.body.dataset.band}${typeSuffix()}-${i}`;
 
 /* ---------------- Render ---------------- */
@@ -1412,14 +1439,20 @@ function renderStep() {
   $('stepper').innerHTML = (mode === 'ecrq' ? `<button class="done" data-q="1"><div class="bar"></div>Questions ✓</button>` : '') + steps.map((st, i) =>
     `<button class="${i < current ? 'done' : i === current ? 'active' : ''}" data-i="${i}"><div class="bar"></div>${i + 1}. ${st.label}</button>`).join('');
   let html = `<h3>${s.title}</h3><p class="instr">${emph(s.instruction)}</p>`;
+  if (s.think) html += `<div class="think-box"><span>Think</span><p>${emph(s.think)}</p></div>`;
+  const claimBoxHtml = s.claimBox ? `<div class="claim-box"><label class="field-label" for="claimBox">${emph(s.claimBox.label)}</label>
+      <textarea id="claimBox" rows="2" placeholder="${s.claimBox.placeholder}">${esc(answers.claimBox || '')}</textarea></div>` : '';
+  if (s.think) html += claimBoxHtml;   // 4–12: claim first, then check it
   if (s.checklist) html += `<ul class="checklist">${s.checklist.map((c, i) =>
     `<li><input type="checkbox" id="c${current}-${i}" ${answers[`c${current}-${i}`] ? 'checked' : ''}><label for="c${current}-${i}">${emph(c)}</label></li>`).join('')}</ul>`;
+  if (!s.think) html += claimBoxHtml;   // 2–3: after the checklist
   if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
     `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
     <p class="hl-tip">Tip: click a highlight to change its color or remove it.</p>`;
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
       const k = ansKey(current, i);
+      if (i === CLAIM_SECTION[document.body.dataset.band] && claimText() && !(answers[k] || '').replace(/<[^>]+>/g, '').trim()) answers[k] = esc(claimText());
       return `<div class="org-sec rte-host">
         <div class="org-head"><span class="kw kw-${sec.color}">${sec.keyword}:</span> ${emph(sec.text)}${sec.ask ? `<br>Ask yourself: ${emph(sec.ask)}` : ''}</div>
         ${rteBar()}
@@ -1443,7 +1476,13 @@ function renderStep() {
              <textarea id="${k}" class="${f.big ? 'big' : ''}" placeholder="${f.placeholder}" style="margin-bottom:16px" ${f.maxChars ? `data-max="${f.maxChars}"` : ''}>${answers[k] || ''}</textarea>`;
     if (f.maxChars) html += `<div class="char-count" data-for="${k}"></div>`;
   });
+  // Steps 2–4: keep the student's claim pinned at the top
+  if (ptype === 'arg' && current > 0) html = (claimText()
+    ? `<div class="claim-pin"><span>My claim</span><p>${esc(claimText())}</p><button type="button" data-edit-claim>Edit</button></div>`
+    : `<div class="claim-pin empty"><span>My claim</span><p>You haven’t typed your claim yet.</p><button type="button" data-edit-claim>Go to Step 1</button></div>`) + html;
   $('step').innerHTML = html;
+  const ec = $('step').querySelector('[data-edit-claim]');
+  if (ec) ec.onclick = () => { current = 0; renderStep(); setTimeout(() => $('claimBox') && $('claimBox').focus(), 0); };
   const syncCount = el => { const c = $('step').querySelector(`[data-for="${el.id}"]`); if (!c) return;
     const n = el.value.length, max = +el.dataset.max; c.textContent = `${n} / ${max} characters`; c.classList.toggle('over', n > max); };
   $('step').querySelectorAll('input,textarea').forEach(el => {
