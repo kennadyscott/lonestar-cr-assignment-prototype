@@ -637,11 +637,11 @@ const assignment = {
     {
       label: "Read",
       title: "Read and think",
-      instruction: "Read both passages and consider the following.",
+      instruction: "Read the prompt and the passages. Then think about these questions.",
       checklist: [
-        "This is an ARGUMENTATIVE writing piece.",
-        "What is the claim?",
-        "What are the reasons that support the claim?"
+        "This is an argumentative prompt. This means you will tell what you think and give reasons why.",
+        "You will pick a side. The side you pick is your claim.",
+        "What evidence from the passages supports your claim?"
       ],
       supports: ["claim-def", "evidence-def"],
       // Grade-band overrides: any field set here replaces the 2–3 default. [Placeholder wording]
@@ -677,18 +677,19 @@ const assignment = {
     },
     {
       label: "Highlight",
-      title: "Highlight the passage",
-      instruction: "Highlight parts of the passage that will help you answer the prompt. Select some words, then choose a color.",
+      title: "Find your evidence",
+      instruction: "Look back at the passages for sentences that help you answer the prompt. Select the words, then pick a color.",
       // Color keys are fixed (green / blue / red). Labels are generic: they work for any
       // argumentative prompt, whether or not the passage itself argues. [Placeholder wording]
       highlights: [
-        { color: "green", label: "Ideas for my claim",    hint: "Details that help you decide your answer to the prompt" },
-        { color: "blue",  label: "Details and evidence",  hint: "Facts and examples that could prove your answer" },
-        { color: "red",   label: "Other helpful details", hint: "Words or ideas you want to remember for your writing" }
+        { color: "green", label: "Ideas for my claim",    hint: "Words that help you pick your side" },
+        { color: "blue",  label: "My evidence",           hint: "Facts and examples that show your side is right" },
+        { color: "red",   label: "Other helpful details", hint: "Words or ideas you want to use in your writing" }
       ],
       supports: ["hint-claim", "hint-evidence"],
       byBand: { // [Placeholder wording]
         "4-5": {
+          title: "Highlight the passage",
           instruction: "Highlight details that will help you build your answer to the prompt. The passage may not take a side, but you will. Select text, then choose a color.",
           highlights: [
             { color: "green", label: "Ideas for my claim",   hint: "Details that help you decide your position on the prompt" },
@@ -717,8 +718,8 @@ const assignment = {
     },
     {
       label: "Organize",
-      title: "Graphic organizer",
-      instruction: "Use the graphic organizer to help compose your response.",
+      title: "Plan your writing",
+      instruction: "Use the boxes to plan your answer. Write one or two sentences in each box.",
       maxChars: 2300,   // total across all sections
       // Each section = a color-coded keyword + direction (+ optional "Ask yourself" line).
       // Colors: green, purple, blue, red, orange. Shared across assignments; varies by band.
@@ -730,6 +731,8 @@ const assignment = {
       supports: ["claim-def", "evidence-def", "sentence-starters"],
       byBand: {
         "4-5": {
+          title: "Graphic organizer",
+          instruction: "Use the graphic organizer to help compose your response.",
           organizer: [
             { color: "green",  keyword: "Restate the question",   text: "Turn the question around into a statement." },
             { color: "red",    keyword: "Answer the question",    text: "Answer all parts of the question." },
@@ -752,8 +755,8 @@ const assignment = {
     },
     {
       label: "Revise & Edit",
-      title: "Here is your paragraph. Let’s revise and edit.",
-      instruction: "Remember to include transition words and enhance your word choice. Reread your writing to check for organization and flow. Always check for spelling and punctuation.",
+      title: "Here is your paragraph. Let’s make it even better!",
+      instruction: "Read your paragraph out loud. Does it make sense? Did you use linking words like first, also and because? Then check your capital letters, end marks and spelling.",
       // The organizer answers are combined into one piece of writing:
       // "paragraph" = all sections run together, "essay" = one paragraph per section
       essay: { combine: "paragraph", maxChars: 2300 },
@@ -769,16 +772,18 @@ const assignment = {
             { letter: "S", text: "Substitute words or sentences for better ones." }
           ] },
           { key: "edit", label: "Edit", question: "Can I fix my mistakes?", items: [   // [Placeholder wording]
-            { letter: "C", text: "Capitalize the first word of each sentence and names." },
-            { letter: "U", text: "Use words correctly, like “he runs” and “they run.”" },
-            { letter: "P", text: "Put punctuation at the end of every sentence." },
-            { letter: "S", text: "Spell words correctly." }
+            { letter: "C", text: "Capitals: Start every sentence and name with a capital letter." },
+            { letter: "U", text: "Usage: Do your words sound right? (He runs. They run.)" },
+            { letter: "P", text: "Punctuation: End every sentence with a . ? or !" },
+            { letter: "S", text: "Spelling: Check that your words are spelled right." }
           ] }
         ]
       },
       supports: ["example-transitions", "example-description", "rev-edit-tips"],
       byBand: {
         "4-5": {
+          title: "Here is your paragraph. Let’s revise and edit.",
+          instruction: "Remember to include transition words and enhance your word choice. Reread your writing to check for organization and flow. Always check for spelling and punctuation.",
           revise: {
             layout: "list",
             title: "Revise and edit your paragraph",
