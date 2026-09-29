@@ -26,8 +26,8 @@
   /* Grade band font scale: 2–3 = base, 4–5 smaller, 6–8 smaller still */
   body { --fs: 1; }
   body[data-band="4-5"] { --fs: .9; }
-  body[data-band="6-8"] { --fs: .8; }
-  body[data-band="9-12"] { --fs: .8; }   /* same as 6–8 */
+  body[data-band="6-8"] { --fs: .9; }   /* 4–5 size is the floor */
+  body[data-band="9-12"] { --fs: .9; }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
@@ -180,19 +180,26 @@
   /* ---------- Question set (ECR + Q): runs before the writing steps, no Writing Support panel ---------- */
   body.in-q .workspace { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr); }
   body.in-q .luna, body.in-q .prompt-card, body.in-q .stepper { display: none; }
-  .qs-head { border: 1px solid var(--border); border-radius: 12px; padding: 14px 12px 4px; margin: 0 0 18px; text-align: center; background: var(--surface); }
-  .qs-head h3 { margin: 0 0 12px; font-size: calc(16px * var(--fs)); color: var(--navy); }
-  .qs-head .qs-count { margin-bottom: 8px; }
+  .qs-head { border: 1px solid var(--border); border-top: 4px solid var(--qs-c); border-radius: 12px; padding: 12px 12px 4px; margin: 0 0 18px; text-align: center; background: var(--surface); }
+  .qs-rc { --qs-c: #1fb3de; --qs-soft: #d9f2fb; }
+  .qs-peer { --qs-c: #7a5cd6; --qs-soft: #e4dcfb; }
+  .qs-sections { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 8px; }
+  .qs-sec { padding: 8px 12px 4px; border-radius: 10px; opacity: .55; }
+  .qs-sec.on { opacity: 1; background: color-mix(in srgb, var(--qs-soft) 45%, transparent); }
+  .qs-sec-name { display: block; font-weight: 700; font-size: calc(13.5px * var(--fs)); color: var(--qs-c); margin-bottom: 8px; }
+  .qs-sec + .qs-sec { border-left: 1px solid var(--border); border-radius: 0 10px 10px 0; }
+  .qs-head .qs-count { margin-bottom: 8px; font-weight: 600; color: var(--qs-c); }
   .qs-steps { display: flex; flex-wrap: wrap; row-gap: 8px; align-items: center; justify-content: center; margin: 0 0 6px; }
   .qs-steps button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border); background: var(--surface); color: var(--muted); font-weight: 700; font-size: calc(13px * var(--fs)); padding: 0; }
-  .qs-steps button.done { border-color: var(--navy-2); background: var(--navy-2); color: #fff; }
-  .qs-steps button.active { border-color: var(--cyan); color: var(--navy); box-shadow: 0 0 0 3px var(--cyan-soft); }
+  .qs-steps button.done { border-color: var(--qs-c, var(--navy-2)); background: var(--qs-c, var(--navy-2)); color: #fff; }
+  .qs-steps button.active { border-color: var(--qs-c, var(--cyan)); color: var(--navy); box-shadow: 0 0 0 3px var(--qs-soft, var(--cyan-soft)); }
+  .qs-steps button.done.active { color: #fff; }
   .qs-steps i { width: clamp(10px, 3vw, 28px); height: 2px; background: var(--border); }
   .qs-count { text-align: center; font-size: calc(12.5px * var(--fs)); color: var(--muted); margin: 0 0 18px; }
   .qs-kind { font-size: calc(11px * var(--fs)); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); margin: 0 0 6px; }
   .qs-intro { margin: 0 0 12px; }
   .qs-q { font-weight: 600; color: var(--navy); margin: 0 0 14px; }
-  .qs-task { background: #e4dcfb; border-radius: 6px; padding: 8px 12px; font-weight: 600; color: #2a2150; margin: 0 0 14px; }
+  .qs-task { background: var(--qs-soft-peer, #e4dcfb); border-radius: 6px; padding: 8px 12px; font-weight: 600; color: #2a2150; margin: 0 0 14px; }
   .qs-para { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 0 0 14px; line-height: 1.8; }
   .qs-blank { display: inline-block; min-width: 150px; border-bottom: 2px solid var(--muted); margin: 0 4px; padding: 0 4px; color: var(--muted); }
   .qs-blank.filled { border-bottom-color: var(--cyan); background: var(--cyan-softer); color: var(--navy); cursor: pointer; border-radius: 4px 4px 0 0; }
@@ -1144,6 +1151,17 @@ const questionSet = LSCR ? LSCR.questions : [
 let mode = 'ecr', phase = 'writing', qi = 0;
 const qa = questionSet.map(() => ({ sel: [], checked: false }));
 const inQuestions = () => mode === 'ecrq' && phase === 'questions';
+// Consecutive questions of the same kind form a section ("… · Part B" stays with its question's kind)
+function qsGroups() {
+  const out = [];
+  questionSet.forEach((q, i) => {
+    const kind = q.kind.replace(/ · Part .*/, '');
+    const last = out[out.length - 1];
+    if (last && last.kind === kind) last.idx.push(i);
+    else out.push({ kind, cls: /peer/i.test(kind) ? 'peer' : 'rc', idx: [i] });
+  });
+  return out;
+}
 const sameSet = (a, b) => a.length === b.length && a.every(x => b.includes(x));
 
 function renderQuestions() {
@@ -1154,8 +1172,15 @@ function renderQuestions() {
   const right = st.checked && !!q.correct && sameSet(st.sel, q.correct);
   $('midEyebrow').textContent = 'Question set';
   $('stepCount').textContent = `Question ${qi + 1} of ${n}`;
-  let html = `<div class="qs-head"><h3>${q.kind.replace(/ · Part .*/, '')}</h3><div class="qs-steps">${questionSet.map((_, i) => `${i ? '<i></i>' : ''}<button data-q="${i}" class="${qa[i].checked ? 'done' : ''} ${i === qi ? 'active' : ''}" aria-label="Question ${i + 1}">${i + 1}</button>`).join('')}</div>
-    <p class="qs-count">Question ${qi + 1} of ${n}</p></div>`;
+  // Split into sections (Reading Comprehension, Peer Revision Task), each numbered on its own
+  const groups = qsGroups(), g = groups.find(x => x.idx.includes(qi)), pos = g.idx.indexOf(qi) + 1;
+  $('stepCount').textContent = `${g.kind} · ${pos} of ${g.idx.length}`;
+  let html = `<div class="qs-head qs-${g.cls}">
+    <div class="qs-sections">${groups.map(x => `<div class="qs-sec qs-${x.cls} ${x === g ? 'on' : ''}">
+      <span class="qs-sec-name">${x.kind}${x.idx.every(i => qa[i].checked) ? ' ✓' : ''}</span>
+      <div class="qs-steps">${x.idx.map((i, k) => `${k ? '<i></i>' : ''}<button data-q="${i}" class="${qa[i].checked ? 'done' : ''} ${i === qi ? 'active' : ''}" aria-label="${x.kind} question ${k + 1}">${k + 1}</button>`).join('')}</div>
+    </div>`).join('')}</div>
+    <p class="qs-count">${g.kind} · Question ${pos} of ${g.idx.length}</p></div>`;
   if (q.type === 'blanks') {
     let b = 0;
     const para = q.para.map(t => t ? t : (() => { const o = st.sel[b++]; return o === undefined ? '<span class="qs-blank">&nbsp;</span>' : `<span class="qs-blank filled" data-unfill="${o}" title="Click to remove">${q.options[o]}</span>`; })()).join(' ');
@@ -1180,7 +1205,8 @@ function renderQuestions() {
   $('prevBtn').disabled = qi === 0;
   $('nextBtn').disabled = !st.checked && st.sel.length < need;
   $('nextBtn').title = $('nextBtn').disabled ? `Choose ${need === 1 ? 'an answer' : need + ' answers'} first` : '';
-  $('nextBtn').textContent = !st.checked ? 'Check answer' : qi < n - 1 ? 'Next question' : 'Start writing →';
+  const nextG = groups[groups.indexOf(g) + 1];
+  $('nextBtn').textContent = !st.checked ? 'Check answer' : pos < g.idx.length ? 'Next question' : nextG ? `Go to ${nextG.kind} →` : 'Start writing →';
 
   $('step').querySelectorAll('.qs-opt').forEach(b => b.onclick = () => {
     const i = +b.dataset.opt;
