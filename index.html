@@ -248,6 +248,11 @@
   .think-box span { flex: none; font-size: calc(11px * var(--fs)); font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--navy); border-radius: 6px; padding: 3px 8px; margin-top: 2px; }
   .think-box p { margin: 0; color: var(--navy); }
   .claim-box { margin: 0 0 14px; }
+  .claim-q { margin: 0 0 10px; padding: 10px 12px; border-left: 4px solid var(--cyan); border-radius: 0 8px 8px 0; background: var(--cyan-softer); }
+  .claim-q span { display: block; font-size: calc(10.5px * var(--fs)); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--navy-2); margin-bottom: 2px; }
+  .claim-q p { margin: 0; font-weight: 600; color: var(--navy); }
+  .claim-q small { display: block; margin-top: 4px; color: var(--muted); font-size: calc(12.5px * var(--fs)); }
+
   .claim-box textarea { min-height: 64px; }
   .claim-pin { display: flex; gap: 10px; align-items: center; padding: 10px 12px; margin: 0 0 14px; border-radius: 10px; background: #eaf8ee; border: 1px solid #bfe3cb; position: sticky; top: 0; z-index: 2; }
   .claim-pin span { flex: none; font-size: calc(11px * var(--fs)); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #256b41; }
@@ -1453,7 +1458,10 @@ function renderStep() {
     `<button class="${i < current ? 'done' : i === current ? 'active' : ''}" data-i="${i}"><div class="bar"></div>${i + 1}. ${st.label}</button>`).join('');
   let html = `<h3>${s.title}</h3><p class="instr">${emph(s.instruction)}</p>`;
   if (s.think) html += `<div class="think-box"><span>Think</span><p>${emph(s.think)}</p></div>`;
-  const claimBoxHtml = s.claimBox ? `<div class="claim-box"><label class="field-label" for="claimBox">${emph(s.claimBox.label)}</label>
+  // The prompt question sits right above the claim box, so students can reuse its words in their claim
+  const borrowTip = { "2-3": "Use words from the question in your answer.", "4-5": "Turn the question into a statement that takes a side.", "6-8": "Answer the question directly, using its key words.", "9-12": "Respond to the question directly and precisely." }[document.body.dataset.band];
+  const claimBoxHtml = s.claimBox ? `<div class="claim-box"><div class="claim-q"><span>The question</span><p>${assignment.prompt.question}</p><small>${borrowTip}</small></div>
+      <label class="field-label" for="claimBox">${emph(s.claimBox.label)}</label>
       <textarea id="claimBox" rows="2" placeholder="${s.claimBox.placeholder}">${esc(answers.claimBox || '')}</textarea></div>` : '';
   if (s.think) html += claimBoxHtml;   // 4–12: claim first, then check it
   if (s.checklist) html += `<ul class="checklist">${s.checklist.map((c, i) =>
