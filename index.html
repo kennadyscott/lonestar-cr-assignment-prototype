@@ -1216,10 +1216,15 @@ assignment.luna.supports["counterclaim"].reply = assignment.luna.supports["count
 // Shared by every type
 const fillBtn = label => `<p style="margin:8px 0 0"><button class="btn primary" type="button" data-fill-starters style="height:32px;padding:0 12px">${label}</button></p>`;
 scaffold("ai-starters", "Sentence Starters", {
-  "2-3": kidAi('Luna’s starters for this passage') + "Each box has a sentence starter. Click <b>Use starter</b>. Then finish the sentence with your own words." + fillBtn("Put all the starters in my boxes"),
-  "4-5": kidAi('AI starters for this passage') + "Each box in your graphic organizer has a starter. Click <b>Use starter</b> to add it, then finish the sentence." + fillBtn("Add all starters to my organizer"),
-  "6-8": kidAi('AI starters for this passage') + "Starters are ready in each organizer box. Use them to get going, then revise them into your own words." + fillBtn("Add all starters to my organizer"),
-  "9-12": kidAi('AI starters for this passage') + "Optional openers are in each organizer box. Adapt them so the voice and argument are yours." + fillBtn("Add all starters to my organizer") });
+  "2-3": kidAi('Luna’s starters for this passage') + "Stuck? Try one of these to start each box. Then finish the sentence with your own words.{{STARTERS}}" + fillBtn("Put the starters in my boxes"),
+  "4-5": kidAi('AI starters for this passage') + "Here is a starter for each part of your graphic organizer. Add them, then finish each sentence in your own words.{{STARTERS}}" + fillBtn("Add starters to my organizer"),
+  "6-8": kidAi('AI starters for this passage') + "Use these to get going, then revise them into your own words.{{STARTERS}}" + fillBtn("Add starters to my organizer"),
+  "9-12": kidAi('AI starters for this passage') + "Optional openers for each section. Adapt them so the voice and argument are yours.{{STARTERS}}" + fillBtn("Add starters to my organizer") });
+// The starter list shown in the card: one per organizer section, labelled with the section keyword
+function startersList() {
+  const i = assignment.steps.findIndex(st => st.organizer), org = withType(forBand(assignment.steps[i]), i).organizer, list = startersFor(document.body.dataset.band);
+  return '<ul>' + org.map((sec, j) => list[j] ? `<li><b>${sec.keyword}:</b> <i>${list[j]}…</i></li>` : '').join('') + '</ul>';
+}
 const fullTransitions = assignment.luna.supports["example-transitions"].reply, fullDescription = assignment.luna.supports["example-description"].reply;
 scaffold("example-transitions", "Example Transition Words", {
   "2-3": "Use these words to connect your ideas:" + wbTable([["To add more", "also, and, another, next"], ["To give an example", "for example, like"], ["To tell the order", "first, next, then, last"], ["To tell why", "because, so"], ["To finish", "in the end, that is why"]]),
@@ -1415,9 +1420,8 @@ function renderStep() {
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
       const k = ansKey(current, i);
-      const starter = s.supports.includes('ai-starters') ? startersFor(document.body.dataset.band)[i] : null;
       return `<div class="org-sec rte-host">
-        <div class="org-head"><span class="kw kw-${sec.color}">${sec.keyword}:</span> ${emph(sec.text)}${sec.ask ? `<br>Ask yourself: ${emph(sec.ask)}` : ''}${starter ? `<div class="org-starter"><span>✦ <i>${starter}…</i></span><button type="button" data-starter="${i}">Use starter</button></div>` : ''}</div>
+        <div class="org-head"><span class="kw kw-${sec.color}">${sec.keyword}:</span> ${emph(sec.text)}${sec.ask ? `<br>Ask yourself: ${emph(sec.ask)}` : ''}</div>
         ${rteBar()}
         <div class="rte" id="${k}" contenteditable="true" data-placeholder="Write your answer here…">${answers[k] || ''}</div>
       </div>`; }).join('')}</div>
@@ -1482,7 +1486,7 @@ function renderStep() {
     const sp = forBand(assignment.luna.supports[id]);
     return `<div class="support-item ${i % 2 ? 'blue' : ''}">
       <button class="support" data-id="${id}" aria-expanded="false"><span class="ic">${ICON_LIST}</span><span>${sp.title}</span>${chev}</button>
-      <div class="support-body" hidden>${sp.reply}</div></div>`;
+      <div class="support-body" hidden>${id === 'ai-starters' ? sp.reply.replace('{{STARTERS}}', startersList()) : sp.reply}</div></div>`;
   }).join('');
 }
 // ---------- Step 4: combine organizer → essay, Revise / Edit checklist ----------
@@ -1938,7 +1942,7 @@ function useStarters(which) {
     const k = ansKey(i, j), cur = answers[k] || '';
     if (!list[j]) return;
     const plain = cur.replace(/<[^>]+>/g, '').trim();
-    if (!plain.startsWith(list[j])) answers[k] = list[j] + ' ' + (plain ? cur : '');
+    if (!plain) answers[k] = list[j] + ' ';   // only fills empty boxes; never touches the student's writing
   });
   if (current !== i) current = i;
   renderStep();
