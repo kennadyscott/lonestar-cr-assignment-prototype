@@ -231,7 +231,9 @@
   .sp-sub { margin: 8px 0 2px; }
   .sp-ex { margin: 8px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--cyan-softer); font-size: calc(13.5px * var(--fs)); }
   .sp-ex span { font-weight: 700; color: var(--navy); }
-  .ai-tag { display: block; font-size: calc(11px * var(--fs)); font-weight: 700; color: #7a5cd6; margin-bottom: 4px; }
+  /* Students don't see AI labels. The tag stays in the content so CMS knows which items are generated and reviewed there. */
+  .ai-tag { display: none !important; }
+  .ai-tag-unused { display: block; font-size: calc(11px * var(--fs)); font-weight: 700; color: #7a5cd6; margin-bottom: 4px; }
   .org-starter { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 10px; border-radius: 8px; background: #f3effd; color: #4a3a8a; font-size: calc(13.5px * var(--fs)); }
   .org-starter button { margin-left: auto; height: 26px; padding: 0 10px; border-radius: 6px; border: 1px solid #b9a8ee; background: #fff; color: #5a44b8; font-size: calc(12.5px * var(--fs)); font-weight: 700; }
 
