@@ -318,6 +318,11 @@
   .wt-choice .wt-ask { margin: 0 0 4px; }
   .wt-choice p { margin: 0; }
   .wt-choice .wt-aud { margin-top: 6px; font-size: .92em; color: #33454f; }
+  .best-ev { margin-top: 16px; border-left: 4px solid #2a66c9; background: #eef4ff; border-radius: 0 10px 10px 0; padding: 10px 14px; }
+  .best-ev h4 { margin: 0 0 4px; font-size: calc(15px * var(--fs)); color: #1d3f86; }
+  .best-ev ol { margin: 4px 0 6px; padding-left: 20px; }
+  .best-ev li { margin: 3px 0; }
+  .best-ev p { margin: 0; font-size: calc(13px * var(--fs)); color: #33454f; }
   .tap-card { margin-top: 18px; border: 1px solid #cfe3ec; border-radius: 12px; padding: 14px 16px; background: #f6fbfd; }
   .tap-card h4 { margin: 0 0 2px; font-size: calc(15px * var(--fs)); color: var(--navy, #0d4257); }
   .tap-card .tap-sub { margin: 0 0 10px; font-size: calc(13px * var(--fs)); color: var(--muted); }
@@ -979,7 +984,17 @@ const assignment = {
           ]
         },
         "6-8": {
-          instruction: "Annotate the passages with your argument in mind. The text may be informational, so the argument is yours to build.",
+          instruction: "Annotate the passages with your argument in mind, then choose your <b>BEST</b> evidence, not just any evidence. The text may be informational, so the argument is yours to build.",
+          // 6–8 reviewer (Oct 5): re-emphasize choosing the BEST evidence and how to choose it. [Draft wording]
+          bestEvidence: {
+            title: "Choose your BEST evidence",
+            steps: [
+              "Highlight every detail that <i>might</i> support your claim in blue.",
+              "Narrow it down: keep the two or three pieces that most directly prove your reasons.",
+              "Test each one: Is it <b>relevant</b> to your reason? Is it <b>specific</b>, like a quotation or exact detail? Would your argument be weaker without it?"
+            ],
+            tip: "Remove the blue highlight from anything that doesn’t pass the test."
+          },
           highlights: [
             { color: "green", label: "Ideas for my claim",  hint: "Details that shape your position on the prompt" },
             { color: "blue",  label: "Relevant evidence",   hint: "Facts, examples, or quotations that could support your claim" },
@@ -1640,8 +1655,17 @@ const TAP = {
   purpose: [["arg", "To convince"], ["info", "To explain"], ["narr", "To tell a story"], ["corr", "To ask for or share something"]]
 };
 const tapOn = () => TAP_BANDS.includes(document.body.dataset.band);
-const tapPurpose = () => answers.tapPurpose || TAP.purpose.find(x => x[0] === ptype)[1];
+const tapPurpose = () => answers.tapPurpose || (document.body.dataset.band === '4-5' ? TAP.purpose.find(x => x[0] === ptype)[1] : '');
 function tapCardHtml() {
+  // 6–7 (reviewer, Oct 5): less support. Students decide and word all three themselves; no options.
+  if (document.body.dataset.band !== '4-5') {
+    const box = (id, letter, q, ph) => `<div class="tap-row"><label for="${id}"><span class="tap-letter">${letter}</span>${q}</label>
+      <textarea id="${id}" rows="1" placeholder="${ph}">${esc(answers[id] || '')}</textarea></div>`;
+    return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">Decide your topic, audience and purpose in your own words. Then choose words that fit them.</p>
+      ${box('tapTopic', 'T', 'Topic', 'What is your writing about?')}
+      ${box('tapAudience', 'A', 'Audience', 'Who is reading, and what do they already know?')}
+      ${box('tapPurpose', 'P', 'Purpose', 'What should your writing do for the reader?')}</div>`;
+  }
   const aud = pickBand(TAP.audience, document.body.dataset.band), pur = tapPurpose();
   const opts = (name, list, sel) => `<div class="tap-opts" role="radiogroup">${list.map(v =>
     `<label><input type="radio" name="${name}" value="${esc(v)}" ${v === sel ? 'checked' : ''}>${esc(v)}</label>`).join('')}</div>`;
@@ -1652,9 +1676,9 @@ function tapCardHtml() {
     <div class="tap-row"><span class="tap-q"><span class="tap-letter">P</span>Purpose: Why are you writing?</span>${opts('tapPurpose', TAP.purpose.map(x => x[1]), pur)}</div></div>`;
 }
 function tapStripHtml() {
-  const t = (answers.tapTopic || '').trim(), a = answers.tapAudience;
+  const t = (answers.tapTopic || '').trim(), a = (answers.tapAudience || '').trim(), p = tapPurpose().trim();
   if (!t && !a) return '';
-  return `<div class="tap-strip"><b>My plan:</b> ${t ? esc(t) : '<i>no topic yet</i>'}${a ? ` · <b>For:</b> ${esc(a)}` : ''} · <b>To:</b> ${esc(tapPurpose().replace(/^To /, '').toLowerCase())}</div>`;
+  return `<div class="tap-strip"><b>My plan:</b> ${t ? esc(t) : '<i>no topic yet</i>'}${a ? ` · <b>For:</b> ${esc(a)}` : ''}${p ? ` · <b>To:</b> ${esc(p.replace(/^To /, '').replace(/^./, c => c.toLowerCase()))}` : ''}</div>`;
 }
 function renderStep() {
   if (inQuestions()) return renderQuestions();
@@ -1678,6 +1702,7 @@ function renderStep() {
   if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
     `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
     <p class="hl-tip">Tip: Click a highlight to change its color or remove it.</p>`;
+  if (s.bestEvidence && ptype === 'arg') html += `<div class="best-ev"><h4>${s.bestEvidence.title}</h4><ol>${s.bestEvidence.steps.map(x => `<li>${emph(x)}</li>`).join('')}</ol><p>${s.bestEvidence.tip}</p></div>`;
   if (current === 1 && tapOn()) html += tapCardHtml();
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
