@@ -314,6 +314,10 @@
   .hl-legend small { color: var(--muted); font-size: calc(13px * var(--fs)); line-height: 1.4; display: block; }
   .hl-legend .count { margin-left: auto; flex: none; min-width: 28px; height: 28px; padding: 0 8px; border-radius: 999px; background: #fff; border: 1px solid var(--sand-border); display: grid; place-items: center; font-size: calc(13px * var(--fs)); font-weight: 600; color: var(--navy); }
   .hl-tip { font-size: calc(13px * var(--fs)); color: var(--muted); margin: 0; }
+  .wt-choice { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: #f6fbfd; border: 1px solid #cfe3ec; }
+  .wt-choice .wt-ask { margin: 0 0 4px; }
+  .wt-choice p { margin: 0; }
+  .wt-choice .wt-aud { margin-top: 6px; font-size: .92em; color: #33454f; }
   .tap-card { margin-top: 18px; border: 1px solid #cfe3ec; border-radius: 12px; padding: 14px 16px; background: #f6fbfd; }
   .tap-card h4 { margin: 0 0 2px; font-size: calc(15px * var(--fs)); color: var(--navy, #0d4257); }
   .tap-card .tap-sub { margin: 0 0 10px; font-size: calc(13px * var(--fs)); color: var(--muted); }
@@ -1347,6 +1351,22 @@ function transitionsUI() {
       <p class="wt-ex"><span>Example:</span> ${p.ex}</p>${p.note ? `<p class="wt-note">${p.note}</p>` : ''}</div>` : ''}
     <p class="wt-tip" data-tip>Tap a word to add it where you’re typing.</p>`;
 }
+// Word choice reminder (every band, in the slot "Words from your passage" used to fill): strong words fit
+// the audience, not just "big" words. One line per band + one per prompt type. [Draft wording]
+const WORD_CHOICE = {
+  band: { "2-3": "Pick words that fit who will read your writing.",
+          "4-5": "Strong words aren’t just big words. Choose words that match the <b>audience</b> of your writing.",
+          "6-8": "Choose words that match your <b>audience</b> and <b>purpose</b>, not just words that sound impressive.",
+          "9-12": "Choose words for precision and tone that suit your <b>audience</b> and <b>purpose</b>." },
+  type: { arg:  { "2-3": "Use words from the passage to help.", "4-5": "For an argument, use academic language and key words from the passages." },
+          info: { "2-3": "Use words from the passage to help.", "4-5": "For an explanation, use exact topic words from the passages." },
+          narr: { "2-3": "Use words that help your reader picture it.", "4-5": "For a story, pick vivid words that help readers picture what happens." },
+          corr: { "2-3": "Use kind, polite words.", "4-5": "For a letter, use polite words that fit the person you’re writing to." } }
+};
+function wordChoiceTip() {
+  const b = document.body.dataset.band, aud = typeof tapOn === 'function' && tapOn() && answers.tapAudience;
+  return `<div class="wt-choice"><p class="wt-ask">Word choice</p><p>${pickBand(WORD_CHOICE.band, b)} ${pickBand(WORD_CHOICE.type[ptype], b)}</p>${aud ? `<p class="wt-aud">Your audience: <b>${esc(aud)}</b></p>` : ''}</div>`;
+}
 function describeUI() {
   const swaps = wordBand(SWAPS), q = wt.swap.trim().toLowerCase(), hit = q && swaps[q];
   return `<p class="wt-ask">Swap a word</p>
@@ -1354,6 +1374,7 @@ function describeUI() {
     ${q ? (hit ? `<p class="wt-sub">Instead of <b>${esc(q)}</b>, try:</p><div class="wchips">${hit.map(chip).join('')}</div>`
              : `<p class="wt-sub">No swaps for “${esc(q)}” yet. Try one of these:</p><div class="wchips">${Object.keys(swaps).map(k => `<button type="button" class="wchip plain" data-swap="${k}">${k}</button>`).join('')}</div>`)
         : `<div class="wchips">${Object.keys(swaps).slice(0, 8).map(k => `<button type="button" class="wchip plain" data-swap="${k}">${k}</button>`).join('')}</div>`}
+    ${wordChoiceTip()}
     <p class="wt-tip" data-tip>Tap a word to add it where you’re typing.</p>`;
 }
 // Claim Starters (Argumentative Step 1, static, by band): tap a starter to put it in the claim box.
