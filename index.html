@@ -1068,6 +1068,8 @@ const assignment = {
         "6-8": {
           title: "Here is your essay. Let’s revise and edit.",
           essay: { combine: "essay", maxChars: 2300 },
+          // 6–8 reviewer (Oct 5): check the counterclaim is refuted; plagiarism matters from this band up. 9–12 inherits.
+          supports: ["example-transitions", "example-description", "revise-counterclaim", "avoid-plagiarism"],
         }
       }
     }
@@ -1299,6 +1301,14 @@ scaffold("counterclaim", "Counterclaim", {
   "6-8": "A <b>counterclaim</b> is what someone who disagrees with you might say. Strong arguments name it, then explain why your claim is still stronger.<ul><li>Some people might argue that…</li><li>However, the passages show…</li></ul>",
   "9-12": "Acknowledge the strongest opposing view fairly, then <b>rebut</b> it with evidence and reasoning.<ul><li>While some argue that…, this overlooks…</li><li>Admittedly…; however, …</li></ul>" });
 assignment.luna.supports["counterclaim"].reply = assignment.luna.supports["counterclaim"].byBand["6-8"].reply;
+// Step 4 (6–8 and up), from the 6–8 reviewer, Oct 5. Static. [Draft wording]
+scaffold("revise-counterclaim", "Counterclaim Check", {
+  "6-8": "A strong argument names the other side <b>and</b> shows why it’s wrong. Check your essay:<ul><li>Did you name a <b>counterclaim</b>? <i>(Some people might argue that…)</i></li><li>Did you <b>refute</b> it with evidence? <i>(However, the passage shows…)</i></li><li>Does your answer lead back to your <b>claim</b>?</li></ul>If you only named the other side, add a sentence that explains why your claim is still stronger.",
+  "9-12": "Check how you handle the other side:<ul><li>Is the <b>counterclaim</b> stated fairly, in its strongest form?</li><li>Is your <b>rebuttal</b> supported with evidence and reasoning, not just a statement that it’s wrong?</li><li>Does the rebuttal return to and strengthen your <b>claim</b>?</li></ul>" });
+scaffold("avoid-plagiarism", "Avoid Plagiarism", {
+  "6-8": "<b>Plagiarism</b> is using someone else’s words or ideas as if they were your own. Check your essay:<ul><li>Exact words from a passage go in <b>quotation marks</b>.</li><li>Every quote says where it came from, like the passage title or paragraph number.</li><li>Check each quote against the passage. Is it copied exactly?</li><li>To <b>paraphrase</b>, say the idea in your own words, not just a word or two changed. Still name the source.</li></ul>",
+  "9-12": "Using a source’s words or ideas without credit is <b>plagiarism</b>, even by accident.<ul><li>Quote exactly, in quotation marks, and cite the source.</li><li>Paraphrase in your own words <i>and</i> sentence structure, and still cite it.</li><li>Verify every quotation against the text.</li><li>Let your own analysis, not the source, do most of the work.</li></ul>" });
+for (const k of ["revise-counterclaim", "avoid-plagiarism"]) assignment.luna.supports[k].reply = assignment.luna.supports[k].byBand["6-8"].reply;
 
 // Shared by every type
 const fillBtn = label => `<p style="margin:8px 0 0"><button class="btn primary" type="button" data-fill-starters style="height:auto;min-height:32px;padding:6px 12px;white-space:normal;line-height:1.25;text-align:center;max-width:100%">${label}</button></p>`;
