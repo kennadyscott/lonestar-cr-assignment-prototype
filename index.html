@@ -906,7 +906,7 @@ const assignment = {
         "You will pick a side. The side you pick is your claim.",
         "What evidence from the passages supports your claim?"
       ],
-      supports: ["claim-def", "evidence-def"],
+      supports: ["claim-def", "claim-starters", "evidence-def"],
       // Grade-band overrides: any field set here replaces the 2–3 default. [Placeholder wording]
       byBand: {
         "4-5": {
@@ -925,7 +925,7 @@ const assignment = {
             "Identify at least two reasons, each backed by text evidence.",
             "Consider a counterclaim: what would someone on the other side say?"
           ],
-          supports: ["claim-def", "evidence-def", "counterclaim"]
+          supports: ["claim-def", "claim-starters", "evidence-def", "counterclaim"]
         },
         "9-12": {
           instruction: "Read the passages critically and consider how each could inform your argument.",
@@ -1259,6 +1259,7 @@ scaffold("find-evidence-ai", "Find Details & Evidence", {
   "4-5": aiTag + "Look for details that could help either side:<ul><li><b>Soft sounds:</b> whispering keeps the classroom calm (Passage 1, paragraph 2); quiet helps us sleep (Passage 2, paragraph 3)</li><li><b>Loud sounds:</b> the fire alarm tells us to leave safely (Passage 1, paragraph 3); the referee’s whistle keeps games safe (Passage 1, paragraph 5)</li></ul>Which details help <i>your</i> side?",
   "6-8": aiTag + "Relevant evidence for each position: whispering “helps keep the classroom calm and focused” (P1 ¶2); a fire alarm “tells us to leave the building quickly and safely” (P1 ¶3); quiet supports “deep, healthy sleep” (P2 ¶3). Which best supports your claim, and which could a counterclaim use?",
   "9-12": aiTag + "Weigh the evidence on both sides. Safety (P1 ¶3, ¶5) makes a strong case for loud sounds; focus and health (P1 ¶2; P2 ¶2–3) make one for quiet. Choose sufficient evidence for your position and anticipate the strongest counterclaim." });
+scaffold("claim-starters", "Claim Starters", { "2-3": "{{WORDTOOL}}", "4-5": "{{WORDTOOL}}", "6-8": "{{WORDTOOL}}", "9-12": "{{WORDTOOL}}" });
 scaffold("counterclaim", "Counterclaim", {
   "6-8": "A <b>counterclaim</b> is what someone who disagrees with you might say. Strong arguments name it, then explain why your claim is still stronger.<ul><li>Some people might argue that…</li><li>However, the passages show…</li></ul>",
   "9-12": "Acknowledge the strongest opposing view fairly, then <b>rebut</b> it with evidence and reasoning.<ul><li>While some argue that…, this overlooks…</li><li>Admittedly…; however, …</li></ul>" });
@@ -1341,7 +1342,24 @@ function describeUI() {
         : `<div class="wchips">${Object.keys(swaps).slice(0, 8).map(k => `<button type="button" class="wchip plain" data-swap="${k}">${k}</button>`).join('')}</div>`}
     <p class="wt-tip" data-tip>Tap a word to add it where you’re typing.</p>`;
 }
-const WORD_TOOLS = { "example-transitions": transitionsUI, "example-description": describeUI };
+// Claim Starters (Argumentative Step 1, static, by band): tap a starter to put it in the claim box.
+const CLAIM_STARTERS = {   // [Draft wording] topic-neutral so they work for any prompt
+  "2-3": { intro: "Not sure how to start? Tap one. Then finish it with your side and use words from the question.",
+           starters: ["I think", "I believe", "My answer is"] },
+  "4-5": { intro: "Pick a starter, then finish it with your position. Use key words from the question.",
+           starters: ["In my opinion,", "I believe that", "It is clear that"] },
+  "6-8": { intro: "Choose a starter, then complete it with a clear, arguable position that answers the question.",
+           starters: ["The evidence shows that", "Although some may disagree,", "It is clear that"] },
+  "9-12": { intro: "Use a starter to frame a precise, defensible claim, then make it specific to the prompt.",
+           starters: ["While some argue otherwise,", "The strongest case is that", "Ultimately,"] }
+};
+function claimStartersUI() {
+  const c = wordBand(CLAIM_STARTERS);
+  return `<p style="margin:0 0 8px">${c.intro}</p>
+    <div class="wchips">${c.starters.map(w => `<button type="button" class="wchip" data-claim-starter="${esc(w)}">${esc(w)}${w.endsWith(',') ? ' …' : '…'}</button>`).join('')}</div>
+    <p class="wt-tip" data-tip>Tap a starter to add it to your claim.</p>`;
+}
+const WORD_TOOLS = { "example-transitions": transitionsUI, "example-description": describeUI, "claim-starters": claimStartersUI };
 scaffold("example-transitions", "Transition Words", { "2-3": "{{WORDTOOL}}", "4-5": "{{WORDTOOL}}", "6-8": "{{WORDTOOL}}", "9-12": "{{WORDTOOL}}" });
 scaffold("example-description", "Description Words", { "2-3": "{{WORDTOOL}}", "4-5": "{{WORDTOOL}}", "6-8": "{{WORDTOOL}}", "9-12": "{{WORDTOOL}}" });
 
@@ -1353,8 +1371,8 @@ document.addEventListener('selectionchange', () => {
   const n = sel.anchorNode, host = n && (n.nodeType === 1 ? n : n.parentElement)?.closest?.('#step .rte');
   if (host) { lastEdit = host; lastRange = sel.getRangeAt(0).cloneRange(); }
 });
-function insertWord(word, tipEl) {
-  const el = lastEdit && document.contains(lastEdit) ? lastEdit : null;
+function insertWord(word, tipEl, target) {
+  const el = target || (lastEdit && document.contains(lastEdit) ? lastEdit : null);
   if (!el) { if (tipEl) { tipEl.textContent = 'Click in your writing first, then tap a word.'; tipEl.classList.add('warn'); } return; }
   if (el.tagName === 'TEXTAREA') {
     const a = el.selectionStart ?? el.value.length, b = el.selectionEnd ?? a, before = el.value.slice(0, a);
@@ -1379,6 +1397,13 @@ function wordToolClick(e) {
   if (p) { wt.purpose = wt.purpose === p.dataset.purpose ? null : p.dataset.purpose; body.innerHTML = WORD_TOOLS[id](); return true; }
   if (sw) { wt.swap = sw.dataset.swap; body.innerHTML = WORD_TOOLS[id](); return true; }
   if (w) { e.preventDefault(); insertWord(w.dataset.word, body.querySelector('[data-tip]')); return true; }
+  const cst = e.target.closest('[data-claim-starter]');
+  if (cst) {
+    e.preventDefault(); const box = $('claimBox'), tip = body.querySelector('[data-tip]');
+    if (!box) { if (tip) { tip.textContent = 'Your claim box is on Step 1.'; tip.classList.add('warn'); } return true; }
+    if (!box.value.trim()) { box.value = ''; box.selectionStart = box.selectionEnd = 0; }
+    insertWord(cst.dataset.claimStarter, tip, box); return true;
+  }
   return !!e.target.closest('.wt-swap, .wchips, .wt-pick');
 }
 document.addEventListener('submit', e => {
