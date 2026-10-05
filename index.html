@@ -314,6 +314,20 @@
   .hl-legend small { color: var(--muted); font-size: calc(13px * var(--fs)); line-height: 1.4; display: block; }
   .hl-legend .count { margin-left: auto; flex: none; min-width: 28px; height: 28px; padding: 0 8px; border-radius: 999px; background: #fff; border: 1px solid var(--sand-border); display: grid; place-items: center; font-size: calc(13px * var(--fs)); font-weight: 600; color: var(--navy); }
   .hl-tip { font-size: calc(13px * var(--fs)); color: var(--muted); margin: 0; }
+  .tap-card { margin-top: 18px; border: 1px solid #cfe3ec; border-radius: 12px; padding: 14px 16px; background: #f6fbfd; }
+  .tap-card h4 { margin: 0 0 2px; font-size: calc(15px * var(--fs)); color: var(--navy, #0d4257); }
+  .tap-card .tap-sub { margin: 0 0 10px; font-size: calc(13px * var(--fs)); color: var(--muted); }
+  .tap-row { margin-top: 10px; }
+  .tap-row > label, .tap-row > .tap-q { display: block; font-weight: 600; font-size: calc(14px * var(--fs)); margin-bottom: 6px; }
+  .tap-row .tap-letter { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--navy, #0d4257); color: #fff; font-size: 12px; margin-right: 6px; }
+  .tap-row textarea { min-height: 0; height: auto; }
+  .tap-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tap-opts label { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 999px; border: 1.5px solid #cfe3ec; background: #fff; font-size: calc(13.5px * var(--fs)); cursor: pointer; }
+  .tap-opts input { position: absolute; opacity: 0; pointer-events: none; }
+  .tap-opts label:has(input:checked) { border-color: #2f9e63; background: #e2f5ea; font-weight: 600; }
+  .tap-opts label:has(input:focus-visible) { outline: 3px solid #1fb3de; outline-offset: 2px; }
+  .tap-strip { margin: -4px 0 12px; padding: 6px 10px; border-radius: 8px; background: #f6fbfd; border: 1px solid #cfe3ec; font-size: calc(13px * var(--fs)); color: #33454f; }
+  .tap-strip b { color: var(--navy, #0d4257); }
   .char-count { text-align: right; font-size: calc(13px * var(--fs)); color: var(--muted); margin: -10px 0 16px; }
   .char-count.over { color: #b3261e; font-weight: 600; }
 
@@ -1596,6 +1610,31 @@ const forBand = obj => {
   return BANDS.slice(1, upTo + 1).reduce((acc, b) => ({ ...acc, ...((obj.byBand || {})[b] || {}) }), { ...obj });
 };
 
+// TAP planning (Topic, Audience, Purpose): Grades 4–7, end of Step 2, every prompt type. Optional.
+// Topic is written; Audience and Purpose are picked. Purpose is pre-selected from the prompt type. [Draft wording]
+const TAP_BANDS = ['4-5', '6-8'];
+const TAP = {
+  audience: { "4-5": ["My teacher", "My classmates", "My principal", "Someone who doesn’t know the topic"],
+              "6-8": ["My teacher", "My classmates", "A school leader", "Someone new to the topic"] },
+  purpose: [["arg", "To convince"], ["info", "To explain"], ["narr", "To tell a story"], ["corr", "To ask for or share something"]]
+};
+const tapOn = () => TAP_BANDS.includes(document.body.dataset.band);
+const tapPurpose = () => answers.tapPurpose || TAP.purpose.find(x => x[0] === ptype)[1];
+function tapCardHtml() {
+  const aud = pickBand(TAP.audience, document.body.dataset.band), pur = tapPurpose();
+  const opts = (name, list, sel) => `<div class="tap-opts" role="radiogroup">${list.map(v =>
+    `<label><input type="radio" name="${name}" value="${esc(v)}" ${v === sel ? 'checked' : ''}>${esc(v)}</label>`).join('')}</div>`;
+  return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">Now that you have your evidence, make a quick plan.</p>
+    <div class="tap-row"><label for="tapTopic"><span class="tap-letter">T</span>Topic: What are you writing about?</label>
+      <textarea id="tapTopic" rows="1" placeholder="${document.body.dataset.band === '4-5' ? 'I am writing about…' : 'My writing is about…'}">${esc(answers.tapTopic || '')}</textarea></div>
+    <div class="tap-row"><span class="tap-q"><span class="tap-letter">A</span>Audience: Who will read it?</span>${opts('tapAudience', aud, answers.tapAudience)}</div>
+    <div class="tap-row"><span class="tap-q"><span class="tap-letter">P</span>Purpose: Why are you writing?</span>${opts('tapPurpose', TAP.purpose.map(x => x[1]), pur)}</div></div>`;
+}
+function tapStripHtml() {
+  const t = (answers.tapTopic || '').trim(), a = answers.tapAudience;
+  if (!t && !a) return '';
+  return `<div class="tap-strip"><b>My plan:</b> ${t ? esc(t) : '<i>no topic yet</i>'}${a ? ` · <b>For:</b> ${esc(a)}` : ''} · <b>To:</b> ${esc(tapPurpose().replace(/^To /, '').toLowerCase())}</div>`;
+}
 function renderStep() {
   if (inQuestions()) return renderQuestions();
   document.body.classList.remove('in-q');
@@ -1618,6 +1657,7 @@ function renderStep() {
   if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
     `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
     <p class="hl-tip">Tip: Click a highlight to change its color or remove it.</p>`;
+  if (current === 1 && tapOn()) html += tapCardHtml();
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
       const k = ansKey(current, i);
@@ -1645,6 +1685,7 @@ function renderStep() {
              <textarea id="${k}" class="${f.big ? 'big' : ''}" placeholder="${f.placeholder}" style="margin-bottom:16px" ${f.maxChars ? `data-max="${f.maxChars}"` : ''}>${answers[k] || ''}</textarea>`;
     if (f.maxChars) html += `<div class="char-count" data-for="${k}"></div>`;
   });
+  if (current >= 2 && tapOn()) html = html.replace('</h3>', '</h3>' + tapStripHtml());
   // Steps 2–4: the student's claim sits in the panel header, outside the scrolling area, so it never covers the work
   const showClaim = ptype === 'arg' && current > 0, cs = $('claimStrip');
   cs.hidden = !showClaim; $('midEyebrow').hidden = showClaim;
@@ -1664,6 +1705,7 @@ function renderStep() {
     el.addEventListener('input', () => { answers[el.id] = el.type === 'checkbox' ? el.checked : el.value; syncCount(el); });
     syncCount(el);
   });
+  $('step').querySelectorAll('.tap-opts input').forEach(r => r.addEventListener('change', () => { answers[r.name] = r.value; }));
   updateCounts();
   if (s.organizer || s.essay) {
     const syncOrg = () => {
