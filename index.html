@@ -323,6 +323,8 @@
   .best-ev ol { margin: 4px 0 6px; padding-left: 20px; }
   .best-ev li { margin: 3px 0; }
   .best-ev p { margin: 0; font-size: calc(13px * var(--fs)); color: #33454f; }
+  .claim-box-2 { margin-top: 16px; }
+  .claim-box-2 .cb2-sub { margin: 0 0 6px; font-size: calc(13px * var(--fs)); color: var(--muted); }
   .tap-card { margin-top: 18px; border: 1px solid #cfe3ec; border-radius: 12px; padding: 14px 16px; background: #f6fbfd; }
   .tap-card h4 { margin: 0 0 2px; font-size: calc(15px * var(--fs)); color: var(--navy, #0d4257); }
   .tap-card .tap-sub { margin: 0 0 10px; font-size: calc(13px * var(--fs)); color: var(--muted); }
@@ -1703,6 +1705,11 @@ function renderStep() {
     `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
     <p class="hl-tip">Tip: Click a highlight to change its color or remove it.</p>`;
   if (s.bestEvidence && ptype === 'arg') html += `<div class="best-ev"><h4>${s.bestEvidence.title}</h4><ol>${s.bestEvidence.steps.map(x => `<li>${emph(x)}</li>`).join('')}</ol><p>${s.bestEvidence.tip}</p></div>`;
+  // Claim box again on Step 2 (Kennady, Oct 5): between the BEST evidence box and Plan your writing, so students
+  // can sharpen their claim once they've chosen their evidence. Same answer as Step 1's box.
+  if (s.bestEvidence && ptype === 'arg') html += `<div class="claim-box claim-box-2"><label class="field-label" for="claimBox">${emph('Your claim')}</label>
+      <p class="cb2-sub">Now that you’ve chosen your evidence, does your claim still fit? Make it stronger if you can.</p>
+      <textarea id="claimBox" rows="2" placeholder="Type your claim in one sentence.">${esc(answers.claimBox || '')}</textarea></div>`;
   if (current === 1 && tapOn()) html += tapCardHtml();
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
@@ -1750,6 +1757,11 @@ function renderStep() {
   $('step').querySelectorAll('input,textarea').forEach(el => {
     el.addEventListener('input', () => { answers[el.id] = el.type === 'checkbox' ? el.checked : el.value; syncCount(el); });
     syncCount(el);
+  });
+  const cb = $('claimBox'); if (cb && current > 0) cb.addEventListener('input', () => {   // keep the header "My claim" strip in sync
+    const cs = $('claimStrip'), v = cb.value.trim();
+    cs.classList.toggle('empty', !v);
+    cs.innerHTML = `<span class="cs-label">My claim</span><span class="cs-text">${v ? esc(v) : 'Not typed yet.'}</span>`;
   });
   $('step').querySelectorAll('.tap-opts input').forEach(r => r.addEventListener('change', () => { answers[r.name] = r.value; }));
   updateCounts();
