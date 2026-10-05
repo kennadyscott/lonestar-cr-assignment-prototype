@@ -1285,7 +1285,7 @@ scaffold("example-description", "Example Description Words", {
   "4-5": fullDescription });
 // ---------- Word tools (Transition Words, Description Words) ----------
 // Transition Words: pick what you want to do → 3–5 word chips + an example sentence (static, by band).
-// Description Words: "Swap a word" (static, by band) + "Words from your passage" (AI per passage).
+// Description Words: "Swap a word" from the thesaurus bank (static, by band). It never reads the student's writing.
 // Tapping any chip adds the word where the student is typing (organizer box, essay or claim box).
 const TRANSITIONS = {   // [Draft wording] Kennady's full word banks remain the source lists
   "2-3": [
@@ -1320,11 +1320,6 @@ const SWAPS = {   // plain word → stronger choices; 6–8 entries include a sh
   "4-5": { good: ["helpful", "useful", "important", "excellent"], bad: ["harmful", "unpleasant", "dangerous"], big: ["enormous", "large", "massive"], small: ["tiny", "slight"], loud: ["blaring", "booming", "deafening"], quiet: ["hushed", "peaceful", "silent"], nice: ["pleasant", "thoughtful"], "a lot": ["plenty of", "countless", "a great deal of"], thing: ["item", "detail", "reason"], said: ["explained", "shouted", "whispered"], happy: ["joyful", "delighted"], sad: ["gloomy", "disappointed"], fast: ["rapid", "swift"], important: ["necessary", "key", "major"], very: ["extremely", "truly"] },
   "6-8": { good: ["beneficial (it helps)", "valuable (worth a lot)", "effective (it works)", "essential (it’s needed)"], bad: ["detrimental (causes harm)", "hazardous (dangerous)", "disruptive (interrupts)"], big: ["substantial", "significant", "vast"], small: ["minimal", "modest", "negligible"], loud: ["piercing", "thunderous", "jarring"], quiet: ["tranquil", "muted", "subdued"], nice: ["considerate", "gracious", "agreeable"], "a lot": ["numerous", "abundant", "a multitude of"], thing: ["factor", "element", "aspect"], said: ["stated", "argued", "emphasized"], happy: ["elated", "content"], sad: ["dejected", "somber"], fast: ["immediate", "brisk"], important: ["crucial", "essential", "significant"], very: ["remarkably", "exceptionally"] }
 };
-const PASSAGE_WORDS = {   // AI per passage [Sample text for the Sounds passages]
-  "2-3": ["loud", "soft", "calm", "quiet", "sharp", "whisper"],
-  "4-5": ["blaring", "rustling", "calm", "focused", "sharp", "chirping"],
-  "6-8": ["blaring", "alarming", "rustling", "focused", "disturbing", "rhythms"]
-};
 const wordBand = map => pickBand(map, document.body.dataset.band);
 const wt = { purpose: null, swap: '' };
 const chip = w => `<button type="button" class="wchip" data-word="${esc(w.replace(/\s*\(.*\)$/, ''))}">${esc(w)}</button>`;
@@ -1344,8 +1339,6 @@ function describeUI() {
     ${q ? (hit ? `<p class="wt-sub">Instead of <b>${esc(q)}</b>, try:</p><div class="wchips">${hit.map(chip).join('')}</div>`
              : `<p class="wt-sub">No swaps for “${esc(q)}” yet. Try one of these:</p><div class="wchips">${Object.keys(swaps).map(k => `<button type="button" class="wchip plain" data-swap="${k}">${k}</button>`).join('')}</div>`)
         : `<div class="wchips">${Object.keys(swaps).slice(0, 8).map(k => `<button type="button" class="wchip plain" data-swap="${k}">${k}</button>`).join('')}</div>`}
-    <p class="wt-ask" style="margin-top:12px">${aiTag}Words from your passage</p>
-    <div class="wchips">${wordBand(PASSAGE_WORDS).map(chip).join('')}</div>
     <p class="wt-tip" data-tip>Tap a word to add it where you’re typing.</p>`;
 }
 const WORD_TOOLS = { "example-transitions": transitionsUI, "example-description": describeUI };
