@@ -1617,7 +1617,7 @@ function renderStep() {
   if (!s.think) html += claimBoxHtml;   // 2–3: after the checklist
   if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
     `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
-    <p class="hl-tip">Tip: click a highlight to change its color or remove it.</p>`;
+    <p class="hl-tip">Tip: Click a highlight to change its color or remove it.</p>`;
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
       const k = ansKey(current, i);
