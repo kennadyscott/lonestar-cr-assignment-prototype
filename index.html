@@ -1265,7 +1265,7 @@ scaffold("counterclaim", "Counterclaim", {
 assignment.luna.supports["counterclaim"].reply = assignment.luna.supports["counterclaim"].byBand["6-8"].reply;
 
 // Shared by every type
-const fillBtn = label => `<p style="margin:8px 0 0"><button class="btn primary" type="button" data-fill-starters style="height:32px;padding:0 12px">${label}</button></p>`;
+const fillBtn = label => `<p style="margin:8px 0 0"><button class="btn primary" type="button" data-fill-starters style="height:auto;min-height:32px;padding:6px 12px;white-space:normal;line-height:1.25;text-align:center;max-width:100%">${label}</button></p>`;
 scaffold("ai-starters", "Sentence Starters", {
   "2-3": kidAi('Luna’s starters for this passage') + "Stuck? Try one of these to start each box. Then finish the sentence with your own words.{{STARTERS}}" + fillBtn("Put the starters in my boxes"),
   "4-5": kidAi('AI starters for this passage') + "Here is a starter for each part of your graphic organizer. Add them, then finish each sentence in your own words.{{STARTERS}}" + fillBtn("Add starters to my organizer"),
