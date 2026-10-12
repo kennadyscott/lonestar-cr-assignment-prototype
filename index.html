@@ -1497,11 +1497,11 @@ document.addEventListener('submit', e => {
 
 
 // Informational (✦ AI per passage)
-scaffold("hint-audience", "Hint: Audience", {
-  "2-3": kidAi() + "You are writing for a friend who does not know about sounds. Teach them! Use clear words and explain each idea.",
-  "4-5": aiTag + "Your readers are students who may not know much about sounds. Explain each idea clearly, like you are teaching a friend.",
-  "6-8": aiTag + "Your audience is readers your age who know little about the topic. Define key terms and explain why each detail matters.",
-  "9-12": aiTag + "Write for an informed general reader. Keep a formal, objective tone and anticipate what they need defined or explained." });
+scaffold("hint-audience", "Hint: Audience", {   // static and generic for every passage (Oct 12)
+  "2-3": "Your <b>audience</b> is the person who will read your writing. Pretend you are writing for a friend who does not know about the topic. Teach them!<ul><li>Use clear words.</li><li>Explain each idea.</li></ul>",
+  "4-5": "Your <b>audience</b> is who will read your writing. Write for a classmate who doesn’t know much about the topic.<ul><li>Explain each idea clearly, like you are teaching it.</li><li>Tell what any new or hard words mean.</li></ul>",
+  "6-8": "Your <b>audience</b> is readers your age who know little about the topic.<ul><li>Define key terms the first time you use them.</li><li>Explain why each detail matters, not just what it is.</li></ul>",
+  "9-12": "Write for an informed general <b>audience</b>: a reader who is smart but new to this topic.<ul><li>Keep a formal, objective tone.</li><li>Anticipate what they need defined or explained.</li></ul>" });
 scaffold("hint-topic", "Hint: Topic & Subtopics", {
   "2-3": "The <b>topic</b> is what your writing is all about. To find it, ask:<ul><li>What is the question asking me to explain?</li><li>What are the passages mostly about?</li></ul>Say your topic in a few words, like <i>how bees help plants</i>. Then pick two or three smaller parts to write about.",   // static and generic (Oct 12)
   "4-5": aiTag + "<b>Topic:</b> how sounds help us every day.<ul><li>Soft sounds, like whispers and quiet places</li><li>Loud sounds, like fire alarms and whistles</li><li>Sounds that help us learn, like music</li></ul>",
