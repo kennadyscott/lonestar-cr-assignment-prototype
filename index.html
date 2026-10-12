@@ -332,6 +332,7 @@
   .tap-row > label, .tap-row > .tap-q { display: block; font-weight: 600; font-size: calc(14px * var(--fs)); margin-bottom: 6px; }
   .tap-row .tap-letter { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--navy, #0d4257); color: #fff; font-size: 12px; margin-right: 6px; }
   .tap-row textarea { min-height: 0; height: auto; }
+  .tap-note { margin: 4px 0 0; font-size: calc(12px * var(--fs)); color: var(--muted); }
   .tap-opts { display: flex; flex-wrap: wrap; gap: 6px; }
   .tap-opts label { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 999px; border: 1.5px solid #cfe3ec; background: #fff; font-size: calc(13.5px * var(--fs)); cursor: pointer; }
   .tap-opts input { position: absolute; opacity: 0; pointer-events: none; }
@@ -1691,13 +1692,15 @@ const TAP = {
 };
 const tapOn = () => TAP_BANDS.includes(document.body.dataset.band);
 const tapPurpose = () => answers.tapPurpose || (document.body.dataset.band === '4-5' ? TAP.purpose.find(x => x[0] === ptype)[1] : '');
+// Informational only (Kennady, Oct 12): a small note under the Topic box.
+const tapInfoNote = () => ptype === 'info' ? `<p class="tap-note">Avoid using words like “I think” or “In my opinion” in informational writing.</p>` : '';
 function tapCardHtml() {
   // 6–7 (reviewer, Oct 5): less support. Students decide and word all three themselves; no options.
   if (document.body.dataset.band !== '4-5') {
     const box = (id, letter, q, ph) => `<div class="tap-row"><label for="${id}"><span class="tap-letter">${letter}</span>${q}</label>
       <textarea id="${id}" rows="1" placeholder="${ph}">${esc(answers[id] || '')}</textarea></div>`;
     return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">Decide your topic, audience and purpose in your own words. Then choose words that fit them.</p>
-      ${box('tapTopic', 'T', 'Topic', 'What is your writing about?')}
+      ${box('tapTopic', 'T', 'Topic', 'What is your writing about?').replace(/<\/div>$/, tapInfoNote() + '</div>')}
       ${box('tapAudience', 'A', 'Audience', 'Who is reading, and what do they already know?')}
       ${box('tapPurpose', 'P', 'Purpose', 'What should your writing do for the reader?')}</div>`;
   }
@@ -1706,7 +1709,7 @@ function tapCardHtml() {
     `<label><input type="radio" name="${name}" value="${esc(v)}" ${v === sel ? 'checked' : ''}>${esc(v)}</label>`).join('')}</div>`;
   return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">Now that you have your evidence, make a quick plan.</p>
     <div class="tap-row"><label for="tapTopic"><span class="tap-letter">T</span>Topic: What are you writing about?</label>
-      <textarea id="tapTopic" rows="1" placeholder="${document.body.dataset.band === '4-5' ? 'I am writing about…' : 'My writing is about…'}">${esc(answers.tapTopic || '')}</textarea></div>
+      <textarea id="tapTopic" rows="1" placeholder="${document.body.dataset.band === '4-5' ? 'I am writing about…' : 'My writing is about…'}">${esc(answers.tapTopic || '')}</textarea>${tapInfoNote()}</div>
     <div class="tap-row"><span class="tap-q"><span class="tap-letter">A</span>Audience: Who will read it?</span>${opts('tapAudience', aud, answers.tapAudience)}</div>
     <div class="tap-row"><span class="tap-q"><span class="tap-letter">P</span>Purpose: Why are you writing?</span>${opts('tapPurpose', TAP.purpose.map(x => x[1]), pur)}</div></div>`;
 }
