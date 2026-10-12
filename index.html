@@ -768,7 +768,6 @@
     <button data-ptype="arg">Argumentative</button>
     <button data-ptype="info">Informational</button>
     <button data-ptype="narr">Narrative</button>
-    <button data-ptype="corr">Correspondence</button>
   </div>
 
   <div class="band" id="mode" title="With or without a question set before writing">
@@ -1132,13 +1131,13 @@ if (LSCR) {
 // The set's own hints / sentence starters for a step (1-based), shown after the Student UX scaffolds
 const setSupports = step => (LSCR ? LSCR.supports.filter(sp => sp.steps.includes(step)).map(sp => sp.key) : []);
 
-// ---------- Prompt types: Argumentative (content above), Informational, Narrative, Correspondence ----------
+// ---------- Prompt types: Argumentative (content above), Informational, Narrative (Correspondence removed Oct 12: not used in the platform) ----------
 // Each non-argumentative type swaps the prompt, each step's wording, highlight colors, organizer,
 // AI sentence starters and Luna scaffolds. Everything is written per grade band: the 2–3 value is
 // the default and higher bands override it (cascade 2–3 → 4–5 → 6–8 → 9–12).
 // ✦ = AI-written per passage in the product (sample text here). [Draft wording for review]
 let ptype = 'arg';
-const TYPE_KEYS = ['arg', 'info', 'narr', 'corr'];
+const TYPE_KEYS = ['arg', 'info', 'narr'];
 const typeSuffix = () => (ptype === 'arg' ? '' : '-' + ptype);
 const argPrompt = { ...assignment.prompt };
 const typePrompts = {
@@ -1146,9 +1145,7 @@ const typePrompts = {
   info: { question: "How do different sounds help people in their daily lives? Use details from both passages to explain your answer.",
           directions: "Read the articles The Sounds of a Busy Day and The Power of Quiet. Based on the information in the articles, write an informational response to the following:" },
   narr: { question: "Write a story about a character whose day changes because of a sound. Use details from the passages to describe the sounds in your story.",
-          directions: "Read the articles The Sounds of a Busy Day and The Power of Quiet. Then write a narrative that responds to the following:" },
-  corr: { question: "Write a letter to your principal about whether your school should have a quiet reading room. Use details from both passages to explain your ideas.",
-          directions: "Read the articles The Sounds of a Busy Day and The Power of Quiet. Then write a letter that responds to the following:" }
+          directions: "Read the articles The Sounds of a Busy Day and The Power of Quiet. Then write a narrative that responds to the following:" }
 };
 const readInstr = {
   base: "Read the prompt and the passages. Then think about these questions.",
@@ -1211,34 +1208,6 @@ const typeSteps = {
       instruction: "Read your story out loud. Does it have a beginning, middle and end? Did you use describing words? Then check your capital letters, end marks and spelling.",
       supports: ["example-description", "example-transitions"],
       byBand: { "4-5": { title: "Here is your story. Let’s revise and edit.", instruction: "Check that your story has a clear beginning, middle and end, sensory details and transitions. Then check spelling and punctuation." } } }
-  ],
-  corr: [
-    { instruction: R('2-3'),
-      checklist: ["This is a letter prompt. This means you will write to a person.", "Who are you writing to? What do you want to tell them?", "Which facts from the passages will help your letter?"],
-      supports: ["corr-audience", "corr-parts"],
-      byBand: {
-        "4-5": { instruction: R('4-5'), checklist: ["This is a correspondence prompt. You will write a letter with a greeting, body and closing.", "Who is your audience, and what is your purpose for writing?", "Which facts from the passages will support your message?"] },
-        "6-8": { instruction: R('6-8'), checklist: ["Genre: correspondence. Write a purposeful letter to a specific audience.", "Identify your audience and purpose, and choose a respectful tone.", "Plan which evidence from the passages will persuade or inform your reader."] },
-        "9-12": { instruction: R('9-12'), checklist: ["Task: formal correspondence. Address a real audience with a clear purpose.", "Consider what your reader values and which tone and register fit.", "Select the evidence most compelling to this reader and plan a specific request."] } } },
-    { instruction: "Look back at the passages for facts to share in your letter. Select the words, then pick a color.",
-      highlights: HL(["My main idea", "Words that help you decide what to ask for"], ["Facts to share", "Facts that help your reader understand"], ["Words to use", "Good words for your letter"]),
-      supports: ["corr-details", "corr-message"],
-      byBand: {
-        "4-5": { title: "Highlight the passage", instruction: "Highlight details that will help you write your letter. Select text, then choose a color.",
-                 highlights: HL(["Main message", "Details that help you decide what to tell your reader"], ["Supporting facts", "Facts and examples that support your message"], ["Reader questions", "Things your reader may want to know"]) },
-        "6-8": { instruction: "Annotate for evidence your reader will find convincing.",
-                 highlights: HL(["Purpose", "Details that shape your message or request"], ["Evidence", "Facts and examples that will convince your reader"], ["Audience concerns", "Points your reader may question or disagree with"]) },
-        "9-12": { instruction: "Annotate for the evidence and concerns that matter most to your reader.",
-                  highlights: HL(["Purpose", "Details that sharpen your request"], ["Compelling evidence", "Facts most persuasive to this reader"], ["Objections", "Concerns to acknowledge respectfully"]) } } },
-    { organizer: [SEC("Greeting", "green", "Say hello to your reader.", "Who am I writing to?"), SEC("Message", "purple", "Tell what you want to say and give a fact from the passage.", "What do I want them to know?"), SEC("Closing", "blue", "Say thank you and sign your name.", "How do I end my letter?")],
-      supports: ["ai-starters", "example-transitions", "example-description"],
-      byBand: {
-        "4-5": { organizer: [SEC("Greeting", "green", "Write the greeting (Dear ___,)."), SEC("Purpose", "red", "Tell why you are writing."), SEC("Details", "purple", "Give facts from the text that support your message."), SEC("Request", "blue", "Tell what you want your reader to do."), SEC("Closing", "orange", "End politely and sign your name.")] },
-        "6-8": { organizer: [SEC("Greeting and introduction", "green", "Greet your reader and state your purpose (2–3 sentences)."), SEC("Body paragraph", "purple", "Support your message with evidence and explanation."), SEC("Body paragraph", "purple", "Add a second reason with evidence and explanation."), SEC("Closing", "blue", "Restate your request, thank your reader and sign off.")] } } },
-    { title: "Here is your letter. Let’s make it even better!",
-      instruction: "Read your letter out loud. Did you greet your reader? Did you say what you want and why? Then check your capital letters, end marks and spelling.",
-      supports: ["example-description", "example-transitions"],
-      byBand: { "4-5": { title: "Here is your letter. Let’s revise and edit.", instruction: "Check that your letter has a greeting, a clear purpose, supporting details and a polite closing. Then check spelling and punctuation." } } }
   ]
 };
 
@@ -1255,11 +1224,7 @@ const typeStarters = {
   narr: { "2-3": ["One day,", "Then, I heard", "In the end,"],
           "4-5": ["Maya loved quiet mornings until", "The problem started when", "First,", "Finally,", "After that day, Maya knew"],
           "6-8": ["The morning began like any other, until", "The sound grew louder as", "At that moment,", "Looking back,"],
-          "9-12": ["Silence had always been my refuge, until", "Each time the sound returned,", "Then, without warning,", "Only later did I understand"] },
-  corr: { "2-3": ["Dear Principal,", "I think our school should", "Thank you for reading my letter. Sincerely,"],
-          "4-5": ["Dear Principal Lee,", "I am writing to ask", "According to “The Power of Quiet,”", "I hope you will", "Thank you for your time. Sincerely,"],
-          "6-8": ["Dear Principal Lee, I am writing to propose", "“The Power of Quiet” explains that", "Some may worry that", "I respectfully ask that you consider"],
-          "9-12": ["Dear Principal Lee, I am writing on behalf of students to propose", "Evidence from “The Power of Quiet” suggests", "I recognize that", "I would welcome the chance to discuss"] }
+          "9-12": ["Silence had always been my refuge, until", "Each time the sound returned,", "Then, without warning,", "Only later did I understand"] }
 };
 const pickBand = (map, band) => { const order = ['2-3', '4-5', '6-8', '9-12']; for (let i = order.indexOf(band); i >= 0; i--) if (map[order[i]]) return map[order[i]]; return map['2-3']; };
 const startersFor = band => pickBand(typeStarters[ptype], band);
@@ -1336,7 +1301,7 @@ scaffold("ai-starters", "Sentence Starters", {
   "9-12": kidAi('AI starters for this passage') + "Optional openers for each section. Adapt them so the voice and argument are yours.{{STARTERS}}" + fillBtn("Add starters to my organizer") });
 // CMS stores separate starter introductions by prompt type. [CMS Draft wording for review]
 assignment.luna.supports["ai-starters"].byType = Object.fromEntries([
-  ["info", "ideas"], ["narr", "story"], ["corr", "message"]
+  ["info", "ideas"], ["narr", "story"]
 ].map(([type, noun]) => [type, { byBand: { "9-12": {
   reply: `Optional openers for each section. Adapt them so the voice and ${noun} are yours.{{STARTERS}}` + fillBtn("Add starters to my organizer")
 } } }]));
@@ -1410,8 +1375,7 @@ const WORD_CHOICE = {
           "9-12": "Choose words for precision and tone that suit your <b>audience</b> and <b>purpose</b>." },
   type: { arg:  { "2-3": "Use words from the passage to help.", "4-5": "For an argument, use academic language and key words from the passages." },
           info: { "2-3": "Use words from the passage to help.", "4-5": "For an explanation, use exact topic words from the passages." },
-          narr: { "2-3": "Use words that help your reader picture it.", "4-5": "For a story, pick vivid words that help readers picture what happens." },
-          corr: { "2-3": "Use kind, polite words.", "4-5": "For a letter, use polite words that fit the person you’re writing to." } }
+          narr: { "2-3": "Use words that help your reader picture it.", "4-5": "For a story, pick vivid words that help readers picture what happens." } }
 };
 function wordChoiceTip() {
   const b = document.body.dataset.band, aud = typeof tapOn === 'function' && tapOn() && answers.tapAudience;
@@ -1551,28 +1515,6 @@ scaffold("narr-details", "Hint: Details", {
   "6-8": aiTag + "Show, don’t tell: use precise verbs, sensory language and dialogue to bring key moments to life.",
   "9-12": aiTag + "Use precise, evocative language and figurative devices sparingly, so each detail carries tone and meaning." });
 
-// Correspondence (✦ AI per passage, except Parts of a Letter)
-scaffold("corr-audience", "Hint: Audience & Purpose", {
-  "2-3": kidAi() + "You are writing to your <b>principal</b>. Be polite! Tell them what you want and why.",
-  "4-5": aiTag + "Your audience is the principal. Your purpose is to explain why a quiet reading room would help. Use a polite, respectful voice.",
-  "6-8": aiTag + "Audience: your principal, who cares about learning and safety. Purpose: persuade them. Use a respectful, formal tone and connect your request to their goals.",
-  "9-12": aiTag + "Tailor your case to an administrator’s priorities, such as achievement, well-being and cost, in a formal, measured register." });
-scaffold("corr-parts", "Parts of a Letter", {
-  "2-3": "A letter has parts:<ul><li><b>Greeting:</b> Dear ___,</li><li><b>Body:</b> your message</li><li><b>Closing:</b> Sincerely,</li><li><b>Signature:</b> your name</li></ul>",
-  "4-5": "Every letter needs a greeting, a body with your message, a closing such as <i>Sincerely,</i> and your signature. Keep each paragraph focused.",
-  "6-8": "Use formal letter format: date, greeting, an introduction that states your purpose, body paragraphs, a closing and your signature.",
-  "9-12": "Follow formal business-letter conventions: date, salutation, purpose statement, supporting paragraphs, a specific request, complimentary close and signature." });
-scaffold("corr-details", "Hint: Key Details", {
-  "2-3": kidAi() + "Share these facts:<ul><li>Quiet helps people focus (Passage 2).</li><li>Quiet helps us rest (Passage 2).</li></ul>",
-  "4-5": aiTag + "Useful facts: libraries are quiet so readers can focus (Passage 2, paragraph 2); whispering keeps a classroom calm (Passage 1, paragraph 2).",
-  "6-8": aiTag + "Choose evidence your principal will value: quiet improves focus and learning (P2 ¶1–2) and supports rest (P2 ¶3). Cite each source.",
-  "9-12": aiTag + "Lead with evidence tied to learning (P2 ¶1–2), then address well-being (P2 ¶3). Integrate and cite concisely." });
-scaffold("corr-message", "Hint: Your Message", {
-  "2-3": kidAi() + "What do you want your principal to do? Say it clearly, like: <i>Please make a quiet reading room.</i>",
-  "4-5": aiTag + "State your main message in one clear sentence near the beginning of your letter.",
-  "6-8": aiTag + "Make your request specific and reasonable, such as one quiet room during reading time, and explain the benefit.",
-  "9-12": aiTag + "Frame a precise, actionable proposal and anticipate concerns about how it would work." });
-
 // Sept 29 reviewer wording; the CMS export now uses "Evidence" for the definition in every band.
 scaffold("claim-def", "Claim Definition", { "4-5": "A <b>claim</b> is a sentence that states your position on the question. It should be clear and arguable." });
 // CMS → prototype reconciliation, Oct 7: preserve the Approved wording exactly, including "include".
@@ -1605,8 +1547,7 @@ scaffold("what-is-claim", "What is a Claim?", {
 const KEY_TERMS = {
   arg: ["counterclaims?", "claims?", "evidence", "rebuttal", "reasons?"],
   info: ["main idea", "central idea", "key details", "topic", "facts?"],
-  narr: ["characters?", "setting", "problem", "conflict", "beginning", "middle", "end"],
-  corr: ["audience", "purpose", "greeting", "closing", "letter"]
+  narr: ["characters?", "setting", "problem", "conflict", "beginning", "middle", "end"]
 };
 const emph = t => {
   if (!t) return t;
@@ -1690,8 +1631,8 @@ const TAP = {
   audience: { "2-3": ["My teacher", "My class", "A friend", "My family"],
               "4-5": ["My teacher", "My classmates", "My principal", "Someone who doesn’t know the topic"],
               "6-8": ["My teacher", "My classmates", "A school leader", "Someone new to the topic"] },
-  purpose: { "2-3": [["arg", "To tell what I think"], ["info", "To teach"], ["narr", "To tell a story"], ["corr", "To ask or tell someone"]],
-             "4-5": [["arg", "To convince"], ["info", "To explain"], ["narr", "To tell a story"], ["corr", "To ask for or share something"]] },
+  purpose: { "2-3": [["arg", "To tell what I think"], ["info", "To teach"], ["narr", "To tell a story"]],
+             "4-5": [["arg", "To convince"], ["info", "To explain"], ["narr", "To tell a story"]] },
   write: { "6-8": { sub: "Decide your topic, audience and purpose in your own words. Then choose words that fit them.",
                     topic: "What is your writing about?", audience: "Who is reading, and what do they already know?", purpose: "What should your writing do for the reader?" },
            "9-12": { sub: "Define your topic, audience and purpose before you draft. Let them shape your tone and word choice.",
