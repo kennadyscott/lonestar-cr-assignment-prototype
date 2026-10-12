@@ -1682,36 +1682,47 @@ const forBand = obj => {
   return BANDS.slice(1, upTo + 1).reduce((acc, b) => ({ ...acc, ...((obj.byBand || {})[b] || {}) }), { ...obj });
 };
 
-// TAP planning (Topic, Audience, Purpose): Grades 4–7, end of Step 2, every prompt type. Optional.
-// Topic is written; Audience and Purpose are picked. Purpose is pre-selected from the prompt type. [Draft wording]
-const TAP_BANDS = ['4-5', '6-8'];
+// TAP planning (Topic, Audience, Purpose): every grade band, end of Step 2 (Prepare), every prompt type. Optional.
+// 2–3 and 4–5 pick Audience and Purpose (Purpose pre-selected from the prompt type); 6–7 and 8–12 write all three. [Draft wording]
+const TAP_BANDS = ['2-3', '4-5', '6-8', '9-12'];
+const TAP_PICK = ['2-3', '4-5'];
 const TAP = {
-  audience: { "4-5": ["My teacher", "My classmates", "My principal", "Someone who doesn’t know the topic"],
+  audience: { "2-3": ["My teacher", "My class", "A friend", "My family"],
+              "4-5": ["My teacher", "My classmates", "My principal", "Someone who doesn’t know the topic"],
               "6-8": ["My teacher", "My classmates", "A school leader", "Someone new to the topic"] },
-  purpose: [["arg", "To convince"], ["info", "To explain"], ["narr", "To tell a story"], ["corr", "To ask for or share something"]]
+  purpose: { "2-3": [["arg", "To tell what I think"], ["info", "To teach"], ["narr", "To tell a story"], ["corr", "To ask or tell someone"]],
+             "4-5": [["arg", "To convince"], ["info", "To explain"], ["narr", "To tell a story"], ["corr", "To ask for or share something"]] },
+  write: { "6-8": { sub: "Decide your topic, audience and purpose in your own words. Then choose words that fit them.",
+                    topic: "What is your writing about?", audience: "Who is reading, and what do they already know?", purpose: "What should your writing do for the reader?" },
+           "9-12": { sub: "Define your topic, audience and purpose before you draft. Let them shape your tone and word choice.",
+                     topic: "What is the focus of your response?", audience: "Who is your reader, and what do they need from you?", purpose: "What do you want your writing to accomplish?" } }
 };
 const tapOn = () => TAP_BANDS.includes(document.body.dataset.band);
-const tapPurpose = () => answers.tapPurpose || (document.body.dataset.band === '4-5' ? TAP.purpose.find(x => x[0] === ptype)[1] : '');
+const tapPicks = () => TAP_PICK.includes(document.body.dataset.band);
+const tapPurpose = () => answers.tapPurpose || (tapPicks() ? pickBand(TAP.purpose, document.body.dataset.band).find(x => x[0] === ptype)[1] : '');
 // Informational only (Kennady, Oct 12): a small note under the Topic box.
 const tapInfoNote = () => ptype === 'info' ? `<p class="tap-note">Avoid using words like “I think” or “In my opinion” in informational writing.</p>` : '';
 function tapCardHtml() {
-  // 6–7 (reviewer, Oct 5): less support. Students decide and word all three themselves; no options.
-  if (document.body.dataset.band !== '4-5') {
+  const band = document.body.dataset.band;
+  // 6–7 and 8–12 (reviewer, Oct 5): less support. Students decide and word all three themselves; no options.
+  if (!tapPicks()) {
+    const w = pickBand(TAP.write, band);
     const box = (id, letter, q, ph) => `<div class="tap-row"><label for="${id}"><span class="tap-letter">${letter}</span>${q}</label>
       <textarea id="${id}" rows="1" placeholder="${ph}">${esc(answers[id] || '')}</textarea></div>`;
-    return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">Decide your topic, audience and purpose in your own words. Then choose words that fit them.</p>
-      ${box('tapTopic', 'T', 'Topic', 'What is your writing about?').replace(/<\/div>$/, tapInfoNote() + '</div>')}
-      ${box('tapAudience', 'A', 'Audience', 'Who is reading, and what do they already know?')}
-      ${box('tapPurpose', 'P', 'Purpose', 'What should your writing do for the reader?')}</div>`;
+    return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">${w.sub}</p>
+      ${box('tapTopic', 'T', 'Topic', w.topic).replace(/<\/div>$/, tapInfoNote() + '</div>')}
+      ${box('tapAudience', 'A', 'Audience', w.audience)}
+      ${box('tapPurpose', 'P', 'Purpose', w.purpose)}</div>`;
   }
-  const aud = pickBand(TAP.audience, document.body.dataset.band), pur = tapPurpose();
+  const aud = pickBand(TAP.audience, band), pur = tapPurpose();
   const opts = (name, list, sel) => `<div class="tap-opts" role="radiogroup">${list.map(v =>
     `<label><input type="radio" name="${name}" value="${esc(v)}" ${v === sel ? 'checked' : ''}>${esc(v)}</label>`).join('')}</div>`;
-  return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">Now that you have your evidence, make a quick plan.</p>
+  const kid = band === '2-3';
+  return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">${kid ? 'Now make a plan before you write.' : 'Now that you have your evidence, make a quick plan.'}</p>
     <div class="tap-row"><label for="tapTopic"><span class="tap-letter">T</span>Topic: What are you writing about?</label>
-      <textarea id="tapTopic" rows="1" placeholder="${document.body.dataset.band === '4-5' ? 'I am writing about…' : 'My writing is about…'}">${esc(answers.tapTopic || '')}</textarea>${tapInfoNote()}</div>
+      <textarea id="tapTopic" rows="1" placeholder="I am writing about…">${esc(answers.tapTopic || '')}</textarea>${tapInfoNote()}</div>
     <div class="tap-row"><span class="tap-q"><span class="tap-letter">A</span>Audience: Who will read it?</span>${opts('tapAudience', aud, answers.tapAudience)}</div>
-    <div class="tap-row"><span class="tap-q"><span class="tap-letter">P</span>Purpose: Why are you writing?</span>${opts('tapPurpose', TAP.purpose.map(x => x[1]), pur)}</div></div>`;
+    <div class="tap-row"><span class="tap-q"><span class="tap-letter">P</span>Purpose: Why are you writing?</span>${opts('tapPurpose', pickBand(TAP.purpose, band).map(x => x[1]), pur)}</div></div>`;
 }
 function tapStripHtml() {
   const t = (answers.tapTopic || '').trim(), a = (answers.tapAudience || '').trim(), p = tapPurpose().trim();
