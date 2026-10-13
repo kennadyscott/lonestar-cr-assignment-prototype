@@ -1156,12 +1156,14 @@ const SEC = (keyword, color, text, ask) => (ask ? { keyword, color, text, ask } 
 const typeSteps = {
   info: [
     { instruction: R('2-3'),
-      checklist: ["This is an informational prompt. This means you will teach your reader about a topic using facts from the passages.", "What is the topic? What is the main idea?", "What facts and details from the passages will help you explain it?"],
+      // Oct 13: the prompt explanation is a THINK note; the two planning questions remain checkboxes.
+      think: "This is an informational prompt. This means you will teach your reader about a topic using facts from the passages.",
+      checklist: ["What is the topic? What is the main idea?", "What facts and details from the passages will help you explain it?"],
       supports: ["hint-audience", "hint-topic"],
       byBand: {
-        "4-5": { instruction: R('4-5'), checklist: ["This is an informational prompt. You will explain a topic using facts, not your opinion.", "What is the topic, and what is the main idea of each passage?", "Which facts and details from the passages will you use to explain it?"] },
-        "6-8": { instruction: R('6-8'), checklist: ["Genre: informational. Explain and inform; keep your opinion out.", "Identify the central idea of each passage and how the passages connect.", "Plan which facts, examples and quotations will develop each idea."] },
-        "9-12": { instruction: R('9-12'), checklist: ["Task: informational/explanatory response. Synthesize the sources; don’t argue.", "Determine each source’s central idea and how the sources relate.", "Select the most relevant evidence and plan how to organize it for your reader."] } } },
+        "4-5": { instruction: R('4-5'), think: "This is an informational prompt. You will explain a topic using facts, not your opinion.", checklist: ["What is the topic, and what is the main idea of each passage?", "Which facts and details from the passages will you use to explain it?"] },
+        "6-8": { instruction: R('6-8'), think: "Genre: informational. Explain and inform; keep your opinion out.", checklist: ["Identify the central idea of each passage and how the passages connect.", "Plan which facts, examples and quotations will develop each idea."] },
+        "9-12": { instruction: R('9-12'), think: "Task: informational/explanatory response. Synthesize the sources; don’t argue.", checklist: ["Determine each source’s central idea and how the sources relate.", "Select the most relevant evidence and plan how to organize it for your reader."] } } },
     { instruction: "Look back at the passages for facts that help you explain the topic. Select the words, then pick a color.",
       highlights: HL(["Main idea", "Sentences that tell what a passage is mostly about"], ["Key details", "Facts and examples that explain the main idea"], ["Words to know", "Topic words you want to use in your writing"]),
       supports: ["hint-key-details", "hint-main-idea"],
