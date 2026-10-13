@@ -237,14 +237,16 @@
   .org-starter { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 10px; border-radius: 8px; background: #f3effd; color: #4a3a8a; font-size: calc(13.5px * var(--fs)); }
   .org-starter button { margin-left: auto; height: 26px; padding: 0 10px; border-radius: 6px; border: 1px solid #b9a8ee; background: #fff; color: #5a44b8; font-size: calc(12.5px * var(--fs)); font-weight: 700; }
 
-  /* Step 4: View Passage / View Checklist tabs */
-  .left-tabs { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 16px 0; }
-  .left-tabs[hidden] { display: none; }
+  /* Step 4: switch between the checklist and passage */
+  .passage-view-control { flex: none; display: flex; justify-content: flex-end; padding: 6px 16px 0; }
+  .passage-view-control[hidden] { display: none; }
   .passage-bar[hidden] { display: none; }
-  .left-tabs button { height: 44px; border-radius: 10px 10px 0 0; border: 0; font-family: inherit; font-size: calc(15px * var(--fs)); font-weight: 700; letter-spacing: .02em; text-transform: uppercase; cursor: pointer; background: #e7eef2; color: var(--navy); }
-  .left-tabs button.on[data-left="passage"] { background: var(--navy); color: #fff; }
-  .left-tabs button.on[data-left="checklist"] { background: #ec7a2d; color: #fff; }
-  .left-tabs button:not(.on):hover { background: #dbe6ec; }
+  .passage-view-switch { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 4px; color: var(--navy); font-size: calc(15px * var(--fs)); font-weight: 700; cursor: pointer; }
+  .passage-view-switch input { appearance: none; flex: none; width: 44px; height: 24px; margin: 0; padding: 2px; border: 2px solid transparent; border-radius: 999px; background: #647c8a; cursor: pointer; }
+  .passage-view-switch input::before { content: ''; display: block; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
+  .passage-view-switch input:checked { background: var(--navy); }
+  .passage-view-switch input:checked::before { transform: translateX(20px); }
+  .passage-view-switch input:focus-visible { outline: 3px solid var(--navy); outline-offset: 3px; }
   /* Step 1 THINK note, claim box, and the claim pinned on Steps 2–4 */
   .think-box { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; margin: 0 0 14px; border-radius: 10px; background: var(--cyan-softer); border: 1px solid var(--cyan-soft); }
   .think-box span { flex: none; font-size: calc(11px * var(--fs)); font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--navy); border-radius: 6px; padding: 3px 8px; margin-top: 2px; }
@@ -790,9 +792,11 @@
 <main class="workspace">
   <!-- Passage -->
   <section class="panel">
-    <div class="left-tabs" id="leftTabs" role="tablist" aria-label="Passage or checklist" hidden>
-      <button type="button" role="tab" data-left="passage">View Passage</button>
-      <button type="button" role="tab" data-left="checklist">View Checklist</button>
+    <div class="passage-view-control" id="passageViewControl" hidden>
+      <label class="passage-view-switch">
+        <span>View Passage</span>
+        <input type="checkbox" role="switch" id="passageViewSwitch" aria-controls="passage revise">
+      </label>
     </div>
     <div class="passage-bar" id="passageBar">
       <div class="passage-pill"><span id="passageLabel">Passage</span><b id="passageTitle"></b></div>
@@ -1897,14 +1901,11 @@ function speakTip(text, key, s) {
 function renderRevise(s) {
   const onStep4 = !!s.revise, showRv = onStep4 && !rv.showPassage;
   $('passage').hidden = showRv; $('revise').hidden = !showRv;
-  // Step 4: View Passage / View Checklist tabs, always in the same spot at the top of the left panel
-  $('leftTabs').hidden = !onStep4;
+  // Keep the switch in the same spot in both views; off returns to the checklist.
+  $('passageViewControl').hidden = !onStep4;
   $('passageBar').hidden = showRv;
-  $('leftTabs').querySelectorAll('button').forEach(b => {
-    const on = (b.dataset.left === 'checklist') === showRv;
-    b.classList.toggle('on', on); b.setAttribute('aria-selected', on);
-    b.onclick = () => { rv.showPassage = b.dataset.left === 'passage'; renderRevise(s); };
-  });
+  $('passageViewSwitch').checked = rv.showPassage;
+  $('passageViewSwitch').onchange = e => { rv.showPassage = e.target.checked; renderRevise(s); };
   if ($('backRv')) $('backRv').remove();
   if (!onStep4 || !showRv) return;
   const band = tipBand(document.body.dataset.band), set = tipSets[band];
@@ -2084,6 +2085,7 @@ function renderQuestions() {
   document.body.classList.add('in-q');
   $('claimStrip').hidden = true; $('midEyebrow').hidden = false;
   $('passage').hidden = false; $('revise').hidden = true;
+  $('passageViewControl').hidden = true; $('passageBar').hidden = false;
   if ($('backRv')) $('backRv').remove();
   const q = questionSet[qi], st = qa[qi], n = questionSet.length;
   const right = st.checked && !!q.correct && sameSet(st.sel, q.correct);
