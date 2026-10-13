@@ -926,12 +926,10 @@ const assignment = {
     {
       label: "Read",
       title: "Read and think",
-      instruction: "Read the prompt and the passages. Then think about these questions.",
-      checklist: [
-        "This is an argumentative prompt. This means you will tell what you think and give <b>evidence</b> (<b>reasons</b>) why.",
-        "You will pick a side. The side you pick is your claim.",
-        "What evidence from the passages supports your claim?"
-      ],
+      // Oct 13: grades 2–3 use the same THINK treatment as 4–5. All three guidance points are retained.
+      instruction: "Read the prompt and the passages. Then think about your answer.", // [Draft wording for review]
+      think: "This is an argumentative prompt. This means you will tell what you think and give <b>evidence</b> (<b>reasons</b>) why. You will pick a side. The side you pick is your claim. What evidence from the passages supports your claim?",
+      checklist: null,
       supports: ["claim-def", "claim-starters", "evidence-def", "custom-write-a-claim"],
       // Grade-band overrides: any field set here replaces the 2–3 default. [Placeholder wording]
       byBand: {
@@ -1685,10 +1683,10 @@ function renderStep() {
   const claimBoxHtml = s.claimBox ? `<div class="claim-box"><div class="claim-q"><span>The question</span><p>${assignment.prompt.question}</p><small>${borrowTip}</small></div>
       <label class="field-label" for="claimBox">${emph(s.claimBox.label)}</label>
       <textarea id="claimBox" rows="2" placeholder="${s.claimBox.placeholder}">${esc(answers.claimBox || '')}</textarea></div>` : '';
-  if (s.think) html += claimBoxHtml;   // 4–12: claim first, then check it
+  if (s.think) html += claimBoxHtml;   // claim follows THINK; higher bands then check it
   if (s.checklist) html += `<ul class="checklist">${s.checklist.map((c, i) =>
     `<li><input type="checkbox" id="c${current}-${i}" ${answers[`c${current}-${i}`] ? 'checked' : ''}><label for="c${current}-${i}">${emph(c)}</label></li>`).join('')}</ul>`;
-  if (!s.think) html += claimBoxHtml;   // 2–3: after the checklist
+  if (!s.think) html += claimBoxHtml;   // fallback for a step without THINK
   if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
     `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
     <p class="hl-tip">Tip: Click a highlight to change its color or remove it.</p>`;
