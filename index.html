@@ -1183,12 +1183,14 @@ const typeSteps = {
   ],
   narr: [
     { instruction: R('2-3'),
-      checklist: ["This is a narrative prompt. This means you will write a story.", "Who is your character? Where does your story happen?", "What sound will change your character’s day?"],
+      // Oct 13: show the prompt explanation in THINK, with the two planning checkboxes below.
+      think: "This is a narrative prompt. This means you will write a story.",
+      checklist: ["Who is your character? Where does your story happen?", "What sound will change your character’s day?"],
       supports: ["narr-character", "narr-setting"],
       byBand: {
-        "4-5": { instruction: R('4-5'), checklist: ["This is a narrative prompt. You will write a story with characters, a setting and events.", "Who is your main character, and where and when does the story take place?", "What sound causes the problem, and how will it be solved?"] },
-        "6-8": { instruction: R('6-8'), checklist: ["Genre: narrative. Develop a real or imagined experience with descriptive details.", "Establish a narrator or point of view, characters and a setting.", "Plan a clear sequence of events: what sound drives the conflict, and how is it resolved?"] },
-        "9-12": { instruction: R('9-12'), checklist: ["Task: narrative. Craft a story with a purposeful structure and vivid, precise language.", "Decide on point of view and how you will reveal character.", "Plan how the sound builds tension or reflection toward a meaningful resolution."] } } },
+        "4-5": { instruction: R('4-5'), think: "This is a narrative prompt. You will write a story with characters, a setting and events.", checklist: ["Who is your main character, and where and when does the story take place?", "What sound causes the problem, and how will it be solved?"] },
+        "6-8": { instruction: R('6-8'), think: "Genre: narrative. Develop a real or imagined experience with descriptive details.", checklist: ["Establish a narrator or point of view, characters and a setting.", "Plan a clear sequence of events: what sound drives the conflict, and how is it resolved?"] },
+        "9-12": { instruction: R('9-12'), think: "Task: narrative. Craft a story with a purposeful structure and vivid, precise language.", checklist: ["Decide on point of view and how you will reveal character.", "Plan how the sound builds tension or reflection toward a meaningful resolution."] } } },
     { title: "Find story ideas", instruction: "Look back at the passages for sounds and words you can use in your story. Select the words, then pick a color.",
       highlights: HL(["Sound ideas", "Sounds your story could use"], ["Describing words", "Words that help readers hear and see"], ["Story ideas", "Things that could happen in your story"]),
       supports: ["narr-problem", "narr-sequence"],
