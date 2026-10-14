@@ -744,12 +744,15 @@
 .home-view[hidden] { display: none; }
 .home-view button { font-family: inherit; }
 .home-assignments, .home-enrichment { min-width: 0; }
-.home-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding: 8px; background: var(--cyan-soft); border: 1px solid #c4e7f3; border-radius: 14px; }
-.home-tab { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 50px; padding: 9px 8px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--navy); text-align: center; font-size: 12.5px; font-weight: 700; line-height: 1.3; transition: background .15s, box-shadow .15s; }
-.home-tab svg { width: 18px; height: 18px; flex: none; }
+.home-tabs { position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 16px; background: linear-gradient(110deg, #acf0fc 0%, #59d1e7 48%, #04afcf 100%); border: 1px solid #a6e8f2; border-radius: 14px; }
+.home-tabs::before, .home-tabs::after { content: ''; position: absolute; z-index: -1; pointer-events: none; background: rgba(255,255,255,.23); clip-path: polygon(50% 0, 62% 36%, 100% 50%, 64% 62%, 50% 100%, 37% 64%, 0 50%, 36% 37%); }
+.home-tabs::before { width: 76px; height: 76px; right: 8px; top: -21px; transform: rotate(12deg); }
+.home-tabs::after { width: 48px; height: 48px; right: 118px; bottom: -15px; transform: rotate(-10deg); }
+.home-tab { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 64px; padding: 10px 9px; border: 1px solid rgba(7,115,145,.12); border-radius: 13px; background: #c6f6fd; color: var(--navy); text-align: center; font-size: 15px; font-weight: 600; line-height: 1.35; transition: background .15s, box-shadow .15s; }
+.home-tab svg { width: 22px; height: 22px; flex: none; }
 .home-tab[data-home-tab="past"] { color: #b83f32; }
-.home-tab:hover { background: rgba(255,255,255,.65); }
-.home-tab[aria-selected="true"] { color: #fff; background: var(--navy); box-shadow: 0 2px 5px rgba(13,66,87,.12); }
+.home-tab:hover { background: #e4fbff; }
+.home-tab[aria-selected="true"] { color: #fff; background: #035773; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 2px 5px rgba(13,66,87,.1); }
 .home-tab:focus-visible, .home-view a:focus-visible, .home-view button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
 .home-assignment-panel { min-height: 320px; padding-top: 20px; }
 .home-empty { margin: 0; padding: 40px 20px; color: var(--muted); font-size: 15px; text-align: center; }
@@ -785,8 +788,9 @@
 .home-module.is-progress .home-module-progress span { width: 0; }
 @media (max-width: 1120px) {
   .home-view { gap: 18px; padding: 20px; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
-  .home-tab { font-size: 11.5px; gap: 5px; padding: 8px 5px; }
-  .home-tab svg { width: 16px; height: 16px; }
+  .home-tabs { gap: 8px; padding: 12px; }
+  .home-tab { font-size: 13px; gap: 6px; padding: 9px 6px; }
+  .home-tab svg { width: 18px; height: 18px; }
   .home-quick { padding: 20px; }
   .home-quick-copy { width: 83%; }
   .home-quick-art { right: -22px; opacity: .5; }
@@ -797,7 +801,7 @@
 @media (max-width: 900px) {
   .home-view { grid-template-columns: minmax(0, 1fr); }
   .home-assignment-panel { min-height: 170px; }
-  .home-tab { font-size: 13px; }
+  .home-tab { font-size: 15px; }
   .home-quick-copy { width: 76%; }
   .home-quick h2 { font-size: 24px; }
   .home-quick-art { right: 18px; opacity: .82; }
@@ -808,9 +812,9 @@
 }
 @media (max-width: 520px) {
   .home-view { padding: 14px; gap: 18px; }
-  .home-tabs { gap: 4px; padding: 5px; }
-  .home-tab { flex-direction: column; min-height: 68px; gap: 5px; font-size: 11px; }
-  .home-tab svg { width: 18px; height: 18px; }
+  .home-tabs { gap: 6px; padding: 9px; }
+  .home-tab { flex-direction: column; min-height: 72px; gap: 5px; font-size: 11px; border-radius: 10px; }
+  .home-tab svg { width: 20px; height: 20px; }
   .home-quick { padding: 21px 18px; }
   .home-quick h2 { font-size: 22px; }
   .home-quick-art { width: 115px; right: -10px; opacity: .5; }
@@ -877,13 +881,18 @@
 /* Active assignments follow the original compact metadata-row presentation. */
 .home-assignments[data-current-tab="active"] .home-tabs { border-radius: 14px 14px 0 0; }
 .home-assignments[data-current-tab="active"] .home-assignment-panel { padding-top: 0; }
-.home-assignments[data-current-tab="active"] .home-assignment-list { border-top: 0; border-radius: 0 0 var(--radius) var(--radius); box-shadow: none; }
-.home-assignments[data-current-tab="active"] .home-assignment-row { padding: 26px 22px 18px; gap: 20px 18px; }
-.home-assignments[data-current-tab="active"] .home-assignment-row dt { color: #58636b; font-size: 14px; }
+.home-assignments[data-current-tab="active"] .home-assignment-list { border-top: 0; border-radius: 0 0 var(--radius) var(--radius); box-shadow: 0 4px 16px rgba(13,66,87,.035); }
+.home-assignments[data-current-tab="active"] .home-assignment-row { grid-template-columns: minmax(0, 1.65fr) minmax(110px, 1fr) minmax(120px, 1fr) 88px; grid-template-rows: auto auto auto auto auto; padding: 26px 22px 18px; gap: 6px 18px; }
+.home-assignments[data-current-tab="active"] .home-assignment-row dl { display: grid; grid-template-rows: subgrid; grid-row: 1 / span 4; }
+.home-assignments[data-current-tab="active"] .home-assignment-main { grid-column: 1; }
+.home-assignments[data-current-tab="active"] .home-assignment-row dt { margin: 0; color: #58636b; font-size: 14px; }
+.home-assignments[data-current-tab="active"] .home-assignment-row dd + dt { margin-top: 16px; }
 .home-assignments[data-current-tab="active"] .home-assignment-row dd { font-size: 16px; }
 .home-assignments[data-current-tab="active"] .home-assignment-row h2 { color: #263e48; font-size: 21px; line-height: 1.35; }
-.home-assignments[data-current-tab="active"] .home-row-action { gap: 10px; color: #424b51; font-size: 16px; font-weight: 500; }
-.home-assignments[data-current-tab="active"] .home-row-play { width: 62px; height: 62px; }
+.home-assignments[data-current-tab="active"] .home-row-action { grid-column: 4; grid-row: 1 / span 4; gap: 10px; color: #424b51; font-size: 16px; font-weight: 500; }
+.home-assignments[data-current-tab="active"] .home-row-play { width: 64px; height: 64px; background: #e4f7fc; color: #009dca; box-shadow: inset 0 0 0 1px rgba(31,179,222,.04); }
+.home-assignments[data-current-tab="active"] .home-row-action:hover .home-row-play { background: #d0f0fa; }
+.home-assignments[data-current-tab="active"] .home-progress-details { grid-row: 5; margin-top: 14px; }
 .home-assignment-kind { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 4px; background: var(--cyan-softer); color: var(--navy); font-size: 10px; font-weight: 800; vertical-align: 1px; }
 .home-progress-details { grid-column: 1 / -1; min-width: 0; }
 .home-progress-details > summary { width: fit-content; padding: 5px 0; color: var(--navy); font-size: 12px; line-height: 1.5; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
@@ -894,7 +903,11 @@
   .home-assignment-main { grid-column: 1 / -1; }
   .home-row-action { grid-column: 1 / -1; justify-self: end; flex-direction: row; }
   .home-row-play { width: 42px; height: 42px; }
-  .home-assignments[data-current-tab="active"] .home-assignment-row { padding: 22px 20px 16px; gap: 18px 24px; }
+  .home-assignments[data-current-tab="active"] .home-assignment-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: none; padding: 22px 20px 16px; gap: 18px 24px; }
+  .home-assignments[data-current-tab="active"] .home-assignment-row dl { display: block; grid-template-rows: none; grid-row: auto; }
+  .home-assignments[data-current-tab="active"] .home-assignment-main { grid-column: 1 / -1; }
+  .home-assignments[data-current-tab="active"] .home-row-action { grid-column: 1 / -1; grid-row: auto; }
+  .home-assignments[data-current-tab="active"] .home-progress-details { grid-row: auto; margin-top: 0; }
   .home-assignments[data-current-tab="active"] .home-row-play { width: 52px; height: 52px; }
 }
 
@@ -3126,7 +3139,7 @@ function scrHomeCard(compact = false) {
   const date = savedScrDraft && new Date(savedScrDraft.savedAt);
   const saved = date && Number.isFinite(date.getTime()) ? `Saved ${date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : '';
   const completed = scrComplete();
-  return homeAssignmentRow({ id: 'scr', title: SCR.title, type: 'Short constructed response', questions: SCR.questions.length, completed: completed ? scrState.completedAt : null, isCompleted: completed }, {
+  return homeAssignmentRow({ id: 'scr', title: SCR.title, type: 'Reading Comprehension and Analysis', assigned: '2026-10-13', due: '2026-10-14', questions: SCR.questions.length, completed: completed ? scrState.completedAt : null, isCompleted: completed }, {
     buttonId: 'resumeScr', action: completed ? 'View assignment' : 'Continue', icon: completed ? homeSubmittedIcon() : homePlayIcon(),
     kind: compact ? 'SCR' : '', collapseDetails: compact,
     detail: `<div class="home-row-context"><span class="home-status">${completed ? 'Completed' : savedScrDraft ? 'In progress' : 'Ready to begin'}</span><span>Grades ${visibleBand(scrState.band)} · Short constructed response (SCR)</span></div>
@@ -3434,7 +3447,7 @@ function renderHome() {
   const title = LSCR?.title || assignment.passages[0]?.title || 'Writing assignment';
   const savedAt = savedDraft && new Date(savedDraft.savedAt);
   const saved = savedAt && Number.isFinite(savedAt.getTime()) ? `Saved ${savedAt.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : '';
-  // Active demos have no assignment/due dates in the supplied data; show missing dates honestly.
+  // The ECR demo has no assignment/due dates in the supplied data; show missing dates honestly.
   const activeEcr = homeAssignmentRow({ id: 'ecr', title, type: `${type} Passage`, questions: mode === 'ecrq' ? questionSet.length + 1 : 1 }, {
     buttonId: 'resumeAssignment', action: 'Continue', kind: 'ECR', collapseDetails: true,
     detail: `<div class="home-row-context"><span class="home-status">${savedDraft ? 'In progress' : 'Ready to begin'}</span><span>Grades ${visibleBand(ecrBand)} · ${mode === 'ecrq' ? 'Reading questions + writing (ECR + Q)' : 'Extended constructed response (ECR)'}</span></div>
@@ -3443,7 +3456,7 @@ function renderHome() {
       <span class="home-saved">${esc(saved)}</span>`
   });
   // Keep both prototype entry points available, including after an SCR preview is submitted.
-  $('homeAssignments').innerHTML = `<div class="home-assignment-list">${activeEcr}${scrHomeCard(true)}</div>`;
+  $('homeAssignments').innerHTML = `<div class="home-assignment-list">${scrHomeCard(true)}${activeEcr}</div>`;
   $('resumeAssignment').onclick = () => showAssignment();
   if ($('resumeScr')) $('resumeScr').onclick = () => showScr();
 }
