@@ -833,32 +833,41 @@
 .home-resume svg { width: 17px; height: 17px; }
 @media (max-width: 520px) { .home-assignment-card { padding: 20px; } .home-assignment-card h2, .home-assignment-card h3 { font-size: 21px; } }
 
-/* Past due reference rows retain the homepage's existing columns and tabs. */
+/* Shared assignment rows retain the homepage's existing columns and tabs. */
 .home-assignments { container-type: inline-size; container-name: home-assignments; }
 .home-tab[data-home-tab="past"][aria-selected="true"] { color: #ffb4aa; }
-.home-past-list { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); }
-.home-past-row { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(100px, .85fr) minmax(110px, .9fr) 76px; gap: 18px; align-items: start; padding: 23px 20px; }
-.home-past-row + .home-past-row { border-top: 1px solid var(--border); }
-.home-past-row dl { min-width: 0; margin: 0; }
-.home-past-row dt { margin: 0 0 4px; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
-.home-past-row dd { margin: 0; color: var(--text); font-size: 13.5px; font-weight: 600; line-height: 1.55; overflow-wrap: anywhere; }
-.home-past-row dd + dt { margin-top: 17px; }
-.home-past-row h2 { margin: 0; color: var(--navy); font-size: 17px; font-weight: 800; line-height: 1.4; letter-spacing: -.015em; }
-.home-past-row time { white-space: nowrap; font-variant-numeric: tabular-nums; }
-.home-past-row .home-past-due { color: #b83f32; font-weight: 800; }
-.home-past-teacher { display: flex; align-items: center; gap: 7px; }
-.home-past-avatar { display: grid; place-items: center; flex: none; width: 27px; height: 27px; border: 1px solid #c8d9e2; border-radius: 50%; background: var(--cyan-softer); color: var(--navy); font-size: 10px; font-weight: 700; }
-.home-past-continue { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--navy); font-size: 12.5px; font-weight: 600; line-height: 1.4; }
-.home-past-play { display: grid; place-items: center; width: 51px; height: 51px; border-radius: 50%; background: var(--cyan-soft); color: #078bb3; }
-.home-past-play svg { width: 22px; height: 22px; margin-left: 3px; }
-.home-past-continue:not(:disabled):hover .home-past-play { background: var(--navy); color: #fff; }
-.home-past-continue:disabled { cursor: default; }
-.home-past-continue:disabled .home-past-play { background: #eef7fa; color: #7096a5; }
+.home-assignment-list { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); }
+.home-assignment-row { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(100px, .85fr) minmax(110px, .9fr) 100px; gap: 18px; align-items: start; padding: 23px 20px; }
+.home-assignment-row + .home-assignment-row { border-top: 1px solid var(--border); }
+.home-assignment-row dl { min-width: 0; margin: 0; }
+.home-assignment-row dt { margin: 0 0 4px; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+.home-assignment-row dd { margin: 0; color: var(--text); font-size: 13.5px; font-weight: 600; line-height: 1.55; overflow-wrap: anywhere; }
+.home-assignment-row dd + dt { margin-top: 17px; }
+.home-assignment-row h2 { margin: 0; color: var(--navy); font-size: 17px; font-weight: 800; line-height: 1.4; letter-spacing: -.015em; }
+.home-assignment-row time { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.home-assignment-row .home-past-due { color: #b83f32; font-weight: 800; }
+.home-row-teacher { display: flex; align-items: center; gap: 7px; }
+.home-row-avatar { display: grid; place-items: center; flex: none; width: 27px; height: 27px; border: 1px solid #c8d9e2; border-radius: 50%; background: var(--cyan-softer); color: var(--navy); font-size: 10px; font-weight: 700; }
+.home-row-action { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--navy); font-size: 12.5px; font-weight: 600; line-height: 1.4; }
+.home-row-play { display: grid; place-items: center; width: 51px; height: 51px; border-radius: 50%; background: var(--cyan-soft); color: #078bb3; }
+.home-row-play svg { width: 22px; height: 22px; margin-left: 3px; }
+.home-row-action:not(:disabled):hover .home-row-play { background: var(--navy); color: #fff; }
+.home-row-action:disabled { cursor: default; }
+.home-row-action:disabled .home-row-play { background: #eef7fa; color: #7096a5; }
+.home-row-detail { grid-column: 1 / -1; padding-top: 14px; border-top: 1px solid #edf2f5; }
+.home-row-context { display: flex; align-items: center; flex-wrap: wrap; gap: 7px 12px; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+.home-row-detail .home-place { margin: 10px 0 0; color: var(--navy); font-size: 12.5px; line-height: 1.55; }
+.home-row-detail .home-progress { max-width: 310px; margin: 12px 0 8px; }
+.home-score-ring { display: grid; place-items: center; position: relative; flex: none; width: 58px; height: 58px; border-radius: 50%; background: conic-gradient(var(--score-color) var(--score), #e1e6e9 0); }
+.home-score-ring::before { content: ''; position: absolute; inset: 6px; border-radius: 50%; background: #fff; }
+.home-score-ring > span { position: relative; color: var(--text); font-size: 14px; font-weight: 800; }
+.home-submitted-ring { display: grid; place-items: center; width: 58px; height: 58px; border: 3px solid #bfe3cb; border-radius: 50%; background: #eaf8ee; color: #35724f; }
+.home-submitted-ring svg { width: 25px; height: 25px; }
 @container home-assignments (max-width: 620px) {
-  .home-past-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px 24px; padding: 20px; }
-  .home-past-main { grid-column: 1 / -1; }
-  .home-past-continue { grid-column: 1 / -1; justify-self: end; flex-direction: row; }
-  .home-past-play { width: 42px; height: 42px; }
+  .home-assignment-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px 24px; padding: 20px; }
+  .home-assignment-main { grid-column: 1 / -1; }
+  .home-row-action { grid-column: 1 / -1; justify-self: end; flex-direction: row; }
+  .home-row-play { width: 42px; height: 42px; }
 }
 
 /* View navigation shares the existing student header. */
@@ -3012,7 +3021,7 @@ const SCR = {
   ]
 };
 const SCR_DRAFT_KEY = 'lscr-prototype-scr-monarch-v1';
-const scrState = { band: document.body.dataset.band, current: 0, answers: ['', ''], submitted: [false, false], size: 16, lineReader: false };
+const scrState = { band: document.body.dataset.band, current: 0, answers: ['', ''], submitted: [false, false], completedAt: null, size: 16, lineReader: false };
 let savedScrDraft = null, ecrBand = document.body.dataset.band;
 let scrWarningQuestion = null;
 // Screenshot's RACE self-check sample. The student app resolves the assigned strategy in CMS.
@@ -3081,17 +3090,21 @@ function restoreScrDraft() {
     const d = JSON.parse(localStorage.getItem(SCR_DRAFT_KEY));
     if (!d || d.version !== 1 || !BANDS.includes(d.band) || !Array.isArray(d.answers) || d.answers.length !== SCR.questions.length) return;
     Object.assign(scrState, { band: d.band, current: wholeNumber(d.current, SCR.questions.length - 1), answers: d.answers.map(v => savedWritingHtml(typeof v === 'string' ? v : '')), submitted: SCR.questions.map((_, i) => d.submitted?.[i] === true), size: typeof d.size === 'number' && Number.isFinite(d.size) ? Math.max(14, Math.min(26, d.size)) : 16, lineReader: d.lineReader === true });
+    scrState.completedAt = scrComplete() && typeof d.completedAt === 'string' && Number.isFinite(new Date(d.completedAt).getTime()) ? d.completedAt : null;
     savedScrDraft = d;
   } catch (e) {}
 }
 function scrHomeCard() {
   const date = savedScrDraft && new Date(savedScrDraft.savedAt);
   const saved = date && Number.isFinite(date.getTime()) ? `Saved ${date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : '';
-  return `<article class="home-assignment-card"><div class="home-card-top"><span>Short constructed response</span><span class="home-status">${scrComplete() ? 'Completed' : savedScrDraft ? 'In progress' : 'Ready to begin'}</span></div>
-    <h2>${esc(SCR.title)}</h2><p class="home-assignment-meta">Grades ${visibleBand(scrState.band)} · 2 questions</p>
-    <p class="home-place">${scrComplete() ? '2 of 2 answers submitted' : `Question ${scrState.current + 1} of 2`}</p>
-    <div class="home-progress" aria-hidden="true">${SCR.questions.map((_, i) => `<span class="${scrState.submitted[i] ? 'done' : i === scrState.current && savedScrDraft ? 'current' : ''}"></span>`).join('')}</div>
-    <div class="home-card-footer"><span class="home-saved">${esc(saved)}</span><button class="home-resume" id="resumeScr">${scrComplete() ? 'View assignment' : savedScrDraft ? 'Resume assignment' : 'Open assignment'} <span aria-hidden="true">→</span></button></div></article>`;
+  const completed = scrComplete();
+  return homeAssignmentRow({ id: 'scr', title: SCR.title, type: 'Short constructed response', questions: SCR.questions.length, completed: completed ? scrState.completedAt : null, isCompleted: completed }, {
+    buttonId: 'resumeScr', action: completed ? 'View assignment' : 'Continue', icon: completed ? homeSubmittedIcon() : homePlayIcon(),
+    detail: `<div class="home-row-context"><span class="home-status">${completed ? 'Completed' : savedScrDraft ? 'In progress' : 'Ready to begin'}</span><span>Grades ${visibleBand(scrState.band)} · Short constructed response</span></div>
+      <p class="home-place">${completed ? '2 of 2 answers submitted' : `Question ${scrState.current + 1} of ${SCR.questions.length}`}</p>
+      <div class="home-progress" aria-hidden="true">${SCR.questions.map((_, i) => `<span class="${scrState.submitted[i] ? 'done' : i === scrState.current && savedScrDraft ? 'current' : ''}"></span>`).join('')}</div>
+      <span class="home-saved">${esc(saved)}</span>`
+  });
 }
 function syncTaskControls(view) {
   $('ptype').hidden = view === 'scr'; $('scrDraftNote').hidden = view !== 'scr';
@@ -3126,8 +3139,10 @@ function closeScrWarning(returnToWriting = true) {
 function submitScrAnswer() {
   syncScrAnswer();
   if (document.body.dataset.view !== 'scr' || $('scrSubmit').disabled || scrState.submitted[scrState.current]) return;
+  const previousCompletedAt = scrState.completedAt;
   scrState.submitted[scrState.current] = true;
-  if (!saveScrDraft()) { scrState.submitted[scrState.current] = false; syncScrAnswer(); $('scrAnswer').focus(); return; }
+  if (scrComplete() && !scrState.completedAt) scrState.completedAt = new Date().toISOString();
+  if (!saveScrDraft()) { scrState.submitted[scrState.current] = false; scrState.completedAt = previousCompletedAt; syncScrAnswer(); $('scrAnswer').focus(); return; }
   renderScr(); $('scrSubmit').focus();
 }
 function closeScrChecklist(returnToWriting = true) {
@@ -3318,6 +3333,39 @@ function restoreDraft(snapshot) {
   lastEdit = null; lastRange = null; hidePop(); renderStep(); return true;
 }
 
+function homeDateHtml(value) {
+  if (!value) return '<span aria-label="Not provided">—</span>';
+  let iso = String(value);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+    const date = new Date(value); if (!Number.isFinite(date.getTime())) return '<span aria-label="Not provided">—</span>';
+    iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }
+  const [year, month, day] = iso.split('-');
+  return `<time datetime="${iso}">${month}-${day}-${year}</time>`;
+}
+function homePlayIcon() {
+  return '<span class="home-row-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4.7c0-1.3 1.4-2.1 2.5-1.4l12 7.3a1.65 1.65 0 0 1 0 2.8l-12 7.3C7.4 21.4 6 20.6 6 19.3Z"/></svg></span>';
+}
+function homeSubmittedIcon() {
+  return '<span class="home-submitted-ring" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+}
+function homeScoreIcon(score) {
+  return `<span class="home-score-ring" style="--score:${score}%;--score-color:${score === 100 ? '#219653' : '#efb900'}" aria-hidden="true"><span>${score}%</span></span>`;
+}
+function homeAssignmentRow(row, options = {}) {
+  return `<article class="home-assignment-row" aria-labelledby="home-title-${row.id}">
+    <dl class="home-assignment-main"><dt>Title</dt><dd><h2 id="home-title-${row.id}">${esc(row.title)}</h2></dd><dt>Assignment Type</dt><dd>${esc(row.type)}</dd></dl>
+    <dl><dt>Date Assigned</dt><dd>${homeDateHtml(row.assigned)}</dd><dt>${row.isCompleted ? 'Completed On' : 'Date Due'}</dt><dd>${homeDateHtml(row.isCompleted ? row.completed : row.due)}</dd></dl>
+    <dl><dt># of Questions</dt><dd>${row.questions}</dd><dt>Teacher</dt><dd class="home-row-teacher"><span class="home-row-avatar" aria-hidden="true">KS</span><span>Kennady Scott</span></dd></dl>
+    <button type="button" class="home-row-action" ${options.buttonId ? `id="${options.buttonId}"` : ''} aria-label="${esc(options.action)} ${esc(row.title)}${row.score !== undefined ? `, score ${row.score}%` : ''}" ${options.disabled ? 'disabled' : ''}>${options.icon || homePlayIcon()}<span>${esc(options.action)}</span></button>
+    ${options.detail ? `<div class="home-row-detail">${options.detail}</div>` : ''}
+  </article>`;
+}
+const HOME_COMPLETED_ASSIGNMENTS = [
+  { id: 'canned-milk', title: 'The Amazing Invention of the Canned Milk', type: 'Informational Passage', assigned: '2026-09-14', completed: '2026-09-14', questions: 1, score: 100 },
+  { id: 'kind-act', title: 'A Kind Act', type: 'Reading Comprehension and Analysis', assigned: '2026-09-11', completed: '2026-09-14', questions: 4, score: 50 },
+  { id: 'light-bulb', title: 'The Amazing Energy of a Light Bulb', type: 'Informational Passage', assigned: '2026-09-14', completed: '2026-09-14', questions: 1, score: 60 }
+];
 // Static reference records supplied in Kennady's Past Due screenshot. These do not
 // reclassify the active demos or overwrite their saved work.
 const HOME_PAST_ASSIGNMENTS = [
@@ -3328,14 +3376,14 @@ const HOME_PAST_ASSIGNMENTS = [
 ];
 function renderPastAssignments() {
   const dateLabel = iso => { const [year, month, day] = iso.split('-'); return `${month}-${day}-${year}`; };
-  $('homeAssignments').innerHTML = `<div class="home-past-list">${HOME_PAST_ASSIGNMENTS.map(row => {
+  $('homeAssignments').innerHTML = `<div class="home-assignment-list">${HOME_PAST_ASSIGNMENTS.map(row => {
     // Only resume a matching local assignment; never open unrelated content or reset a draft.
     const canResume = row.id === 'sounds' && !LSCR && ptype === 'arg' && mode === 'ecr';
-    return `<article class="home-past-row" aria-labelledby="home-past-title-${row.id}">
-      <dl class="home-past-main"><dt>Title</dt><dd><h2 id="home-past-title-${row.id}">${esc(row.title)}</h2></dd><dt>Assignment Type</dt><dd>${esc(row.type)}</dd></dl>
+    return `<article class="home-assignment-row" aria-labelledby="home-past-title-${row.id}">
+      <dl class="home-assignment-main"><dt>Title</dt><dd><h2 id="home-past-title-${row.id}">${esc(row.title)}</h2></dd><dt>Assignment Type</dt><dd>${esc(row.type)}</dd></dl>
       <dl><dt>Date Assigned</dt><dd><time datetime="${row.assigned}">${dateLabel(row.assigned)}</time></dd><dt>Date Due</dt><dd class="home-past-due"><time datetime="${row.due}">${dateLabel(row.due)}</time></dd></dl>
-      <dl><dt># of Questions</dt><dd>${row.questions}</dd><dt>Teacher</dt><dd class="home-past-teacher"><span class="home-past-avatar" aria-hidden="true">KS</span><span>Kennady Scott</span></dd></dl>
-      <button type="button" class="home-past-continue" data-past-assignment="${row.id}" aria-label="Continue ${esc(row.title)}" ${canResume ? '' : 'disabled'}><span class="home-past-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4.7c0-1.3 1.4-2.1 2.5-1.4l12 7.3a1.65 1.65 0 0 1 0 2.8l-12 7.3C7.4 21.4 6 20.6 6 19.3Z"/></svg></span><span>Continue</span></button>
+      <dl><dt># of Questions</dt><dd>${row.questions}</dd><dt>Teacher</dt><dd class="home-row-teacher"><span class="home-row-avatar" aria-hidden="true">KS</span><span>Kennady Scott</span></dd></dl>
+      <button type="button" class="home-row-action" data-past-assignment="${row.id}" aria-label="Continue ${esc(row.title)}" ${canResume ? '' : 'disabled'}><span class="home-row-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4.7c0-1.3 1.4-2.1 2.5-1.4l12 7.3a1.65 1.65 0 0 1 0 2.8l-12 7.3C7.4 21.4 6 20.6 6 19.3Z"/></svg></span><span>Continue</span></button>
     </article>`;
   }).join('')}</div>`;
   $('homeAssignments').querySelector('[data-past-assignment="sounds"]').onclick = e => { if (!e.currentTarget.disabled) showAssignment(); };
@@ -3347,10 +3395,8 @@ function renderHome() {
   $('homeAssignments').setAttribute('aria-labelledby', `home-tab-${homeTab}`);
   if (homeTab === 'past') { renderPastAssignments(); return; }
   if (homeTab !== 'active') {
-    if (homeTab === 'completed' && scrComplete()) {
-      $('homeAssignments').innerHTML = scrHomeCard(); $('resumeScr').onclick = () => showScr(); return;
-    }
-    $('homeAssignments').innerHTML = '<div class="home-empty"><h2>No completed assignments yet</h2><p>Your completed assignments will appear here.</p></div>';
+    $('homeAssignments').innerHTML = `<div class="home-assignment-list">${HOME_COMPLETED_ASSIGNMENTS.map(row => homeAssignmentRow({ ...row, isCompleted: true }, { action: 'View Summary', icon: homeScoreIcon(row.score), disabled: true })).join('')}${scrComplete() ? scrHomeCard() : ''}</div>`;
+    if ($('resumeScr')) $('resumeScr').onclick = () => showScr();
     return;
   }
   const type = { arg: 'Argumentative', info: 'Informational', narr: 'Narrative' }[ptype];
@@ -3358,14 +3404,15 @@ function renderHome() {
   const title = LSCR?.title || assignment.passages[0]?.title || 'Writing assignment';
   const savedAt = savedDraft && new Date(savedDraft.savedAt);
   const saved = savedAt && Number.isFinite(savedAt.getTime()) ? `Saved ${savedAt.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : '';
-  $('homeAssignments').innerHTML = `<article class="home-assignment-card">
-    <div class="home-card-top"><span>${type} writing</span><span class="home-status">${savedDraft ? 'In progress' : 'Ready to begin'}</span></div>
-    <h2>${esc(title)}</h2>
-    <p class="home-assignment-meta">Grades ${visibleBand(ecrBand)} · ${mode === 'ecrq' ? 'Reading questions + writing' : 'Extended constructed response'}</p>
-    <p class="home-place">${savedDraft ? esc(place) : 'Read, plan, write, and revise.'}</p>
-    <div class="home-progress" aria-hidden="true">${assignment.steps.map((_, i) => `<span class="${savedDraft && !inQuestions() ? i < current ? 'done' : i === current ? 'current' : '' : ''}"></span>`).join('')}</div>
-    <div class="home-card-footer"><span class="home-saved">${esc(saved)}</span><button class="home-resume" id="resumeAssignment">${savedDraft ? 'Resume assignment' : 'Open assignment'} <span aria-hidden="true">→</span></button></div>
-  </article>` + (scrComplete() ? '' : scrHomeCard());
+  // Active demos have no assignment/due dates in the supplied data; show missing dates honestly.
+  const activeEcr = homeAssignmentRow({ id: 'ecr', title, type: `${type} Passage`, questions: mode === 'ecrq' ? questionSet.length + 1 : 1 }, {
+    buttonId: 'resumeAssignment', action: 'Continue',
+    detail: `<div class="home-row-context"><span class="home-status">${savedDraft ? 'In progress' : 'Ready to begin'}</span><span>Grades ${visibleBand(ecrBand)} · ${mode === 'ecrq' ? 'Reading questions + writing' : 'Extended constructed response'}</span></div>
+      <p class="home-place">${savedDraft ? esc(place) : 'Read, plan, write, and revise.'}</p>
+      <div class="home-progress" aria-hidden="true">${assignment.steps.map((_, i) => `<span class="${savedDraft && !inQuestions() ? i < current ? 'done' : i === current ? 'current' : '' : ''}"></span>`).join('')}</div>
+      <span class="home-saved">${esc(saved)}</span>`
+  });
+  $('homeAssignments').innerHTML = `<div class="home-assignment-list">${activeEcr}${scrComplete() ? '' : scrHomeCard()}</div>`;
   $('resumeAssignment').onclick = () => showAssignment();
   if ($('resumeScr')) $('resumeScr').onclick = () => showScr();
 }
