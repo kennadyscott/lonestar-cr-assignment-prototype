@@ -445,6 +445,16 @@
   .luna-intro { display: flex; gap: 12px; align-items: center; }
   .luna-avatar { width: 72px; height: 72px; flex: none; border-radius: 50%; background: #0f2540; display: grid; place-items: center; overflow: hidden; }
   .luna-avatar img { width: 80%; height: 80%; object-fit: contain; }
+  @keyframes luna-wiggle {
+    0%, 100% { transform: translateX(-1px) rotate(calc(var(--luna-rest-angle, 0deg) - 3deg)); }
+    50% { transform: translateX(1px) rotate(calc(var(--luna-rest-angle, 0deg) + 3deg)); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .home-nook-luna, .luna-avatar img, .scr-avatar img, .ret-luna-star img {
+      transform-origin: 50% 80%;
+      animation: luna-wiggle 6s ease-in-out infinite;
+    }
+  }
   .bubble { position: relative; background: #d6f3fb; border-radius: 14px; padding: 14px 16px; font-size: calc(16px * var(--fs)); font-weight: 500; line-height: 1.45; color: #111; }
   .bubble::before { content: ""; position: absolute; left: -9px; top: 50%; transform: translateY(-50%); border: 9px solid transparent; border-left: 0; border-right-color: #d6f3fb; }
   .pick { text-align: center; color: #555; font-size: calc(15px * var(--fs)); margin: 4px 0 0; }
@@ -755,7 +765,7 @@
 .home-nook { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); }
 .home-nook-head { position: relative; display: flex; align-items: center; gap: 14px; min-height: 92px; padding: 16px 20px 16px 108px; overflow: hidden; background: linear-gradient(105deg, #0d4257, #072a3d); }
 .home-nook-head::after { content: ''; position: absolute; right: -24px; top: -49px; width: 174px; height: 174px; border: 1px solid rgba(31,179,222,.18); border-radius: 50%; box-shadow: 0 0 0 18px rgba(31,179,222,.035), 0 0 0 37px rgba(31,179,222,.025); pointer-events: none; }
-.home-nook-luna { position: absolute; width: 90px; height: 90px; object-fit: contain; left: 13px; bottom: -13px; transform: rotate(-9deg); }
+.home-nook-luna { --luna-rest-angle: -9deg; position: absolute; width: 90px; height: 90px; object-fit: contain; left: 13px; bottom: -13px; transform: rotate(-9deg); }
 .home-nook-head h2 { position: relative; z-index: 1; margin: 0; color: #fff; font-size: clamp(18px, 1.6vw, 24px); font-weight: 800; letter-spacing: -.025em; line-height: 1.25; }
 .home-module-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 16px; }
 .home-module { min-width: 0; min-height: 219px; padding: 18px 11px 16px; display: flex; flex-direction: column; align-items: center; border: 1px solid #c9e7f1; border-radius: 10px; background: #eef9fd; text-align: center; }
