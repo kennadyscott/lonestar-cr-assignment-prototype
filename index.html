@@ -79,6 +79,9 @@
   .proto-bar .band button { height: 28px; padding: 0 11px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: var(--v1-ink); border: 0; background: none; cursor: pointer; font-family: inherit; white-space: nowrap; }
   .proto-bar .band button:hover { background: #eef6fa; }
   .proto-bar .band button.on { background: var(--v1-navy); color: #fff; }
+  .scr-strategy-preview { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; color: #76551c; font-size: 11px; }
+  .scr-strategy-preview[hidden] { display: none; }
+  .scr-strategy-preview select { max-width: 100%; padding: 6px 8px; border: 1px solid var(--sand-border); border-radius: 7px; background: #fff; color: var(--navy); font: inherit; }
 
   /* ---------- Assignment bar (matches the current app: title left, Save And Exit right) ---------- */
   .assign-bar { flex: none; display: flex; align-items: center; gap: 12px; padding: 14px 20px 0; }
@@ -956,6 +959,21 @@
 }
 @media (prefers-reduced-motion: reduce) { #scrView #scrLimitBar, #scrView .scr-paragraphs p { transition: none; } }
 
+/* SCR submission warning: the strategy result comes from CMS in the student app. */
+#scrLengthDialog { width: min(620px, calc(100% - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 30px 32px 24px; overflow-y: auto; border: 2px solid #efbf78; border-radius: 20px; background: #fff; color: var(--text); text-align: center; box-shadow: 0 18px 70px #092b3f33; }
+#scrLengthDialog::backdrop { background: rgb(15 30 39 / 55%); }
+#scrLengthDialog .scr-warning-icon { display: block; width: 84px; height: 84px; margin: 0 auto 14px; }
+#scrLengthDialog h2 { margin: 0 0 14px; color: var(--navy); font-size: clamp(25px, 4vw, 32px); line-height: 1.3; font-weight: 800; }
+#scrLengthDialog p { margin: 0 auto 26px; max-width: 48ch; font-size: calc(18px * var(--fs)); line-height: 1.65; }
+#scrLengthDialog .scr-warning-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+#scrLengthDialog button { min-height: 44px; padding: 10px 18px; border: 1px solid #d7e1e6; border-radius: 9px; background: #f4f7f9; color: var(--navy); font-size: calc(15px * var(--fs)); font-weight: 600; }
+#scrLengthDialog button:hover { background: #eaf1f5; }
+#scrLengthDialog #scrKeepWriting { border-color: var(--navy); background: var(--navy); color: #fff; }
+#scrLengthDialog #scrKeepWriting:hover { background: var(--navy-2); }
+#scrLengthDialog #scrWarningClose { display: block; margin: 12px auto 0; border-color: transparent; background: transparent; font-size: calc(14px * var(--fs)); }
+#scrLengthDialog button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+@media (max-width: 480px) { #scrLengthDialog { padding: 25px 20px 18px; } #scrLengthDialog .scr-warning-actions { flex-direction: column; } }
+
 .proto-bar .band[hidden], #scrDraftNote[hidden], #scrDictionaryPanel[hidden] { display: none; }
 #scrDraftNote { font-size: 11px; color: #8a6a1c; }
 .home-assignment-card + .home-assignment-card { margin-top: 16px; }
@@ -1024,6 +1042,9 @@ body[data-band="9-12"] #scrView .scr-intro { display: none; }
     <button data-mode="ecrq">ECR + Q</button>
     <button data-mode="scr">SCR</button>
   </div>
+  <label id="scrStrategyPreview" class="scr-strategy-preview" hidden>CMS strategy result (preview)
+    <select id="scrStrategyResult"><option value="below">Below CMS minimum</option><option value="within">Within CMS limits</option></select>
+  </label>
   <span id="scrDraftNote" hidden>SCR Question 2 and supports: draft copy for review</span>
 </div>
 
@@ -1249,6 +1270,17 @@ body[data-band="9-12"] #scrView .scr-intro { display: none; }
     </aside>
   </div>
 </main>
+
+<dialog id="scrLengthDialog" aria-labelledby="scrWarningTitle" aria-describedby="scrWarningMessage">
+  <svg class="scr-warning-icon" viewBox="0 0 88 88" aria-hidden="true"><path d="m44 5 11.7 23.7 26.2 3.8-19 18.5 4.5 26.1L44 64.8 20.6 77.1l4.5-26.1-19-18.5 26.2-3.8Z" fill="#fff0c9" stroke="#eaa83b" stroke-width="2.5" stroke-linejoin="round"/><path d="M44 27v21" stroke="#a66411" stroke-width="6" stroke-linecap="round"/><circle cx="44" cy="58" r="3.5" fill="#a66411"/></svg>
+  <h2 id="scrWarningTitle">Hold up, writer!</h2>
+  <p id="scrWarningMessage">It looks a little short. Adding more details or evidence could help show what you really know!</p>
+  <div class="scr-warning-actions">
+    <button id="scrSubmitAnyway" type="button">Submit Anyway</button>
+    <button id="scrKeepWriting" type="button" autofocus>Keep Writing</button>
+  </div>
+  <button id="scrWarningClose" type="button">Close</button>
+</dialog>
 
 <div class="fb-overlay" id="fbOverlay" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
   <div class="fb">
@@ -2897,6 +2929,7 @@ const SCR = {
 const SCR_DRAFT_KEY = 'lscr-prototype-scr-monarch-v1';
 const scrState = { band: document.body.dataset.band, current: 0, answers: ['', ''], submitted: [false, false], size: 16, lineReader: false };
 let savedScrDraft = null, ecrBand = document.body.dataset.band;
+let scrWarningQuestion = null;
 const visibleBand = b => ({ '2-3': '2–3', '4-5': '4–5', '6-8': '6–7', '9-12': '8–12' }[b]);
 const scrComplete = () => scrState.submitted.every(Boolean);
 function syncScrAnswer() {
@@ -2969,6 +3002,7 @@ function scrHomeCard() {
 }
 function syncTaskControls(view) {
   $('ptype').hidden = view === 'scr'; $('scrDraftNote').hidden = view !== 'scr';
+  $('scrStrategyPreview').hidden = view !== 'scr';
   $('mode').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.mode === (view === 'scr' ? 'scr' : mode)));
   $('band').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.band === document.body.dataset.band));
 }
@@ -2990,6 +3024,33 @@ $('scrQuestions').onclick = e => {
   syncScrAnswer(); scrState.current = +b.dataset.scrQuestion; renderScr();
   $('scrQuestions').querySelector('[aria-current="step"]').focus({ preventScroll: true });
 };
+function closeScrWarning(returnToWriting = true) {
+  if (!$('scrLengthDialog').open) return;
+  scrWarningQuestion = null;
+  $('scrLengthDialog').close();
+  if (returnToWriting && document.body.dataset.view === 'scr') $('scrAnswer').focus();
+}
+function submitScrAnswer() {
+  syncScrAnswer();
+  if (document.body.dataset.view !== 'scr' || $('scrSubmit').disabled || scrState.submitted[scrState.current]) return;
+  scrState.submitted[scrState.current] = true;
+  if (!saveScrDraft()) { scrState.submitted[scrState.current] = false; syncScrAnswer(); $('scrAnswer').focus(); return; }
+  renderScr(); $('scrSubmit').focus();
+}
+$('scrKeepWriting').onclick = () => closeScrWarning();
+$('scrWarningClose').onclick = () => closeScrWarning();
+$('scrLengthDialog').addEventListener('cancel', e => { e.preventDefault(); closeScrWarning(); });
+$('scrLengthDialog').addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const first = $('scrSubmitAnyway'), last = $('scrWarningClose');
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
+$('scrSubmitAnyway').onclick = () => {
+  const confirmedQuestion = scrWarningQuestion;
+  closeScrWarning(false);
+  if (confirmedQuestion === scrState.current) submitScrAnswer();
+};
 $('scrSubmit').onclick = () => {
   syncScrAnswer(); if ($('scrSubmit').disabled) return;
   if (scrState.submitted[scrState.current]) {
@@ -2997,9 +3058,14 @@ $('scrSubmit').onclick = () => {
     else saveAndExit();
     return;
   }
-  scrState.submitted[scrState.current] = true;
-  if (!saveScrDraft()) { scrState.submitted[scrState.current] = false; syncScrAnswer(); return; }
-  renderScr();
+  // CMS owns the strategy limits. This disconnected preview simulates its result,
+  // rather than inventing a word/character threshold or analyzing the writing.
+  if ($('scrStrategyResult').value === 'below') {
+    scrWarningQuestion = scrState.current;
+    $('scrLengthDialog').showModal(); $('scrKeepWriting').focus();
+    return;
+  }
+  submitScrAnswer();
 };
 $('scrZoomIn').onclick = () => { syncScrAnswer(); scrState.size = Math.min(26, scrState.size + 2); renderScr(); };
 $('scrZoomOut').onclick = () => { syncScrAnswer(); scrState.size = Math.max(14, scrState.size - 2); renderScr(); };
@@ -3150,6 +3216,7 @@ function renderHome() {
 }
 
 function setPageView(view) {
+  closeScrWarning(false);
   const home = view === 'home';
   $('homeView').hidden = !home; $('assignmentView').hidden = view !== 'assignment'; $('scrView').hidden = view !== 'scr';
   document.querySelector('.assign-bar').hidden = home; document.querySelector('.proto-bar').hidden = home;
