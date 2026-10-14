@@ -724,12 +724,135 @@
 .ret-guided .ret-advance-final,.ret-writer .ret-advance-final{background:#7c3aed}
 .ret-writer.ret-step-final .ret-sec h5{color:#5b21b6}
 
+
+/* Student homepage: shared assignment colors, type, and surfaces. */
+.home-view { width: 100%; max-width: 1600px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: minmax(0, 1.17fr) minmax(0, 1fr); align-items: start; gap: 24px; }
+.home-view[hidden] { display: none; }
+.home-view button { font-family: inherit; }
+.home-assignments, .home-enrichment { min-width: 0; }
+.home-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding: 8px; background: var(--cyan-soft); border: 1px solid #c4e7f3; border-radius: 14px; }
+.home-tab { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 50px; padding: 9px 8px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--navy); text-align: center; font-size: 12.5px; font-weight: 700; line-height: 1.3; transition: background .15s, box-shadow .15s; }
+.home-tab svg { width: 18px; height: 18px; flex: none; }
+.home-tab[data-home-tab="past"] { color: #b83f32; }
+.home-tab:hover { background: rgba(255,255,255,.65); }
+.home-tab[aria-selected="true"] { color: #fff; background: var(--navy); box-shadow: 0 2px 5px rgba(13,66,87,.12); }
+.home-tab:focus-visible, .home-view a:focus-visible, .home-view button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+.home-assignment-panel { min-height: 320px; padding-top: 20px; }
+.home-empty { margin: 0; padding: 40px 20px; color: var(--muted); font-size: 15px; text-align: center; }
+.home-enrichment { display: grid; gap: 20px; }
+.home-quick { position: relative; isolation: isolate; overflow: hidden; min-height: 178px; padding: 23px 24px; border: 1px solid #096681; border-radius: var(--radius); background: linear-gradient(112deg, #0d4257 0%, #086c89 66%, #1b9dbd 100%); box-shadow: var(--shadow); color: #fff; }
+.home-quick::after { content: ''; position: absolute; z-index: -1; width: 240px; height: 240px; border: 36px solid rgba(255,255,255,.045); border-radius: 50%; right: -90px; top: -95px; }
+.home-quick-copy { position: relative; z-index: 1; width: 75%; }
+.home-quick .home-kicker { display: block; margin: 0 0 5px; color: #a2e5f5; font-size: 10px; font-weight: 800; letter-spacing: .13em; line-height: 1.6; text-transform: uppercase; }
+.home-quick h2 { max-width: 340px; margin: 0 0 19px; color: #fff; font-size: clamp(19px, 1.5vw, 25px); font-weight: 800; line-height: 1.25; letter-spacing: -.025em; }
+.home-quick-button { display: inline-flex; align-items: center; justify-content: center; gap: 16px; min-height: 40px; padding: 9px 14px; border: 1px solid rgba(255,255,255,.16); border-radius: 8px; background: rgba(255,255,255,.13); color: #fff; font-size: 12px; font-weight: 700; line-height: 1.35; }
+.home-quick-button:disabled { cursor: default; opacity: 1; }
+.home-quick-button svg { width: 19px; height: 19px; }
+.home-quick-art { position: absolute; width: 140px; height: 140px; right: 8px; bottom: 10px; opacity: .82; transform: rotate(-8deg); }
+.home-nook { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); }
+.home-nook-head { position: relative; display: flex; align-items: center; gap: 14px; min-height: 92px; padding: 16px 20px 16px 108px; overflow: hidden; background: linear-gradient(105deg, #0d4257, #072a3d); }
+.home-nook-head::after { content: ''; position: absolute; right: -24px; top: -49px; width: 174px; height: 174px; border: 1px solid rgba(31,179,222,.18); border-radius: 50%; box-shadow: 0 0 0 18px rgba(31,179,222,.035), 0 0 0 37px rgba(31,179,222,.025); pointer-events: none; }
+.home-nook-luna { position: absolute; width: 90px; height: 90px; object-fit: contain; left: 13px; bottom: -13px; transform: rotate(-9deg); }
+.home-nook-head h2 { position: relative; z-index: 1; margin: 0; color: #fff; font-size: clamp(18px, 1.6vw, 24px); font-weight: 800; letter-spacing: -.025em; line-height: 1.25; }
+.home-module-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 16px; }
+.home-module { min-width: 0; min-height: 219px; padding: 18px 11px 16px; display: flex; flex-direction: column; align-items: center; border: 1px solid #c9e7f1; border-radius: 10px; background: #eef9fd; text-align: center; }
+.home-module-badge { display: block; width: 68px; height: 68px; flex: none; margin: 0 0 12px; filter: drop-shadow(0 3px 2px rgba(121,81,11,.09)); }
+.home-module-number { display: block; margin-bottom: 4px; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #668290; line-height: 1.4; }
+.home-module h3 { margin: 0 0 16px; color: var(--navy); font-size: 13px; font-weight: 700; line-height: 1.4; }
+.home-module-status { display: flex; align-items: center; justify-content: center; gap: 4px; margin: auto 0 9px; color: #397757; font-size: 9px; font-weight: 800; letter-spacing: .045em; line-height: 1.4; text-transform: uppercase; }
+.home-module-status svg { width: 12px; height: 12px; }
+.home-module-progress { width: 100%; height: 5px; border-radius: 99px; background: #dceee4; overflow: hidden; }
+.home-module-progress span { display: block; width: 100%; height: 100%; border-radius: inherit; background: #3aaa73; }
+.home-module.is-progress { background: #fbfcfd; border-color: #e1e7eb; }
+.home-module.is-progress .home-module-badge { filter: grayscale(1); opacity: .65; }
+.home-module.is-progress h3 { color: #667681; }
+.home-module.is-progress .home-module-status { color: #75828b; }
+.home-module.is-progress .home-module-progress { background: #e8edf0; }
+.home-module.is-progress .home-module-progress span { width: 0; }
+@media (max-width: 1120px) {
+  .home-view { gap: 18px; padding: 20px; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .home-tab { font-size: 11.5px; gap: 5px; padding: 8px 5px; }
+  .home-tab svg { width: 16px; height: 16px; }
+  .home-quick { padding: 20px; }
+  .home-quick-copy { width: 83%; }
+  .home-quick-art { right: -22px; opacity: .5; }
+  .home-module-grid { gap: 8px; padding: 12px; }
+  .home-module { padding: 15px 8px 13px; }
+  .home-module h3 { font-size: 12px; }
+}
+@media (max-width: 900px) {
+  .home-view { grid-template-columns: minmax(0, 1fr); }
+  .home-assignment-panel { min-height: 170px; }
+  .home-tab { font-size: 13px; }
+  .home-quick-copy { width: 76%; }
+  .home-quick h2 { font-size: 24px; }
+  .home-quick-art { right: 18px; opacity: .82; }
+  .home-nook-head h2 { font-size: 23px; }
+  .home-module { min-height: 220px; padding: 20px 14px 17px; }
+  .home-module h3 { font-size: 14px; }
+  .home-module-grid { gap: 12px; padding: 16px; }
+}
+@media (max-width: 520px) {
+  .home-view { padding: 14px; gap: 18px; }
+  .home-tabs { gap: 4px; padding: 5px; }
+  .home-tab { flex-direction: column; min-height: 68px; gap: 5px; font-size: 11px; }
+  .home-tab svg { width: 18px; height: 18px; }
+  .home-quick { padding: 21px 18px; }
+  .home-quick h2 { font-size: 22px; }
+  .home-quick-art { width: 115px; right: -10px; opacity: .5; }
+  .home-quick-copy { width: 88%; }
+  .home-nook-head { padding-left: 90px; }
+  .home-nook-luna { width: 78px; height: 78px; left: 7px; bottom: -8px; }
+  .home-nook-head h2 { font-size: 20px; }
+  .home-module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px; }
+  .home-module { padding: 16px 10px 14px; min-height: 222px; }
+  .home-module h3 { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) { .home-tab { transition: none; } }
+
+/* Assignment card contents are populated by the prototype's existing state. */
+.home-assignment-card { overflow: hidden; padding: 24px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+.home-card-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; margin-bottom: 17px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.home-status { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #bfe3cb; border-radius: 99px; background: #eaf8ee; padding: 4px 10px; color: #35724f; font-size: 10px; font-weight: 800; letter-spacing: .035em; line-height: 1.5; }
+.home-assignment-card h2, .home-assignment-card h3 { margin: 0 0 11px; color: var(--navy); font-size: 23px; font-weight: 800; line-height: 1.35; letter-spacing: -.025em; }
+.home-assignment-card > p { margin: 0 0 17px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+.home-assignment-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 20px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.home-assignment-meta svg { width: 15px; height: 15px; vertical-align: -3px; margin-right: 4px; }
+.home-progress { display: flex; align-items: center; gap: 5px; margin: 20px 0 10px; }
+.home-progress > span { flex: 1; display: block; min-width: 0; height: 5px; border-radius: 99px; background: #e4edf2; }
+.home-progress > span.done { background: var(--navy-2); }
+.home-progress > span.current { background: var(--cyan); }
+.home-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+.home-card-footer p { margin: 0; }
+.home-saved { display: block; color: var(--muted); font-size: 11px; line-height: 1.6; }
+.home-resume { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 42px; padding: 10px 17px; border: 1px solid var(--navy); border-radius: 9px; background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; line-height: 1.4; }
+.home-resume:hover { background: var(--navy-2); border-color: var(--navy-2); }
+.home-resume svg { width: 17px; height: 17px; }
+@media (max-width: 520px) { .home-assignment-card { padding: 20px; } .home-assignment-card h2, .home-assignment-card h3 { font-size: 21px; } }
+
+/* View navigation shares the existing student header. */
+.workspace[hidden], .assign-bar[hidden], .proto-bar[hidden], .save-error[hidden] { display: none; }
+.save-error { max-width: 460px; color: #a8352a; font-size: 13px; line-height: 1.45; }
+.home-empty h2 { margin: 0 0 8px; color: var(--navy); font-size: 18px; }
+.home-empty p { margin: 0; }
+@media (max-width: 520px) {
+  body[data-view="home"] .topbar { gap: 8px; padding: 0 12px; }
+  body[data-view="home"] .cc-btn { padding: 6px; }
+  body[data-view="home"] .cc-btn .split { display: none; }
+  body[data-view="home"] .who { gap: 6px; }
+  body[data-view="home"] .who .sub { display: none; }
+  body[data-view="home"] .who .nm { max-width: 75px; font-size: 12px; }
+  body[data-view="home"] .logo-chip { padding: 5px 8px; }
+  body[data-view="home"] .logo-chip img { height: 30px; }
+  .assign-bar { flex-wrap: wrap; }
+  .save-error { order: 3; width: 100%; }
+}
 </style>
 </head>
 <body>
 
 <header class="topbar">
-  <button class="logo-chip" title="Home">
+  <button class="logo-chip" id="homeButton" title="Home" aria-label="Home">
     <img src="lonestar-logo.png" alt="LoneStar CR" />
   </button>
 
@@ -779,16 +902,108 @@
 
 </div>
 
+<main id="homeView" class="home-view" hidden aria-label="Student homepage">
+  <section class="home-assignments" aria-label="My assignments">
+    <div id="homeTabs" class="home-tabs" role="tablist" aria-label="Assignment status">
+      <button id="home-tab-active" class="home-tab" type="button" data-home-tab="active" role="tab" aria-selected="true" aria-controls="homeAssignments" tabindex="0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="5" width="14" height="16" rx="2"/><path d="M9 5V3h6v2M9 10h6M9 14h6M9 18h4" stroke-linecap="round"/></svg>
+        <span>Active Assignments</span>
+      </button>
+      <button id="home-tab-past" class="home-tab" type="button" data-home-tab="past" role="tab" aria-selected="false" aria-controls="homeAssignments" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 3v1" stroke-linecap="round"/></svg>
+        <span>Past Due Assignments</span>
+      </button>
+      <button id="home-tab-completed" class="home-tab" type="button" data-home-tab="completed" role="tab" aria-selected="false" aria-controls="homeAssignments" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="5" width="14" height="16" rx="2"/><path d="M9 5V3h6v2m-7 8 3 3 5-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Completed Assignments</span>
+      </button>
+    </div>
+    <div id="homeAssignments" class="home-assignment-panel" role="tabpanel" aria-labelledby="home-tab-active" tabindex="0">
+      <p class="home-empty">No Active Assignment</p>
+    </div>
+  </section>
+  <aside class="home-enrichment" aria-label="Writing practice">
+    <section class="home-quick" aria-labelledby="homeQuickTitle">
+      <div class="home-quick-copy">
+        <span class="home-kicker">Daily task</span>
+        <h2 id="homeQuickTitle">Quick Write Assignment</h2>
+        <button class="home-quick-button" type="button" disabled>Checkout Assignment <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 12h17m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <svg class="home-quick-art" viewBox="0 0 160 160" fill="none" aria-hidden="true">
+        <rect x="41" y="24" width="89" height="118" rx="9" fill="#053e55" opacity=".3"/>
+        <rect x="33" y="17" width="89" height="118" rx="7" fill="#d4f3f9"/>
+        <rect x="33" y="17" width="14" height="118" rx="5" fill="#9eddeb"/>
+        <path d="M59 40h42M59 54h42M59 68h35M59 82h42M59 96h25" stroke="#79bdce" stroke-width="3" stroke-linecap="round"/>
+        <path d="m96 111 10-24 32-39 13 11-32 39-23 13Z" fill="#ffd06a" stroke="#956e26" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="m135 52 13 11m-43 29 10 8" stroke="#bc8730" stroke-width="2"/>
+        <path d="m96 111 5-12 7 6Z" fill="#294f60"/>
+        <path d="M16 49h7m-3-4v9M131 19h8m-4-4v8" stroke="#b9edfa" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </section>
+    <section class="home-nook" aria-labelledby="homeNookTitle">
+      <header class="home-nook-head">
+        <img class="home-nook-luna" src="luna.png" alt="" />
+        <h2 id="homeNookTitle">Luna’s Writing Nook</h2>
+      </header>
+      <div class="home-module-grid">
+<article class="home-module" aria-label="Module 1: Short Constructed Response (RACE), completed">
+          <svg class="home-module-badge" viewBox="0 0 84 84" fill="none" aria-hidden="true"><path d="m42 5 31 18v36L42 78 11 59V23Z" fill="#f5c15a" stroke="#d99421" stroke-width="2"/><path d="m42 11 25 15v29L42 70 17 55V26Z" fill="#e99b25" stroke="#ffe39a" stroke-width="2"/><path d="M31 54c1-14 8-28 23-34 2 16-6 31-20 33" fill="#fff2a8" stroke="#995908" stroke-width="2"/><path d="m27 61 22-30m-18 20 12 1m-7-12 2 8" fill="none" stroke="#995908" stroke-width="2.5" stroke-linecap="round"/></svg>
+          <span class="home-module-number">Module 1</span>
+          <h3>Short Constructed Response (RACE)</h3>
+          <p class="home-module-status"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Completed</p>
+          <div class="home-module-progress" aria-hidden="true"><span></span></div>
+        </article>
+<article class="home-module" aria-label="Module 2: Extended Constructed Response, completed">
+          <svg class="home-module-badge" viewBox="0 0 84 84" fill="none" aria-hidden="true"><path d="m42 5 31 18v36L42 78 11 59V23Z" fill="#f5c15a" stroke="#d99421" stroke-width="2"/><path d="m42 11 25 15v29L42 70 17 55V26Z" fill="#e89432" stroke="#ffe39a" stroke-width="2"/><rect x="24" y="23" width="30" height="37" rx="4" fill="#fff9dc" stroke="#a66515" stroke-width="2"/><path d="M30 31h18m-18 7h13m-13 7h10" stroke="#dfc794" stroke-width="2" stroke-linecap="round"/><path d="m37 52 4-10 18-18 7 7-18 18-11 3Z" fill="#ffd55f" stroke="#945910" stroke-width="2" stroke-linejoin="round"/><path d="m55 28 7 7m-22 10 6 5" stroke="#b87918" stroke-width="2"/></svg>
+          <span class="home-module-number">Module 2</span>
+          <h3>Extended Constructed Response</h3>
+          <p class="home-module-status"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Completed</p>
+          <div class="home-module-progress" aria-hidden="true"><span></span></div>
+        </article>
+<article class="home-module" aria-label="Module 3: Stellar Writers, completed">
+          <svg class="home-module-badge" viewBox="0 0 84 84" fill="none" aria-hidden="true"><path d="m42 5 31 18v36L42 78 11 59V23Z" fill="#f5c15a" stroke="#d99421" stroke-width="2"/><path d="m42 11 25 15v29L42 70 17 55V26Z" fill="#57a874" stroke="#ffe39a" stroke-width="2"/><path d="m42 22 6 12 14 2-10 10 2 14-12-7-13 7 3-14-10-10 14-2Z" fill="#ffdb60" stroke="#8e5a0d" stroke-width="2.5" stroke-linejoin="round"/><path d="m41 29 1 15 13-5" fill="none" stroke="#fff0a6" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="home-module-number">Module 3</span>
+          <h3>Stellar Writers</h3>
+          <p class="home-module-status"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Completed</p>
+          <div class="home-module-progress" aria-hidden="true"><span></span></div>
+        </article>
+<article class="home-module" aria-label="Module 4: The Writing Process, completed">
+          <svg class="home-module-badge" viewBox="0 0 84 84" fill="none" aria-hidden="true"><path d="m42 5 31 18v36L42 78 11 59V23Z" fill="#f5c15a" stroke="#d99421" stroke-width="2"/><path d="m42 11 25 15v29L42 70 17 55V26Z" fill="#ecb341" stroke="#ffe39a" stroke-width="2"/><path d="M30 39a12 12 0 1 1 24 0c0 7-6 10-6 16H36c0-6-6-9-6-16Z" fill="#ffe486" stroke="#966113" stroke-width="2.5"/><path d="M37 59h10m-9 4h8m-4-9V42m-5-3 5 4 5-4" fill="none" stroke="#966113" stroke-width="2.5" stroke-linecap="round"/><path d="M24 31l-3-2m21-10v-4m18 16 3-2" stroke="#fff3b2" stroke-width="2.5" stroke-linecap="round"/></svg>
+          <span class="home-module-number">Module 4</span>
+          <h3>The Writing Process</h3>
+          <p class="home-module-status"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Completed</p>
+          <div class="home-module-progress" aria-hidden="true"><span></span></div>
+        </article>
+<article class="home-module" aria-label="Module 5: Revision, completed">
+          <svg class="home-module-badge" viewBox="0 0 84 84" fill="none" aria-hidden="true"><path d="m42 5 31 18v36L42 78 11 59V23Z" fill="#f5c15a" stroke="#d99421" stroke-width="2"/><path d="m42 11 25 15v29L42 70 17 55V26Z" fill="#9475bd" stroke="#ffe39a" stroke-width="2"/><circle cx="38" cy="36" r="15" fill="#d5f3fc" stroke="#9b6013" stroke-width="4"/><circle cx="38" cy="36" r="11" fill="#5dc7e9"/><path d="M32 31c2-3 5-4 8-3" fill="none" stroke="#e6fbff" stroke-width="3" stroke-linecap="round"/><path d="m49 48 12 14" stroke="#9b6013" stroke-width="9" stroke-linecap="round"/><path d="m50 49 10 11" stroke="#ffdb69" stroke-width="4" stroke-linecap="round"/></svg>
+          <span class="home-module-number">Module 5</span>
+          <h3>Revision</h3>
+          <p class="home-module-status"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Completed</p>
+          <div class="home-module-progress" aria-hidden="true"><span></span></div>
+        </article>
+<article class="home-module is-progress" aria-label="Module 6: Editing, in progress">
+          <svg class="home-module-badge" viewBox="0 0 84 84" fill="none" aria-hidden="true"><path d="m42 5 31 18v36L42 78 11 59V23Z" fill="#f5c15a" stroke="#d99421" stroke-width="2"/><path d="m42 11 25 15v29L42 70 17 55V26Z" fill="#c1b395" stroke="#ffe39a" stroke-width="2"/><path d="M25 21h25l9 9v32H25Z" fill="#fff8dc" stroke="#9e651d" stroke-width="2" stroke-linejoin="round"/><path d="M49 22v10h9M31 36h19M31 43h17M31 50h12" fill="none" stroke="#b9924f" stroke-width="2" stroke-linecap="round"/><path d="m43 53 10-13a3 3 0 0 1 4-1l7 6a3 3 0 0 1 0 4l-10 12h-6l-5-5a3 3 0 0 1 0-3Z" fill="#e9c882" stroke="#99601b" stroke-width="2"/><path d="m48 47 11 9" stroke="#99601b" stroke-width="2"/></svg>
+          <span class="home-module-number">Module 6</span>
+          <h3>Editing</h3>
+          <p class="home-module-status">In progress</p>
+          <div class="home-module-progress" aria-hidden="true"><span></span></div>
+        </article>
+      </div>
+    </section>
+  </aside>
+</main>
+
 <div class="assign-bar">
   <h1>Assignment</h1>
   <div class="spacer"></div>
-  <button class="save-btn" title="Save and exit">
+  <span class="save-error" id="saveError" role="alert" hidden></span>
+  <button class="save-btn" id="saveExit" title="Save and exit" aria-label="Save and exit">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
     <span class="lbl">Save And Exit</span>
   </button>
 </div>
 
-<main class="workspace">
+<main class="workspace" id="assignmentView">
   <!-- Passage -->
   <section class="panel">
     <div class="passage-view-control" id="passageViewControl" hidden>
@@ -1707,7 +1922,7 @@ function renderStep() {
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
       const k = ansKey(current, i);
-      if (i === CLAIM_SECTION[document.body.dataset.band] && claimText() && !(answers[k] || '').replace(/<[^>]+>/g, '').trim()) answers[k] = esc(claimText());
+      if (i === CLAIM_SECTION[document.body.dataset.band] && claimText() && !Object.hasOwn(answers, k)) answers[k] = esc(claimText());
       return `<div class="org-sec rte-host">
         <div class="org-head"><span class="kw kw-${sec.color}">${sec.keyword}:</span> ${emph(sec.text)}${sec.ask ? `<br>Ask yourself: ${emph(sec.ask)}` : ''}</div>
         ${rteBar()}
@@ -1717,7 +1932,7 @@ function renderStep() {
   }
   if (s.essay) {
     const k = essayKey();
-    if (!answers[k]) answers[k] = buildEssay(s.essay.combine);
+    if (!Object.hasOwn(answers, k)) answers[k] = buildEssay(s.essay.combine);
     html = `<h3>${s.title}</h3><div class="essay-note">${s.instruction}</div>
       <div class="rte-wrap rte-host">${rteBar()}<div class="rte big" id="${k}" contenteditable="true" data-placeholder="Write your answer here…">${answers[k]}</div></div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
@@ -1728,7 +1943,7 @@ function renderStep() {
   (s.fields || []).forEach((f, i) => {
     const k = `f${current}-${i}`;
     html += `<label class="field-label" for="${k}">${f.label}</label>
-             <textarea id="${k}" class="${f.big ? 'big' : ''}" placeholder="${f.placeholder}" style="margin-bottom:16px" ${f.maxChars ? `data-max="${f.maxChars}"` : ''}>${answers[k] || ''}</textarea>`;
+             <textarea id="${k}" class="${f.big ? 'big' : ''}" placeholder="${f.placeholder}" style="margin-bottom:16px" ${f.maxChars ? `data-max="${f.maxChars}"` : ''}>${esc(answers[k] || '')}</textarea>`;
     if (f.maxChars) html += `<div class="char-count" data-for="${k}"></div>`;
   });
   if (current >= 2 && tapOn()) html = html.replace('</h3>', '</h3>' + tapStripHtml());
@@ -2108,7 +2323,7 @@ function renderQuestions() {
     html += `<div class="qs-q">${q.q}</div>`;
     if (q.type === 'multi') html += `<p class="qs-kind">Choose ${q.pick || 'all that apply'}</p>`;
   }
-  if (q.type === 'text') html += `<textarea id="qtext-${qi}" rows="5" placeholder="Write your answer here…" ${st.checked ? 'disabled' : ''} style="margin-bottom:14px">${st.text || ''}</textarea>`;
+  if (q.type === 'text') html += `<textarea id="qtext-${qi}" rows="5" placeholder="Write your answer here…" ${st.checked ? 'disabled' : ''} style="margin-bottom:14px">${esc(st.text || '')}</textarea>`;
   if (q.type === 'note') html += `<div class="qs-fb wrong">${q.explain}</div>`;
   const cls = i => (st.checked ? (q.correct.includes(i) ? 'right' : st.sel.includes(i) ? 'wrong' : '') : '') + (st.sel.includes(i) ? ' on' : '');
   if (q.options) html += `<div class="qs-opts ${q.type === 'single' ? 'single one-col' : ''}">${q.options.map((o, i) =>
@@ -2463,6 +2678,181 @@ const DEMO_WRITING = {
   });
   renderStep();
 })();
+// ---------- Homepage and browser-local Save & Exit (prototype only) ----------
+// These drafts stay in this browser. No student work is sent to a service or CMS.
+const draftIdentity = JSON.stringify({ passages: assignment.passages, questions: questionSet, prompt: LSCR?.prompt });
+const draftHash = [...draftIdentity].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261).toString(36);
+const DRAFT_KEY = `lscr-prototype-draft-v1-${draftHash}`;
+let savedDraft = null, homeTab = 'active';
+const wholeNumber = (n, max, fallback = 0) => Number.isInteger(n) && n >= 0 && n <= max ? n : fallback;
+
+function flushDraftInputs() {
+  $('step').querySelectorAll('.rte').forEach(el => { answers[el.id] = el.innerHTML; });
+  $('step').querySelectorAll('input, textarea').forEach(el => {
+    if (el.id.startsWith('qtext-')) { qa[qi].text = el.value; return; }
+    if (el.type === 'radio') { if (el.checked) answers[el.name] = el.value; }
+    else if (el.id) answers[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+  });
+}
+
+function passageSnapshot() {
+  return [...$('passage').querySelectorAll('p')].map(p => [...p.querySelectorAll('mark.hl')].map(mark => {
+    const before = document.createRange(); before.selectNodeContents(p); before.setEndBefore(mark);
+    return { start: before.toString().length, length: mark.textContent.length, color: mark.dataset.color, id: +mark.dataset.hid };
+  }));
+}
+
+function restoreHighlights(paragraphs) {
+  [...$('passage').querySelectorAll('mark.hl')].forEach(mark => { mark.replaceWith(...mark.childNodes); });
+  $('passage').normalize(); hid = 0;
+  [...$('passage').querySelectorAll('p')].forEach((p, i) => {
+    const marks = Array.isArray(paragraphs?.[i]) ? paragraphs[i] : [];
+    // Restore outer marks first so a second highlight inside one keeps both ranges.
+    [...marks].sort((a, b) => a.start - b.start || b.length - a.length).forEach(m => {
+      if (!['green', 'blue', 'red'].includes(m.color) || !Number.isInteger(m.start) || m.start < 0 || !Number.isInteger(m.length) || m.length <= 0 || !Number.isInteger(m.id) || m.id < 1) return;
+      const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT); let offset = 0;
+      while (walker.nextNode()) {
+        const node = walker.currentNode, start = m.start - offset, end = start + m.length;
+        if (start >= 0 && start < node.length && end <= node.length && !node.parentElement.closest('.pnum')) {
+          if (end < node.length) node.splitText(end);
+          const text = start ? node.splitText(start) : node;
+          const mark = document.createElement('mark');
+          mark.className = `hl hl-${m.color}`; mark.dataset.color = m.color; mark.dataset.hid = m.id;
+          text.replaceWith(mark); mark.appendChild(text); hid = Math.max(hid, m.id); break;
+        }
+        offset += node.length;
+      }
+    });
+  });
+}
+
+// Retain editor formatting when loading a local draft, without restoring executable HTML.
+function savedWritingHtml(value) {
+  const template = document.createElement('template'); template.innerHTML = value;
+  const allowed = new Set(['B', 'STRONG', 'I', 'EM', 'U', 'P', 'DIV', 'BR', 'OL', 'UL', 'LI', 'SPAN']);
+  const clean = parent => [...parent.children].forEach(el => {
+    if (['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED'].includes(el.tagName)) { el.remove(); return; }
+    clean(el);
+    if (!allowed.has(el.tagName)) { el.replaceWith(...el.childNodes); return; }
+    const styles = ['font-weight', 'font-style', 'text-decoration', 'text-decoration-line'].map(k => [k, el.style.getPropertyValue(k)]);
+    [...el.attributes].forEach(a => el.removeAttribute(a.name));
+    styles.forEach(([k, v]) => { if (v) el.style.setProperty(k, v); });
+  });
+  clean(template.content); return template.innerHTML;
+}
+
+function saveDraft() {
+  flushDraftInputs();
+  const snapshot = {
+    version: 1, savedAt: new Date().toISOString(), band: document.body.dataset.band, ptype, mode, phase, current, qi,
+    answers, rv, qa, highlights: passageSnapshot(), passageOpen: [...$('passage').querySelectorAll('.psg')].map(d => d.open),
+    size, lineReader: document.body.classList.contains('line-reader'), lunaCollapsed: document.body.classList.contains('luna-collapsed')
+  };
+  try {
+    const json = JSON.stringify(snapshot); localStorage.setItem(DRAFT_KEY, json);
+    savedDraft = JSON.parse(json); $('saveError').hidden = true; return true;
+  } catch (e) {
+    $('saveError').textContent = 'Your work could not be saved. Please keep this page open and try again.';
+    $('saveError').hidden = false; return false;
+  }
+}
+
+function restoreDraft(snapshot) {
+  if (!snapshot || snapshot.version !== 1 || !BANDS.includes(snapshot.band) || !TYPE_KEYS.includes(snapshot.ptype) || !snapshot.answers || typeof snapshot.answers !== 'object') return false;
+  document.body.dataset.band = snapshot.band; ptype = snapshot.ptype;
+  mode = snapshot.mode === 'ecrq' && questionSet.length ? 'ecrq' : 'ecr';
+  phase = mode === 'ecrq' && snapshot.phase === 'questions' ? 'questions' : 'writing';
+  current = wholeNumber(snapshot.current, assignment.steps.length - 1); qi = wholeNumber(snapshot.qi, questionSet.length - 1);
+  Object.keys(answers).forEach(k => delete answers[k]);
+  Object.entries(snapshot.answers).forEach(([k, value]) => {
+    if (['__proto__', 'constructor', 'prototype'].includes(k) || !['string', 'boolean'].includes(typeof value)) return;
+    answers[k] = typeof value === 'string' && /^(o\d+-|essay-)/.test(k) ? savedWritingHtml(value) : value;
+  });
+  const r = snapshot.rv || {};
+  Object.assign(rv, { tab: ['revise', 'edit', 'final'].includes(r.tab) ? r.tab : 'revise', checked: Object.fromEntries(Object.entries(r.checked || {}).filter(([k, v]) => /^(Luna|Guided|Writer)-(revise|edit|final)-\d+$/.test(k) && typeof v === 'boolean')), finished: r.finished === true, showPassage: r.showPassage === true, openHow: Array.isArray(r.openHow) ? r.openHow.filter(x => /^(revise|edit|final):\d+$/.test(x)) : [] });
+  questionSet.forEach((q, i) => {
+    const a = snapshot.qa?.[i] || {};
+    qa[i] = { sel: Array.isArray(a.sel) ? a.sel.filter(n => Number.isInteger(n) && n >= 0 && n < (q.options?.length || 0)) : [], checked: a.checked === true, text: typeof a.text === 'string' ? a.text : '' };
+  });
+  restoreHighlights(snapshot.highlights);
+  $('passage').querySelectorAll('.psg').forEach((d, i) => { d.open = snapshot.passageOpen?.[i] === true; });
+  setSize(typeof snapshot.size === 'number' && Number.isFinite(snapshot.size) ? snapshot.size : 16);
+  document.body.classList.toggle('line-reader', snapshot.lineReader === true); $('lineReader').classList.toggle('on', snapshot.lineReader === true);
+  document.body.classList.toggle('luna-collapsed', snapshot.lunaCollapsed === true);
+  $('lunaChevron').setAttribute('d', snapshot.lunaCollapsed ? 'm9 6 6 6-6 6' : 'm15 6-6 6 6 6');
+  [['band', snapshot.band], ['ptype', ptype], ['mode', mode]].forEach(([id, value]) => {
+    $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset[id] === value));
+  });
+  if (!LSCR) assignment.prompt = typePrompts[ptype];
+  $('promptQ').innerHTML = assignment.prompt.question; $('promptDirections').innerHTML = assignment.prompt.directions;
+  lastEdit = null; lastRange = null; hidePop(); renderStep(); return true;
+}
+
+function renderHome() {
+  document.querySelectorAll('[data-home-tab]').forEach(b => {
+    const selected = b.dataset.homeTab === homeTab; b.setAttribute('aria-selected', selected); b.tabIndex = selected ? 0 : -1;
+  });
+  $('homeAssignments').setAttribute('aria-labelledby', `home-tab-${homeTab}`);
+  if (homeTab !== 'active') {
+    $('homeAssignments').innerHTML = `<div class="home-empty"><h2>${homeTab === 'past' ? 'No past due assignments' : 'No completed assignments yet'}</h2><p>${homeTab === 'past' ? 'You’re all caught up.' : 'Your completed assignments will appear here.'}</p></div>`;
+    return;
+  }
+  const type = { arg: 'Argumentative', info: 'Informational', narr: 'Narrative' }[ptype];
+  const place = inQuestions() ? `Question ${qi + 1} of ${questionSet.length}` : `Step ${current + 1} of ${assignment.steps.length} · ${assignment.steps[current].label}`;
+  const title = LSCR?.title || assignment.passages[0]?.title || 'Writing assignment';
+  const savedAt = savedDraft && new Date(savedDraft.savedAt);
+  const saved = savedAt && Number.isFinite(savedAt.getTime()) ? `Saved ${savedAt.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : '';
+  $('homeAssignments').innerHTML = `<article class="home-assignment-card">
+    <div class="home-card-top"><span>${type} writing</span><span class="home-status">${savedDraft ? 'In progress' : 'Ready to begin'}</span></div>
+    <h2>${esc(title)}</h2>
+    <p class="home-assignment-meta">Grades ${{ '2-3': '2–3', '4-5': '4–5', '6-8': '6–7', '9-12': '8–12' }[document.body.dataset.band]} · ${mode === 'ecrq' ? 'Reading questions + writing' : 'Extended constructed response'}</p>
+    <p class="home-place">${savedDraft ? esc(place) : 'Read, plan, write, and revise.'}</p>
+    <div class="home-progress" aria-hidden="true">${assignment.steps.map((_, i) => `<span class="${savedDraft && !inQuestions() ? i < current ? 'done' : i === current ? 'current' : '' : ''}"></span>`).join('')}</div>
+    <div class="home-card-footer"><span class="home-saved">${esc(saved)}</span><button class="home-resume" id="resumeAssignment">${savedDraft ? 'Resume assignment' : 'Open assignment'} <span aria-hidden="true">→</span></button></div>
+  </article>`;
+  $('resumeAssignment').onclick = () => showAssignment();
+}
+
+function setPageView(home) {
+  $('homeView').hidden = !home; $('assignmentView').hidden = home;
+  document.querySelector('.assign-bar').hidden = home; document.querySelector('.proto-bar').hidden = home;
+  document.body.dataset.view = home ? 'home' : 'assignment';
+  document.title = home ? 'LoneStar CR · Home' : 'LoneStar CR Assignment';
+  window.scrollTo(0, 0);
+}
+function showHome(navigate = true) {
+  homeTab = 'active'; hidePop(); closeFeedback(); speakingKey = null; lastRange = null;
+  renderHome(); setPageView(true);
+  if (navigate && location.hash !== '#home') history.pushState(null, '', '#home');
+  $('home-tab-active').focus({ preventScroll: true });
+}
+function showAssignment(navigate = true) {
+  setPageView(false);
+  if (navigate && location.hash !== '#assignment') history.pushState(null, '', '#assignment');
+  $('saveExit').focus({ preventScroll: true });
+}
+function saveAndExit(navigate = true) { if (saveDraft()) showHome(navigate); }
+$('saveExit').onclick = () => saveAndExit();
+$('homeButton').onclick = () => { if ($('homeView').hidden) saveAndExit(); else showHome(false); };
+$('homeTabs').addEventListener('click', e => {
+  const button = e.target.closest('[data-home-tab]'); if (!button) return;
+  homeTab = button.dataset.homeTab; renderHome();
+});
+$('homeTabs').addEventListener('keydown', e => {
+  const tabs = [...document.querySelectorAll('[data-home-tab]')], index = tabs.indexOf(document.activeElement);
+  if (index < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+  e.preventDefault(); const next = e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (index + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+  homeTab = tabs[next].dataset.homeTab; renderHome(); tabs[next].focus();
+});
+addEventListener('popstate', () => {
+  if (location.hash === '#home') {
+    if (!$('homeView').hidden || saveDraft()) showHome(false);
+    else history.replaceState(null, '', '#assignment');
+  } else showAssignment(false);
+});
+// Run after demo initialization, so saved student writing takes precedence over sample writing.
+try { const draft = JSON.parse(localStorage.getItem(DRAFT_KEY)); if (restoreDraft(draft)) savedDraft = draft; } catch (e) {}
+if (location.hash === '#home') showHome(false); else setPageView(false);
 </script>
 </body>
 </html>
