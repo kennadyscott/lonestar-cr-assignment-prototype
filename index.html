@@ -873,11 +873,28 @@
 .home-score-ring > span { position: relative; color: var(--text); font-size: 14px; font-weight: 800; }
 .home-submitted-ring { display: grid; place-items: center; width: 58px; height: 58px; border: 3px solid #bfe3cb; border-radius: 50%; background: #eaf8ee; color: #35724f; }
 .home-submitted-ring svg { width: 25px; height: 25px; }
+/* Active assignments follow the original compact metadata-row presentation. */
+.home-assignments[data-current-tab="active"] .home-tabs { border-radius: 14px 14px 0 0; }
+.home-assignments[data-current-tab="active"] .home-assignment-panel { padding-top: 0; }
+.home-assignments[data-current-tab="active"] .home-assignment-list { border-top: 0; border-radius: 0 0 var(--radius) var(--radius); box-shadow: none; }
+.home-assignments[data-current-tab="active"] .home-assignment-row { padding: 26px 22px 18px; gap: 20px 18px; }
+.home-assignments[data-current-tab="active"] .home-assignment-row dt { color: #58636b; font-size: 14px; }
+.home-assignments[data-current-tab="active"] .home-assignment-row dd { font-size: 16px; }
+.home-assignments[data-current-tab="active"] .home-assignment-row h2 { color: #263e48; font-size: 21px; line-height: 1.35; }
+.home-assignments[data-current-tab="active"] .home-row-action { gap: 10px; color: #424b51; font-size: 16px; font-weight: 500; }
+.home-assignments[data-current-tab="active"] .home-row-play { width: 62px; height: 62px; }
+.home-assignment-kind { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 4px; background: var(--cyan-softer); color: var(--navy); font-size: 10px; font-weight: 800; vertical-align: 1px; }
+.home-progress-details { grid-column: 1 / -1; min-width: 0; }
+.home-progress-details > summary { width: fit-content; padding: 5px 0; color: var(--navy); font-size: 12px; line-height: 1.5; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.home-progress-details > summary:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; border-radius: 3px; }
+.home-progress-details > .home-row-detail { margin-top: 10px; }
 @container home-assignments (max-width: 620px) {
   .home-assignment-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px 24px; padding: 20px; }
   .home-assignment-main { grid-column: 1 / -1; }
   .home-row-action { grid-column: 1 / -1; justify-self: end; flex-direction: row; }
   .home-row-play { width: 42px; height: 42px; }
+  .home-assignments[data-current-tab="active"] .home-assignment-row { padding: 22px 20px 16px; gap: 18px 24px; }
+  .home-assignments[data-current-tab="active"] .home-row-play { width: 52px; height: 52px; }
 }
 
 /* View navigation shares the existing student header. */
@@ -3104,12 +3121,13 @@ function restoreScrDraft() {
     savedScrDraft = d;
   } catch (e) {}
 }
-function scrHomeCard() {
+function scrHomeCard(compact = false) {
   const date = savedScrDraft && new Date(savedScrDraft.savedAt);
   const saved = date && Number.isFinite(date.getTime()) ? `Saved ${date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : '';
   const completed = scrComplete();
   return homeAssignmentRow({ id: 'scr', title: SCR.title, type: 'Short constructed response', questions: SCR.questions.length, completed: completed ? scrState.completedAt : null, isCompleted: completed }, {
     buttonId: 'resumeScr', action: completed ? 'View assignment' : 'Continue', icon: completed ? homeSubmittedIcon() : homePlayIcon(),
+    kind: compact ? 'SCR' : '', collapseDetails: compact,
     detail: `<div class="home-row-context"><span class="home-status">${completed ? 'Completed' : savedScrDraft ? 'In progress' : 'Ready to begin'}</span><span>Grades ${visibleBand(scrState.band)} · Short constructed response (SCR)</span></div>
       <p class="home-place">${completed ? '2 of 2 answers submitted' : `Question ${scrState.current + 1} of ${SCR.questions.length}`}</p>
       <div class="home-progress" aria-hidden="true">${SCR.questions.map((_, i) => `<span class="${scrState.submitted[i] ? 'done' : i === scrState.current && savedScrDraft ? 'current' : ''}"></span>`).join('')}</div>
@@ -3364,11 +3382,11 @@ function homeScoreIcon(score) {
 }
 function homeAssignmentRow(row, options = {}) {
   return `<article class="home-assignment-row" aria-labelledby="home-title-${row.id}">
-    <dl class="home-assignment-main"><dt>Title</dt><dd><h2 id="home-title-${row.id}">${esc(row.title)}</h2></dd><dt>Assignment Type</dt><dd>${esc(row.type)}</dd></dl>
+    <dl class="home-assignment-main"><dt>Title${options.kind ? `<span class="home-assignment-kind">${esc(options.kind)}</span>` : ''}</dt><dd><h2 id="home-title-${row.id}">${esc(row.title)}</h2></dd><dt>Assignment Type</dt><dd>${esc(row.type)}</dd></dl>
     <dl><dt>Date Assigned</dt><dd>${homeDateHtml(row.assigned)}</dd><dt>${row.isCompleted ? 'Completed On' : 'Date Due'}</dt><dd>${homeDateHtml(row.isCompleted ? row.completed : row.due)}</dd></dl>
     <dl><dt># of Questions</dt><dd>${row.questions}</dd><dt>Teacher</dt><dd class="home-row-teacher"><span class="home-row-avatar" aria-hidden="true">KS</span><span>Kennady Scott</span></dd></dl>
     <button type="button" class="home-row-action" ${options.buttonId ? `id="${options.buttonId}"` : ''} aria-label="${esc(options.action)} ${esc(row.title)}${row.score !== undefined ? `, score ${row.score}%` : ''}" ${options.disabled ? 'disabled' : ''}>${options.icon || homePlayIcon()}<span>${esc(options.action)}</span></button>
-    ${options.detail ? `<div class="home-row-detail">${options.detail}</div>` : ''}
+    ${options.detail ? options.collapseDetails ? `<details class="home-progress-details"><summary>Progress details</summary><div class="home-row-detail">${options.detail}</div></details>` : `<div class="home-row-detail">${options.detail}</div>` : ''}
   </article>`;
 }
 const HOME_COMPLETED_ASSIGNMENTS = [
@@ -3399,6 +3417,7 @@ function renderPastAssignments() {
   $('homeAssignments').querySelector('[data-past-assignment="sounds"]').onclick = e => { if (!e.currentTarget.disabled) showAssignment(); };
 }
 function renderHome() {
+  document.querySelector('.home-assignments').dataset.currentTab = homeTab;
   document.querySelectorAll('[data-home-tab]').forEach(b => {
     const selected = b.dataset.homeTab === homeTab; b.setAttribute('aria-selected', selected); b.tabIndex = selected ? 0 : -1;
   });
@@ -3416,14 +3435,14 @@ function renderHome() {
   const saved = savedAt && Number.isFinite(savedAt.getTime()) ? `Saved ${savedAt.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : '';
   // Active demos have no assignment/due dates in the supplied data; show missing dates honestly.
   const activeEcr = homeAssignmentRow({ id: 'ecr', title, type: `${type} Passage`, questions: mode === 'ecrq' ? questionSet.length + 1 : 1 }, {
-    buttonId: 'resumeAssignment', action: 'Continue',
+    buttonId: 'resumeAssignment', action: 'Continue', kind: 'ECR', collapseDetails: true,
     detail: `<div class="home-row-context"><span class="home-status">${savedDraft ? 'In progress' : 'Ready to begin'}</span><span>Grades ${visibleBand(ecrBand)} · ${mode === 'ecrq' ? 'Reading questions + writing (ECR + Q)' : 'Extended constructed response (ECR)'}</span></div>
       <p class="home-place">${savedDraft ? esc(place) : 'Read, plan, write, and revise.'}</p>
       <div class="home-progress" aria-hidden="true">${assignment.steps.map((_, i) => `<span class="${savedDraft && !inQuestions() ? i < current ? 'done' : i === current ? 'current' : '' : ''}"></span>`).join('')}</div>
       <span class="home-saved">${esc(saved)}</span>`
   });
   // Keep both prototype entry points available, including after an SCR preview is submitted.
-  $('homeAssignments').innerHTML = `<div class="home-assignment-list">${activeEcr}${scrHomeCard()}</div>`;
+  $('homeAssignments').innerHTML = `<div class="home-assignment-list">${activeEcr}${scrHomeCard(true)}</div>`;
   $('resumeAssignment').onclick = () => showAssignment();
   if ($('resumeScr')) $('resumeScr').onclick = () => showScr();
 }
