@@ -847,6 +847,130 @@
   .assign-bar { flex-wrap: wrap; }
   .save-error { order: 3; width: 100%; }
 }
+
+/* SCR stays independent from the ECR layout and support state. */
+#scrView { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.13fr); align-items: start; gap: 20px; padding: 20px; }
+#scrView[hidden] { display: none; }
+#scrView .panel { min-width: 0; overflow: hidden; }
+#scrView button { font-family: inherit; }
+#scrView button:focus-visible, #scrView summary:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+#scrView .scr-passage-head { padding: 17px 20px 15px; border-bottom: 1px solid var(--border); }
+#scrView .scr-title-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 7px 14px; margin-bottom: 13px; }
+#scrView .scr-eyebrow { flex: none; color: var(--muted); font-size: calc(11px * var(--fs)); font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+#scrView #scrPassageTitle { margin: 0; color: var(--navy); font-size: calc(17px * var(--fs)); font-weight: 700; line-height: 1.45; }
+#scrView .scr-reading-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+#scrView .scr-tool { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 10px; border: 1px solid #aec5d0; border-radius: 7px; background: var(--cyan-softer); color: var(--navy); font-size: calc(12.5px * var(--fs)); font-weight: 600; line-height: 1.3; }
+#scrView .scr-tool svg { width: 17px; height: 17px; flex: none; }
+#scrView .scr-tool:hover, #scrView .scr-tool[aria-pressed="true"], #scrView .scr-tool[aria-expanded="true"] { background: var(--cyan-soft); border-color: var(--navy); }
+#scrView .scr-zoom { display: flex; gap: 0; margin-left: auto; border: 1px solid #aec5d0; border-radius: 7px; overflow: hidden; }
+#scrView .scr-zoom .scr-tool { width: 34px; padding: 6px; border: 0; border-radius: 0; }
+#scrView .scr-zoom .scr-tool + .scr-tool { border-left: 1px solid #aec5d0; }
+#scrView .scr-reset { width: 34px; padding: 6px; }
+#scrView .scr-paragraphs { max-height: calc(2 * (100vh - 160px)); overflow-y: auto; padding: 20px; color: var(--text); font-size: calc(16px * var(--fs) * var(--scr-zoom, 1)); line-height: 1.8; }
+#scrView .scr-paragraphs p { margin: 0 0 1.25em; }
+#scrView .scr-paragraphs p:last-child { margin-bottom: 0; }
+#scrView .pnum { display: inline-block; min-width: 1.6em; color: var(--cyan); font-size: .88em; font-weight: 700; }
+#scrView .scr-paragraphs.is-line-reader p, #scrView.scr-line-reader .scr-paragraphs p { opacity: .35; transition: opacity .15s; }
+#scrView .scr-paragraphs.is-line-reader p:hover, #scrView .scr-paragraphs.is-line-reader p:focus, #scrView.scr-line-reader .scr-paragraphs p:hover, #scrView.scr-line-reader .scr-paragraphs p:focus { opacity: 1; background: var(--cyan-softer); border-radius: 6px; }
+#scrView .scr-right { display: grid; grid-template-columns: minmax(0, 1fr) 280px; align-items: start; gap: 16px; min-width: 0; }
+#scrView #scrQuestions { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; grid-column: 1 / -1; min-height: 55px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 11px; background: var(--surface); color: var(--navy); font-size: calc(13px * var(--fs)); font-weight: 700; }
+#scrView #scrQuestions > span, #scrView #scrQuestions > strong { margin-right: 5px; font-size: inherit; }
+#scrView #scrQuestions button { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; padding: 4px; border: 1px solid #c8d9e2; border-radius: 7px; background: #fff; color: var(--navy); font-size: 13px; font-weight: 700; }
+#scrView #scrQuestions button:hover { background: var(--cyan-softer); }
+#scrView #scrQuestions button[aria-current="true"], #scrView #scrQuestions button[aria-current="step"], #scrView #scrQuestions button[aria-selected="true"], #scrView #scrQuestions button.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+#scrView #scrQuestions button:disabled { color: #7a8b95; background: #f5f8fa; border-color: #e0e9ee; cursor: default; }
+#scrView #scrDraftNote { grid-column: 1 / -1; margin: -3px 0 0; padding: 10px 13px; border: 1px solid var(--sand-border); border-radius: 9px; background: var(--sand); color: #76551c; font-size: 12px; line-height: 1.55; }
+#scrView #scrDraftNote[hidden] { display: none; }
+#scrView .scr-response-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 17px 20px; border-bottom: 1px solid var(--border); }
+#scrView .scr-response-head h2 { margin: 0; color: var(--navy); font-size: calc(16px * var(--fs)); font-weight: 700; line-height: 1.4; }
+#scrView #scrQuestionCount { color: var(--muted); font-size: calc(11.5px * var(--fs)); white-space: nowrap; }
+#scrView .scr-response-body { padding: 20px; }
+#scrView .scr-instruction { margin: 0 0 16px; padding-bottom: 14px; border-bottom: 2px solid var(--cyan-soft); color: var(--navy); font-size: calc(15px * var(--fs)); font-weight: 600; line-height: 1.5; }
+#scrView #scrQuestion { margin: 0 0 19px; color: var(--text); font-size: calc(16px * var(--fs)); font-weight: 500; line-height: 1.65; }
+#scrView #scrEditorHost { overflow: hidden; border: 1px solid #cadbe4; border-radius: 10px; background: #fff; }
+#scrView #scrToolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; padding: 6px 8px; border-bottom: 1px solid var(--border); background: #fbfdfe; }
+#scrView #scrToolbar button { display: inline-grid; place-items: center; width: 31px; height: 29px; padding: 0; border: 0; border-radius: 5px; background: none; color: var(--text); font-size: 14px; }
+#scrView #scrToolbar button:hover, #scrView #scrToolbar button[aria-pressed="true"] { background: var(--cyan-soft); }
+#scrView #scrToolbar svg { width: 17px; height: 17px; }
+#scrView #scrToolbar .sep { width: 1px; height: 19px; margin: 0 5px; background: var(--border); }
+#scrView #scrAnswer { min-height: 270px; max-height: 560px; overflow-y: auto; padding: 14px; color: var(--text); font-size: calc(16px * var(--fs)); line-height: 1.7; overflow-wrap: anywhere; }
+#scrView #scrAnswer:focus { box-shadow: inset 0 0 0 2px var(--cyan); }
+#scrView #scrAnswer[aria-invalid="true"] { box-shadow: inset 0 0 0 2px #ba5144; }
+#scrView .scr-character-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; margin: 10px 0; color: var(--muted); font-size: calc(11.5px * var(--fs)); }
+#scrView #scrCount { color: var(--navy); font-variant-numeric: tabular-nums; }
+#scrView .scr-limit-track { height: 5px; overflow: hidden; border-radius: 99px; background: #e6eef2; }
+#scrView #scrLimitBar { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--cyan); transition: width .15s; }
+#scrView #scrStatus { min-height: 19px; margin: 10px 0 0; color: var(--muted); font-size: calc(12px * var(--fs)); line-height: 1.5; }
+#scrView #scrStatus:empty { display: none; }
+#scrView .scr-response-footer { display: flex; align-items: center; justify-content: flex-end; padding: 15px 20px; border-top: 1px solid var(--border); background: #fbfdfe; }
+#scrView #scrSubmit { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 9px 16px; border: 1px solid var(--navy); border-radius: 9px; background: var(--navy); color: #fff; font-size: calc(13.5px * var(--fs)); font-weight: 600; line-height: 1.4; }
+#scrView #scrSubmit:hover { background: var(--navy-2); }
+#scrView #scrSubmit:disabled { opacity: .55; cursor: default; }
+#scrView #scrSubmit svg { width: 17px; height: 17px; }
+#scrView .scr-support-head { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 18px 15px 10px; }
+#scrView .scr-support-head h2 { margin: 0; color: #2f3a40; font-size: calc(20px * var(--fs)); font-weight: 500; line-height: 1.35; }
+#scrView .scr-support-head > svg { width: 20px; height: 20px; color: var(--navy); }
+#scrView .scr-support-body { display: grid; gap: 15px; padding: 12px 16px 20px; }
+#scrView .scr-intro { display: flex; align-items: center; gap: 10px; }
+#scrView .scr-avatar { flex: none; display: grid; place-items: center; width: 58px; height: 58px; border-radius: 50%; background: #0f2540; }
+#scrView .scr-avatar img { display: block; width: 83%; height: 83%; object-fit: contain; }
+#scrView .scr-bubble { position: relative; margin: 0; padding: 12px; border-radius: 12px; background: #d6f3fb; color: #15252f; font-size: calc(14px * var(--fs)); font-weight: 500; line-height: 1.5; }
+#scrView .scr-bubble::before { content: ''; position: absolute; left: -7px; top: 50%; transform: translateY(-50%); border: 7px solid transparent; border-left: 0; border-right-color: #d6f3fb; }
+#scrView .scr-pick { margin: 0; color: #60717c; font-size: calc(12.5px * var(--fs)); text-align: center; line-height: 1.5; }
+#scrView #scrSupports { display: grid; gap: 8px; }
+#scrView .scr-support-item { overflow: hidden; border: 1px solid transparent; border-radius: 11px; background: #e6f7fc; color: #1d5a5a; }
+#scrView .scr-support-item.blue { background: #dfe8f9; color: #2350a8; }
+#scrView .scr-support-item[open], #scrView .scr-support-item.open { border-color: currentColor; }
+#scrView .scr-support-toggle, #scrView .scr-support-item > summary { display: flex; align-items: center; gap: 9px; width: 100%; padding: 10px; border: 0; background: none; color: inherit; text-align: left; font-size: calc(14px * var(--fs)); font-weight: 600; line-height: 1.35; cursor: pointer; list-style: none; }
+#scrView .scr-support-item > summary::-webkit-details-marker { display: none; }
+#scrView .scr-support-toggle svg, #scrView .scr-support-item > summary svg { flex: none; width: 18px; height: 18px; }
+#scrView .scr-support-icon { flex: none; display: grid; place-items: center; width: 29px; height: 29px; border-radius: 50%; background: rgba(255,255,255,.8); }
+#scrView .scr-support-chevron { margin-left: auto; opacity: .6; }
+#scrView .scr-support-content { margin: 0 8px 8px; padding: 12px; border-radius: 8px; background: #fff; color: var(--text); font-size: calc(13px * var(--fs)); line-height: 1.6; }
+#scrView .scr-support-content p { margin: 0 0 8px; }
+#scrView .scr-support-content p:last-child { margin-bottom: 0; }
+#scrView .scr-support-content ul { margin: 0; padding-left: 18px; }
+#scrView .scr-support-content button { width: 100%; padding: 8px 10px; border: 1px solid #cce6ef; border-radius: 7px; background: var(--cyan-softer); color: var(--navy); font-size: inherit; text-align: left; }
+#scrView .scr-support-content button + button { margin-top: 6px; }
+@media (max-width: 1180px) {
+  #scrView { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  #scrView .scr-right { grid-template-columns: minmax(0, 1fr); }
+  #scrView .scr-support-body { grid-template-columns: minmax(0, 1fr); }
+  #scrView .scr-support-head { justify-content: flex-start; padding-left: 20px; }
+  #scrView .scr-support-body { padding: 10px 20px 20px; }
+  #scrView .scr-intro { max-width: 470px; }
+  #scrView .scr-pick { text-align: left; }
+}
+@media (max-width: 760px) {
+  #scrView { grid-template-columns: minmax(0, 1fr); padding: 14px; gap: 16px; }
+  #scrView .scr-paragraphs { max-height: 66vh; }
+  #scrView .scr-passage-head, #scrView .scr-paragraphs, #scrView .scr-response-body { padding: 16px; }
+  #scrView .scr-response-head { padding: 15px 16px; }
+  #scrView .scr-right { gap: 14px; }
+  #scrView #scrAnswer { min-height: 235px; }
+}
+@media (max-width: 400px) {
+  #scrView .scr-reading-tools { gap: 6px; }
+  #scrView .scr-tool { font-size: 11px; padding: 6px 7px; }
+  #scrView .scr-zoom { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { #scrView #scrLimitBar, #scrView .scr-paragraphs p { transition: none; } }
+
+.proto-bar .band[hidden], #scrDraftNote[hidden], #scrDictionaryPanel[hidden] { display: none; }
+#scrDraftNote { font-size: 11px; color: #8a6a1c; }
+.home-assignment-card + .home-assignment-card { margin-top: 16px; }
+#scrView #scrToolbar > .rte-bar { width: 100%; padding: 0; border: 0; }
+#scrView #scrQuestions button { display: inline-flex; justify-content: center; align-items: center; gap: 3px; }
+#scrView #scrCount.over, #scrView #scrStatus.scr-over { color: #a8352a; }
+#scrView #scrLimitBar.over { background: #a8352a; }
+#scrView .scr-dictionary { margin: 16px 20px 0; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--cyan-softer); font-size: calc(14px * var(--fs)); }
+#scrView .scr-dictionary dl { margin: 8px 0 0; }
+#scrView .scr-dictionary dt { color: var(--navy); font-weight: 700; }
+#scrView .scr-dictionary dd { margin: 0 0 8px; }
+#scrView .scr-support-content button:disabled { opacity: .6; cursor: default; }
+#scrView .scr-support-item > summary .chev { margin-left: auto; }
+#scrView .scr-support-item[open] > summary .chev { transform: rotate(180deg); }
+body[data-band="9-12"] #scrView .scr-intro { display: none; }
 </style>
 </head>
 <body>
@@ -898,8 +1022,9 @@
     <span>TASK</span>
     <button data-mode="ecr">ECR</button>
     <button data-mode="ecrq">ECR + Q</button>
+    <button data-mode="scr">SCR</button>
   </div>
-
+  <span id="scrDraftNote" hidden>SCR Question 2 and supports: draft copy for review</span>
 </div>
 
 <main id="homeView" class="home-view" hidden aria-label="Student homepage">
@@ -1078,6 +1203,51 @@
       <div class="supports" id="supports"></div>
     </div>
   </aside>
+</main>
+
+<main id="scrView" class="scr-workspace" hidden aria-label="Short constructed response assignment">
+  <section class="panel scr-reading" aria-labelledby="scrPassageTitle">
+    <header class="scr-passage-head">
+      <div class="scr-title-row"><span class="scr-eyebrow">Passage</span><h2 id="scrPassageTitle">The Amazing Journey of a Monarch Butterfly</h2></div>
+      <div class="scr-reading-tools" role="toolbar" aria-label="Passage tools">
+        <button id="scrDictionary" class="scr-tool" type="button" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1m0-15c3-2 6-2 9-1v15c-3-1-6-1-9 1V5Z" stroke-linejoin="round"/></svg>Dictionary</button>
+        <button id="scrLineReader" class="scr-tool" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 3h14M5 21h14M5 10h14M5 14h14" stroke-linecap="round"/><rect x="2" y="7" width="20" height="10" rx="2"/></svg>Line Reader</button>
+        <div class="scr-zoom" role="group" aria-label="Passage text size">
+          <button id="scrZoomIn" class="scr-tool" type="button" title="Increase passage text size" aria-label="Increase passage text size"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6M7 10h6M10 7v6" stroke-linecap="round"/></svg></button>
+          <button id="scrZoomOut" class="scr-tool" type="button" title="Decrease passage text size" aria-label="Decrease passage text size"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6M7 10h6" stroke-linecap="round"/></svg></button>
+        </div>
+        <button id="scrReset" class="scr-tool scr-reset" type="button" title="Reset passage tools" aria-label="Reset passage tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M19 11a7 7 0 0 0-12-5L4 9m1 4a7 7 0 0 0 12 5l3-3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </header>
+    <div id="scrDictionaryPanel" class="scr-dictionary" hidden><strong>Passage words</strong><dl><dt>Migration</dt><dd>A regular journey animals make from one place to another.</dd><dt>Nectar</dt><dd>A sweet liquid made by flowers.</dd><dt>Habitat</dt><dd>The natural place where a plant or animal lives.</dd></dl></div>
+    <div id="scrPassage" class="panel-body scr-paragraphs" tabindex="0" aria-label="Passage text"></div>
+  </section>
+  <div class="scr-right">
+    <nav id="scrQuestions" aria-label="Assignment questions"></nav>
+    <section class="panel scr-response" aria-labelledby="scrResponseHeading">
+      <header class="scr-response-head"><h2 id="scrResponseHeading">Your response</h2><span id="scrQuestionCount">Question 1 of 2</span></header>
+      <div class="panel-body scr-response-body">
+        <p class="scr-instruction">Read the question carefully. Then enter your answer in the box provided.</p>
+        <p id="scrQuestion"></p>
+        <div id="scrEditorHost">
+          <div id="scrToolbar" role="toolbar" aria-label="Answer formatting"></div>
+          <div id="scrAnswer" class="rte big" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Your answer" aria-describedby="scrCharacterLimit scrCount" spellcheck="true" data-placeholder="Write your answer here…"></div>
+        </div>
+        <div class="scr-character-row"><span id="scrCharacterLimit">Max. 475 characters</span><span id="scrCount">0 / 475</span></div>
+        <div class="scr-limit-track" aria-hidden="true"><span id="scrLimitBar"></span></div>
+        <p id="scrStatus" role="status" aria-live="polite"></p>
+      </div>
+      <footer class="scr-response-footer"><button id="scrSubmit" type="button">Submit Answer <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></footer>
+    </section>
+    <aside class="panel scr-support" aria-labelledby="scrSupportHeading">
+      <header class="scr-support-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M8 10a4 4 0 1 1 8 0c0 3-2 3-2 6h-4c0-3-2-3-2-6ZM10 19h4M12 1v2M3 9h2M19 9h2M5 3l2 2M19 3l-2 2" stroke-linecap="round" stroke-linejoin="round"/></svg><h2 id="scrSupportHeading">Writing Support</h2></header>
+      <div class="panel-body scr-support-body">
+        <div class="scr-intro"><div class="scr-avatar"><img src="luna.png" alt="Luna" /></div><p class="scr-bubble">Hi, I’m Luna! I’m here to help you with your writing.</p></div>
+        <p class="scr-pick">Pick a writing support below:</p>
+        <div id="scrSupports"></div>
+      </div>
+    </aside>
+  </div>
 </main>
 
 <div class="fb-overlay" id="fbOverlay" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
@@ -2594,7 +2764,11 @@ const setBand = b => {
 let savedBand = '2-3';
 try { savedBand = localStorage.getItem('lscr-band') || '2-3'; } catch (e) {}
 setBand(LSCR ? LSCR.band : savedBand);
-$('band').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setBand(b.dataset.band); });
+$('band').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (document.body.dataset.view === 'scr') { syncScrAnswer(); scrState.band = b.dataset.band; document.body.dataset.band = b.dataset.band; syncTaskControls('scr'); renderScr(); }
+  else { setBand(b.dataset.band); ecrBand = b.dataset.band; }
+});
 let savedMode = 'ecr';
 try { savedMode = localStorage.getItem('lscr-mode') || 'ecr'; } catch (e) {}
 setMode(LSCR ? (LSCR.questions.length ? 'ecrq' : 'ecr') : savedMode === 'ecrq' ? 'ecrq' : 'ecr');
@@ -2612,7 +2786,13 @@ let savedPtype = 'arg';
 try { savedPtype = localStorage.getItem('lscr-ptype') || 'arg'; } catch (e) {}
 setPtype(LSCR ? (/inform/i.test(LSCR.writingType || '') ? 'info' : /narr/i.test(LSCR.writingType || '') ? 'narr' : 'arg') : TYPE_KEYS.includes(savedPtype) ? savedPtype : 'arg');
 $('ptype').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setPtype(b.dataset.ptype); });
-$('mode').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setMode(b.dataset.mode); });
+$('mode').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.mode === 'scr') { if (document.body.dataset.view !== 'scr' && saveCurrentView()) showScr(); return; }
+  if (document.body.dataset.view === 'scr') { if (!saveScrDraft()) return; showAssignment(); }
+  if (mode !== b.dataset.mode) setMode(b.dataset.mode);
+  syncTaskControls('assignment');
+});
 
 // Zoom only scales the passage text
 let size = 16;
@@ -2678,6 +2858,158 @@ const DEMO_WRITING = {
   });
   renderStep();
 })();
+
+// ---------- SCR preview: screenshot passage, with draft Question 2 and static supports ----------
+const SCR = {
+  "title": "The Amazing Journey of a Monarch Butterfly",
+  "paragraphs": [
+    "Monarch butterflies are special insects that travel very far every year. They are known for their bright orange and black wings. These butterflies can fly thousands of miles from their homes in North America to warm places in Mexico. This journey is called migration.",
+    "In the fall, when the weather starts to get cold, monarch butterflies begin their long trip. They gather in groups, sometimes in the thousands, to fly together. This helps them stay safe from birds and other animals that want to eat them. The butterflies use the sun to help them find their way. They can even sense the Earth’s magnetic field!",
+    "During their journey, monarchs stop to rest and eat. They drink nectar from flowers. Nectar is a sweet liquid that flowers make. It gives the butterflies energy for their long flight. Monarchs also need to find water to drink. They often stop at ponds or streams along the way.",
+    "The trip to Mexico can take several weeks. Some butterflies fly over mountains and rivers. Others fly across fields and forests. They face many challenges, like strong winds and rain. But these brave butterflies keep going. They are determined to reach their destination.",
+    "When the monarchs arrive in Mexico, they find a special place to rest. They gather in large groups on trees in the mountains. This place is warm and safe. The butterflies stay there all winter, resting and waiting for spring.",
+    "In the spring, when the weather gets warmer, the monarchs begin their journey back home. They will lay eggs on milkweed plants along the way. Milkweed is very important for the baby butterflies, called caterpillars. The caterpillars eat the leaves of the milkweed to grow strong.",
+    "The life of a monarch butterfly is full of adventure. They travel far and face many challenges. Each butterfly plays a part in nature. They help flowers grow by spreading pollen. This is how they help the world around them.",
+    "Monarch butterflies are a symbol of change and hope. Their journey reminds us that we can overcome obstacles and find our way. As we learn more about these amazing creatures, we can think about how we can help protect them and their habitats."
+  ],
+  "maxChars": 475,
+  "questions": [
+    {
+      "question": "Based on what you read, what do you think might happen to the monarch butterflies if they could not find enough nectar during their migration?",
+      "hint": "Reread paragraph 3. Think about why monarch butterflies need nectar during their journey.",
+      "starters": [
+        "If monarch butterflies could not find enough nectar, ",
+        "The passage explains that ",
+        "This means that "
+      ]
+    },
+    {
+      "question": "How do monarch butterflies stay safe during their migration? Use details from the passage to support your answer.",
+      "hint": "Reread paragraphs 2 and 5. Look for details about how traveling and resting together helps the butterflies.",
+      "starters": [
+        "Monarch butterflies stay safe by ",
+        "The passage explains that ",
+        "This helps them because "
+      ]
+    }
+  ]
+};
+const SCR_DRAFT_KEY = 'lscr-prototype-scr-monarch-v1';
+const scrState = { band: document.body.dataset.band, current: 0, answers: ['', ''], submitted: [false, false], size: 16, lineReader: false };
+let savedScrDraft = null, ecrBand = document.body.dataset.band;
+const visibleBand = b => ({ '2-3': '2–3', '4-5': '4–5', '6-8': '6–7', '9-12': '8–12' }[b]);
+const scrComplete = () => scrState.submitted.every(Boolean);
+function syncScrAnswer() {
+  const editor = $('scrAnswer');
+  if (!scrState.submitted[scrState.current]) scrState.answers[scrState.current] = editor.innerHTML;
+  const n = editor.innerText.trim() ? editor.innerText.length : 0, over = n > SCR.maxChars;
+  $('scrCount').textContent = `${n} / ${SCR.maxChars} characters`;
+  $('scrCount').classList.toggle('over', over);
+  editor.setAttribute('aria-invalid', String(over)); $('scrStatus').classList.toggle('scr-over', over);
+  $('scrLimitBar').style.width = `${Math.min(100, n / SCR.maxChars * 100)}%`;
+  $('scrLimitBar').classList.toggle('over', over);
+  $('scrSubmit').disabled = !scrState.submitted[scrState.current] && (!editor.innerText.trim() || over);
+  $('scrStatus').textContent = over ? `Shorten your answer to ${SCR.maxChars} characters.` : scrState.submitted[scrState.current] ? 'Answer submitted.' : '';
+}
+function renderScr() {
+  const i = scrState.current, q = SCR.questions[i], submitted = scrState.submitted[i];
+  $('scrQuestionCount').textContent = `Question ${i + 1} of ${SCR.questions.length}`;
+  $('scrQuestions').innerHTML = `<span>Question</span>${SCR.questions.map((_, j) => `<button type="button" data-scr-question="${j}" aria-label="Question ${j + 1}${scrState.submitted[j] ? ', submitted' : ''}" aria-current="${j === i ? 'step' : 'false'}" class="${j === i ? 'on' : ''} ${scrState.submitted[j] ? 'submitted' : ''}">${j + 1}${scrState.submitted[j] ? '<span aria-hidden="true"> ✓</span>' : ''}</button>`).join('')}`;
+  $('scrQuestion').textContent = q.question;
+  $('scrAnswer').innerHTML = savedWritingHtml(scrState.answers[i]);
+  $('scrAnswer').contentEditable = String(!submitted); $('scrAnswer').setAttribute('aria-readonly', String(submitted));
+  $('scrToolbar').innerHTML = rteBar();
+  $('scrToolbar').querySelectorAll('button').forEach(b => {
+    b.disabled = submitted;
+    b.onmousedown = e => e.preventDefault();
+    b.onclick = () => { $('scrAnswer').focus(); document.execCommand(b.dataset.cmd); syncScrAnswer(); };
+  });
+  $('scrSupports').innerHTML = `<details class="scr-support-item"><summary><span class="scr-support-icon">?</span>Hint${chev}</summary><div class="scr-support-content"><p>${esc(q.hint)}</p></div></details>
+    <details class="scr-support-item blue"><summary><span class="scr-support-icon">✎</span>Sentence Starters${chev}</summary><div class="scr-support-content"><p>Choose a starter, then finish the sentence with your own ideas.</p>${q.starters.map((text, j) => `<button type="button" data-scr-starter="${j}" ${submitted ? 'disabled' : ''}>${esc(text)}…</button>`).join('')}</div></details>`;
+  $('scrSupports').querySelectorAll('[data-scr-starter]').forEach(b => b.onclick = () => {
+    const editor = $('scrAnswer'); editor.focus();
+    const range = document.createRange(); range.selectNodeContents(editor); range.collapse(false);
+    const selection = getSelection(); selection.removeAllRanges(); selection.addRange(range);
+    document.execCommand('insertText', false, (editor.innerText && !/\s$/.test(editor.innerText) ? ' ' : '') + q.starters[+b.dataset.scrStarter]);
+    syncScrAnswer();
+  });
+  $('scrSubmit').textContent = submitted ? i < SCR.questions.length - 1 ? 'Next question →' : 'Back to home' : 'Submit Answer';
+  $('scrPassage').style.fontSize = `calc(${scrState.size}px * var(--fs))`;
+  $('scrPassage').classList.toggle('is-line-reader', scrState.lineReader);
+  $('scrLineReader').setAttribute('aria-pressed', String(scrState.lineReader));
+  $('scrPassage').querySelectorAll('p').forEach(p => p.tabIndex = scrState.lineReader ? 0 : -1);
+  syncScrAnswer();
+}
+function saveScrDraft() {
+  syncScrAnswer();
+  try {
+    const draft = { version: 1, ...scrState, savedAt: new Date().toISOString() };
+    const json = JSON.stringify(draft); localStorage.setItem(SCR_DRAFT_KEY, json); savedScrDraft = JSON.parse(json);
+    $('saveError').hidden = true; return true;
+  } catch (e) {
+    $('saveError').textContent = 'Your work could not be saved. Please keep this page open and try again.'; $('saveError').hidden = false; return false;
+  }
+}
+function restoreScrDraft() {
+  try {
+    const d = JSON.parse(localStorage.getItem(SCR_DRAFT_KEY));
+    if (!d || d.version !== 1 || !BANDS.includes(d.band) || !Array.isArray(d.answers) || d.answers.length !== SCR.questions.length) return;
+    Object.assign(scrState, { band: d.band, current: wholeNumber(d.current, SCR.questions.length - 1), answers: d.answers.map(v => savedWritingHtml(typeof v === 'string' ? v : '')), submitted: SCR.questions.map((_, i) => d.submitted?.[i] === true), size: typeof d.size === 'number' && Number.isFinite(d.size) ? Math.max(14, Math.min(26, d.size)) : 16, lineReader: d.lineReader === true });
+    savedScrDraft = d;
+  } catch (e) {}
+}
+function scrHomeCard() {
+  const date = savedScrDraft && new Date(savedScrDraft.savedAt);
+  const saved = date && Number.isFinite(date.getTime()) ? `Saved ${date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : '';
+  return `<article class="home-assignment-card"><div class="home-card-top"><span>Short constructed response</span><span class="home-status">${scrComplete() ? 'Completed' : savedScrDraft ? 'In progress' : 'Ready to begin'}</span></div>
+    <h2>${esc(SCR.title)}</h2><p class="home-assignment-meta">Grades ${visibleBand(scrState.band)} · 2 questions</p>
+    <p class="home-place">${scrComplete() ? '2 of 2 answers submitted' : `Question ${scrState.current + 1} of 2`}</p>
+    <div class="home-progress" aria-hidden="true">${SCR.questions.map((_, i) => `<span class="${scrState.submitted[i] ? 'done' : i === scrState.current && savedScrDraft ? 'current' : ''}"></span>`).join('')}</div>
+    <div class="home-card-footer"><span class="home-saved">${esc(saved)}</span><button class="home-resume" id="resumeScr">${scrComplete() ? 'View assignment' : savedScrDraft ? 'Resume assignment' : 'Open assignment'} <span aria-hidden="true">→</span></button></div></article>`;
+}
+function syncTaskControls(view) {
+  $('ptype').hidden = view === 'scr'; $('scrDraftNote').hidden = view !== 'scr';
+  $('mode').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.mode === (view === 'scr' ? 'scr' : mode)));
+  $('band').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.band === document.body.dataset.band));
+}
+function showScr(navigate = true) {
+  if (document.body.dataset.view === 'assignment') ecrBand = document.body.dataset.band;
+  hidePop(); closeFeedback();
+  document.body.dataset.band = scrState.band; setPageView('scr'); syncTaskControls('scr'); renderScr();
+  if (navigate && location.hash !== '#scr') history.pushState(null, '', '#scr');
+  $('scrQuestions').querySelector('[aria-current="step"]').focus({ preventScroll: true });
+}
+function saveCurrentView() {
+  if (document.body.dataset.view === 'home') return true;
+  if (document.body.dataset.view === 'scr') return saveScrDraft();
+  ecrBand = document.body.dataset.band; return saveDraft();
+}
+$('scrAnswer').addEventListener('input', syncScrAnswer);
+$('scrQuestions').onclick = e => {
+  const b = e.target.closest('[data-scr-question]'); if (!b) return;
+  syncScrAnswer(); scrState.current = +b.dataset.scrQuestion; renderScr();
+  $('scrQuestions').querySelector('[aria-current="step"]').focus({ preventScroll: true });
+};
+$('scrSubmit').onclick = () => {
+  syncScrAnswer(); if ($('scrSubmit').disabled) return;
+  if (scrState.submitted[scrState.current]) {
+    if (scrState.current < SCR.questions.length - 1) { scrState.current++; renderScr(); $('scrAnswer').focus(); }
+    else saveAndExit();
+    return;
+  }
+  scrState.submitted[scrState.current] = true;
+  if (!saveScrDraft()) { scrState.submitted[scrState.current] = false; syncScrAnswer(); return; }
+  renderScr();
+};
+$('scrZoomIn').onclick = () => { syncScrAnswer(); scrState.size = Math.min(26, scrState.size + 2); renderScr(); };
+$('scrZoomOut').onclick = () => { syncScrAnswer(); scrState.size = Math.max(14, scrState.size - 2); renderScr(); };
+$('scrLineReader').onclick = () => { syncScrAnswer(); scrState.lineReader = !scrState.lineReader; renderScr(); };
+$('scrReset').onclick = () => { syncScrAnswer(); scrState.size = 16; scrState.lineReader = false; $('scrDictionaryPanel').hidden = true; $('scrDictionary').setAttribute('aria-expanded', 'false'); renderScr(); };
+$('scrDictionary').setAttribute('aria-controls', 'scrDictionaryPanel');
+$('scrDictionary').onclick = () => { const open = $('scrDictionaryPanel').hidden; $('scrDictionaryPanel').hidden = !open; $('scrDictionary').setAttribute('aria-expanded', String(open)); };
+$('scrPassageTitle').textContent = SCR.title;
+$('scrPassage').innerHTML = paras(SCR.paragraphs.map(esc));
+
 // ---------- Homepage and browser-local Save & Exit (prototype only) ----------
 // These drafts stay in this browser. No student work is sent to a service or CMS.
 const draftIdentity = JSON.stringify({ passages: assignment.passages, questions: questionSet, prompt: LSCR?.prompt });
@@ -2794,6 +3126,9 @@ function renderHome() {
   });
   $('homeAssignments').setAttribute('aria-labelledby', `home-tab-${homeTab}`);
   if (homeTab !== 'active') {
+    if (homeTab === 'completed' && scrComplete()) {
+      $('homeAssignments').innerHTML = scrHomeCard(); $('resumeScr').onclick = () => showScr(); return;
+    }
     $('homeAssignments').innerHTML = `<div class="home-empty"><h2>${homeTab === 'past' ? 'No past due assignments' : 'No completed assignments yet'}</h2><p>${homeTab === 'past' ? 'You’re all caught up.' : 'Your completed assignments will appear here.'}</p></div>`;
     return;
   }
@@ -2805,33 +3140,35 @@ function renderHome() {
   $('homeAssignments').innerHTML = `<article class="home-assignment-card">
     <div class="home-card-top"><span>${type} writing</span><span class="home-status">${savedDraft ? 'In progress' : 'Ready to begin'}</span></div>
     <h2>${esc(title)}</h2>
-    <p class="home-assignment-meta">Grades ${{ '2-3': '2–3', '4-5': '4–5', '6-8': '6–7', '9-12': '8–12' }[document.body.dataset.band]} · ${mode === 'ecrq' ? 'Reading questions + writing' : 'Extended constructed response'}</p>
+    <p class="home-assignment-meta">Grades ${visibleBand(ecrBand)} · ${mode === 'ecrq' ? 'Reading questions + writing' : 'Extended constructed response'}</p>
     <p class="home-place">${savedDraft ? esc(place) : 'Read, plan, write, and revise.'}</p>
     <div class="home-progress" aria-hidden="true">${assignment.steps.map((_, i) => `<span class="${savedDraft && !inQuestions() ? i < current ? 'done' : i === current ? 'current' : '' : ''}"></span>`).join('')}</div>
     <div class="home-card-footer"><span class="home-saved">${esc(saved)}</span><button class="home-resume" id="resumeAssignment">${savedDraft ? 'Resume assignment' : 'Open assignment'} <span aria-hidden="true">→</span></button></div>
-  </article>`;
+  </article>` + (scrComplete() ? '' : scrHomeCard());
   $('resumeAssignment').onclick = () => showAssignment();
+  if ($('resumeScr')) $('resumeScr').onclick = () => showScr();
 }
 
-function setPageView(home) {
-  $('homeView').hidden = !home; $('assignmentView').hidden = home;
+function setPageView(view) {
+  const home = view === 'home';
+  $('homeView').hidden = !home; $('assignmentView').hidden = view !== 'assignment'; $('scrView').hidden = view !== 'scr';
   document.querySelector('.assign-bar').hidden = home; document.querySelector('.proto-bar').hidden = home;
-  document.body.dataset.view = home ? 'home' : 'assignment';
-  document.title = home ? 'LoneStar CR · Home' : 'LoneStar CR Assignment';
+  document.body.dataset.view = view;
+  document.title = home ? 'LoneStar CR · Home' : view === 'scr' ? 'LoneStar CR · SCR Assignment' : 'LoneStar CR Assignment';
   window.scrollTo(0, 0);
 }
 function showHome(navigate = true) {
   homeTab = 'active'; hidePop(); closeFeedback(); speakingKey = null; lastRange = null;
-  renderHome(); setPageView(true);
+  renderHome(); setPageView('home');
   if (navigate && location.hash !== '#home') history.pushState(null, '', '#home');
   $('home-tab-active').focus({ preventScroll: true });
 }
 function showAssignment(navigate = true) {
-  setPageView(false);
+  document.body.dataset.band = ecrBand; setPageView('assignment'); syncTaskControls('assignment');
   if (navigate && location.hash !== '#assignment') history.pushState(null, '', '#assignment');
   $('saveExit').focus({ preventScroll: true });
 }
-function saveAndExit(navigate = true) { if (saveDraft()) showHome(navigate); }
+function saveAndExit(navigate = true) { if (saveCurrentView()) showHome(navigate); }
 $('saveExit').onclick = () => saveAndExit();
 $('homeButton').onclick = () => { if ($('homeView').hidden) saveAndExit(); else showHome(false); };
 $('homeTabs').addEventListener('click', e => {
@@ -2845,14 +3182,17 @@ $('homeTabs').addEventListener('keydown', e => {
   homeTab = tabs[next].dataset.homeTab; renderHome(); tabs[next].focus();
 });
 addEventListener('popstate', () => {
-  if (location.hash === '#home') {
-    if (!$('homeView').hidden || saveDraft()) showHome(false);
-    else history.replaceState(null, '', '#assignment');
-  } else showAssignment(false);
+  if (!saveCurrentView()) { history.replaceState(null, '', document.body.dataset.view === 'scr' ? '#scr' : '#assignment'); return; }
+  if (location.hash === '#home') showHome(false);
+  else if (location.hash === '#scr') showScr(false);
+  else showAssignment(false);
 });
 // Run after demo initialization, so saved student writing takes precedence over sample writing.
 try { const draft = JSON.parse(localStorage.getItem(DRAFT_KEY)); if (restoreDraft(draft)) savedDraft = draft; } catch (e) {}
-if (location.hash === '#home') showHome(false); else setPageView(false);
+ecrBand = document.body.dataset.band; restoreScrDraft();
+if (location.hash === '#home') showHome(false);
+else if (location.hash === '#scr') showScr(false);
+else { setPageView('assignment'); syncTaskControls('assignment'); }
 </script>
 </body>
 </html>
