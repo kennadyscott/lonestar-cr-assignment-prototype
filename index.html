@@ -974,6 +974,44 @@
 #scrLengthDialog button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
 @media (max-width: 480px) { #scrLengthDialog { padding: 25px 20px 18px; } #scrLengthDialog .scr-warning-actions { flex-direction: column; } }
 
+/* SCR strategy self-check, shown after continuing past the length warning. */
+#scrChecklistDialog { width: min(760px, calc(100% - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow-y: auto; border: 1px solid var(--border); border-radius: 18px; background: #fff; color: var(--text); box-shadow: 0 18px 70px #092b3f33; }
+#scrChecklistDialog::backdrop { background: rgb(15 30 39 / 55%); }
+#scrChecklistDialog .scr-checklist-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 24px; background: var(--cyan-soft); border-bottom: 1px solid #c4e6f0; }
+#scrChecklistDialog h2 { margin: 0; color: var(--navy); font-size: clamp(19px, 3.2vw, 23px); line-height: 1.4; font-weight: 700; }
+#scrChecklistDialog #scrChecklistClose { display: grid; place-items: center; flex: none; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--navy); }
+#scrChecklistDialog #scrChecklistClose:hover { background: #c4e6f0; }
+#scrChecklistDialog #scrChecklistClose svg { width: 22px; height: 22px; }
+#scrChecklistDialog .scr-checklist-body { padding: 24px; }
+#scrChecklistDialog .scr-checklist-intro { max-width: 54ch; margin: 0 auto 20px; text-align: center; font-size: calc(17px * var(--fs)); line-height: 1.65; }
+#scrChecklistDialog table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
+#scrChecklistDialog .scr-checklist-choice-col { width: 66px; }
+#scrChecklistDialog thead th { padding: 0 0 4px 8px; color: var(--navy); text-align: center; font-size: calc(14px * var(--fs)); font-weight: 700; }
+#scrChecklistDialog tbody th { padding: 13px 14px; border: 1px solid var(--border); border-radius: 10px; background: #fbfdfe; text-align: left; font-weight: 600; }
+#scrChecklistDialog .scr-checklist-label { display: flex; align-items: center; gap: 13px; font-size: calc(15px * var(--fs)); line-height: 1.5; }
+#scrChecklistDialog .scr-checklist-letter { display: grid; place-items: center; flex: none; width: 40px; height: 44px; border-radius: 7px; background: var(--letter-bg); color: var(--letter-color); font-size: 24px; font-weight: 800; }
+#scrChecklistDialog td { padding-left: 8px; text-align: center; }
+#scrChecklistDialog .scr-checklist-choice { display: grid; place-items: center; min-height: 58px; border: 1px solid #c8d9e2; border-radius: 10px; background: #fff; cursor: pointer; }
+#scrChecklistDialog .scr-checklist-choice:hover { background: var(--cyan-softer); }
+#scrChecklistDialog .scr-checklist-choice:has(input:checked) { border-color: var(--navy); background: var(--cyan-soft); }
+#scrChecklistDialog input { width: 21px; height: 21px; margin: 0; accent-color: var(--navy); cursor: pointer; }
+#scrChecklistDialog .scr-checklist-footer { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; padding: 0 24px 24px; }
+#scrChecklistDialog .scr-checklist-footer button { min-height: 44px; padding: 10px 16px; border: 1px solid var(--navy); border-radius: 9px; background: var(--navy); color: #fff; font-size: calc(14px * var(--fs)); font-weight: 600; }
+#scrChecklistDialog .scr-checklist-footer button:hover { background: var(--navy-2); }
+#scrChecklistDialog .scr-checklist-footer #scrChecklistEdit.has-submit { border-color: #c8d9e2; background: #f4f7f9; color: var(--navy); }
+#scrChecklistDialog button:focus-visible, #scrChecklistDialog input:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+#scrChecklistDialog #scrChecklistSubmit[hidden] { display: none; }
+@media (max-width: 480px) {
+  #scrChecklistDialog .scr-checklist-head { padding: 12px 14px; }
+  #scrChecklistDialog .scr-checklist-body { padding: 18px 14px; }
+  #scrChecklistDialog .scr-checklist-choice-col { width: 51px; }
+  #scrChecklistDialog tbody th { padding: 11px 8px; }
+  #scrChecklistDialog .scr-checklist-label { gap: 8px; font-size: 13px; }
+  #scrChecklistDialog .scr-checklist-letter { width: 29px; height: 36px; font-size: 21px; }
+  #scrChecklistDialog td { padding-left: 6px; }
+  #scrChecklistDialog .scr-checklist-footer { padding: 0 14px 18px; }
+}
+
 .proto-bar .band[hidden], #scrDraftNote[hidden], #scrDictionaryPanel[hidden] { display: none; }
 #scrDraftNote { font-size: 11px; color: #8a6a1c; }
 .home-assignment-card + .home-assignment-card { margin-top: 16px; }
@@ -1280,6 +1318,25 @@ body[data-band="9-12"] #scrView .scr-intro { display: none; }
     <button id="scrKeepWriting" type="button" autofocus>Keep Writing</button>
   </div>
   <button id="scrWarningClose" type="button">Close</button>
+</dialog>
+
+<dialog id="scrChecklistDialog" aria-labelledby="scrChecklistTitle" aria-describedby="scrChecklistIntro">
+  <header class="scr-checklist-head">
+    <h2 id="scrChecklistTitle">Strategy Anchor Check List</h2>
+    <button id="scrChecklistClose" type="button" aria-label="Close strategy checklist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke-linecap="round"/></svg></button>
+  </header>
+  <div class="scr-checklist-body">
+    <p id="scrChecklistIntro" class="scr-checklist-intro">Did you remember to follow RACE? Check each one to confirm your answer included the requirements.</p>
+    <table aria-label="RACE strategy checklist">
+      <colgroup><col><col class="scr-checklist-choice-col"><col class="scr-checklist-choice-col"></colgroup>
+      <thead><tr><td></td><th scope="col">Yes</th><th scope="col">No</th></tr></thead>
+      <tbody id="scrChecklistRows"></tbody>
+    </table>
+  </div>
+  <footer class="scr-checklist-footer">
+    <button id="scrChecklistEdit" type="button">Go back and Edit</button>
+    <button id="scrChecklistSubmit" type="button" hidden>Submit Answer</button>
+  </footer>
 </dialog>
 
 <div class="fb-overlay" id="fbOverlay" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
@@ -2930,6 +2987,14 @@ const SCR_DRAFT_KEY = 'lscr-prototype-scr-monarch-v1';
 const scrState = { band: document.body.dataset.band, current: 0, answers: ['', ''], submitted: [false, false], size: 16, lineReader: false };
 let savedScrDraft = null, ecrBand = document.body.dataset.band;
 let scrWarningQuestion = null;
+// Screenshot's RACE self-check sample. The student app resolves the assigned strategy in CMS.
+const SCR_STRATEGY_CHECKS = [
+  { letter: 'R', label: 'RESTATE THE QUESTION', color: '#9b328b', bg: '#faeafa' },
+  { letter: 'A', label: 'ANSWER THE QUESTION', color: '#126b8c', bg: '#e1f4fb' },
+  { letter: 'C', label: 'CITE EVIDENCE FROM THE TEXT', color: '#397929', bg: '#eaf6e5' },
+  { letter: 'E', label: 'EXPLAIN', color: '#a34f21', bg: '#fff0e5' }
+];
+let scrChecklist = null;
 const visibleBand = b => ({ '2-3': '2–3', '4-5': '4–5', '6-8': '6–7', '9-12': '8–12' }[b]);
 const scrComplete = () => scrState.submitted.every(Boolean);
 function syncScrAnswer() {
@@ -3037,6 +3102,45 @@ function submitScrAnswer() {
   if (!saveScrDraft()) { scrState.submitted[scrState.current] = false; syncScrAnswer(); $('scrAnswer').focus(); return; }
   renderScr(); $('scrSubmit').focus();
 }
+function closeScrChecklist(returnToWriting = true) {
+  if (!$('scrChecklistDialog').open) return;
+  scrChecklist = null;
+  $('scrChecklistDialog').close();
+  if (returnToWriting && document.body.dataset.view === 'scr') $('scrAnswer').focus();
+}
+function openScrChecklist() {
+  syncScrAnswer();
+  if (document.body.dataset.view !== 'scr' || $('scrSubmit').disabled || scrState.submitted[scrState.current]) return;
+  scrChecklist = { question: scrState.current, answer: scrState.answers[scrState.current], choices: SCR_STRATEGY_CHECKS.map(() => null) };
+  $('scrChecklistRows').innerHTML = SCR_STRATEGY_CHECKS.map((item, i) => `<tr><th scope="row"><span class="scr-checklist-label"><span class="scr-checklist-letter" style="--letter-color:${item.color};--letter-bg:${item.bg}" aria-hidden="true">${item.letter}</span><span>${item.label}</span></span></th>${['yes', 'no'].map(value => `<td><label class="scr-checklist-choice"><input type="radio" name="scr-check-${i}" value="${value}" data-scr-check="${i}" aria-label="${value === 'yes' ? 'Yes' : 'No'}: ${item.label.toLowerCase()}"></label></td>`).join('')}</tr>`).join('');
+  $('scrChecklistSubmit').hidden = true; $('scrChecklistEdit').classList.remove('has-submit');
+  $('scrChecklistDialog').showModal(); $('scrChecklistClose').focus();
+}
+function scrChecklistReady() {
+  return scrChecklist?.choices.length === SCR_STRATEGY_CHECKS.length && scrChecklist.choices.every(choice => choice === 'yes');
+}
+$('scrChecklistRows').addEventListener('change', e => {
+  const input = e.target.closest('[data-scr-check]'); if (!input || !scrChecklist) return;
+  scrChecklist.choices[+input.dataset.scrCheck] = input.value;
+  const ready = scrChecklistReady();
+  $('scrChecklistSubmit').hidden = !ready; $('scrChecklistEdit').classList.toggle('has-submit', ready);
+});
+$('scrChecklistClose').onclick = () => closeScrChecklist();
+$('scrChecklistEdit').onclick = () => closeScrChecklist();
+$('scrChecklistDialog').addEventListener('cancel', e => { e.preventDefault(); closeScrChecklist(); });
+$('scrChecklistDialog').addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const first = $('scrChecklistClose'), last = $('scrChecklistSubmit').hidden ? $('scrChecklistEdit') : $('scrChecklistSubmit');
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
+$('scrChecklistSubmit').onclick = () => {
+  if (!$('scrChecklistDialog').open || !scrChecklistReady()) return;
+  syncScrAnswer();
+  const matches = scrChecklist.question === scrState.current && scrChecklist.answer === scrState.answers[scrState.current];
+  closeScrChecklist(false);
+  if (matches) submitScrAnswer(); else $('scrAnswer').focus();
+};
 $('scrKeepWriting').onclick = () => closeScrWarning();
 $('scrWarningClose').onclick = () => closeScrWarning();
 $('scrLengthDialog').addEventListener('cancel', e => { e.preventDefault(); closeScrWarning(); });
@@ -3049,7 +3153,7 @@ $('scrLengthDialog').addEventListener('keydown', e => {
 $('scrSubmitAnyway').onclick = () => {
   const confirmedQuestion = scrWarningQuestion;
   closeScrWarning(false);
-  if (confirmedQuestion === scrState.current) submitScrAnswer();
+  if (confirmedQuestion === scrState.current) openScrChecklist();
 };
 $('scrSubmit').onclick = () => {
   syncScrAnswer(); if ($('scrSubmit').disabled) return;
@@ -3217,6 +3321,7 @@ function renderHome() {
 
 function setPageView(view) {
   closeScrWarning(false);
+  closeScrChecklist(false);
   const home = view === 'home';
   $('homeView').hidden = !home; $('assignmentView').hidden = view !== 'assignment'; $('scrView').hidden = view !== 'scr';
   document.querySelector('.assign-bar').hidden = home; document.querySelector('.proto-bar').hidden = home;
