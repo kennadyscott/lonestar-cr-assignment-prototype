@@ -833,6 +833,34 @@
 .home-resume svg { width: 17px; height: 17px; }
 @media (max-width: 520px) { .home-assignment-card { padding: 20px; } .home-assignment-card h2, .home-assignment-card h3 { font-size: 21px; } }
 
+/* Past due reference rows retain the homepage's existing columns and tabs. */
+.home-assignments { container-type: inline-size; container-name: home-assignments; }
+.home-tab[data-home-tab="past"][aria-selected="true"] { color: #ffb4aa; }
+.home-past-list { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow); }
+.home-past-row { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(100px, .85fr) minmax(110px, .9fr) 76px; gap: 18px; align-items: start; padding: 23px 20px; }
+.home-past-row + .home-past-row { border-top: 1px solid var(--border); }
+.home-past-row dl { min-width: 0; margin: 0; }
+.home-past-row dt { margin: 0 0 4px; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+.home-past-row dd { margin: 0; color: var(--text); font-size: 13.5px; font-weight: 600; line-height: 1.55; overflow-wrap: anywhere; }
+.home-past-row dd + dt { margin-top: 17px; }
+.home-past-row h2 { margin: 0; color: var(--navy); font-size: 17px; font-weight: 800; line-height: 1.4; letter-spacing: -.015em; }
+.home-past-row time { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.home-past-row .home-past-due { color: #b83f32; font-weight: 800; }
+.home-past-teacher { display: flex; align-items: center; gap: 7px; }
+.home-past-avatar { display: grid; place-items: center; flex: none; width: 27px; height: 27px; border: 1px solid #c8d9e2; border-radius: 50%; background: var(--cyan-softer); color: var(--navy); font-size: 10px; font-weight: 700; }
+.home-past-continue { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--navy); font-size: 12.5px; font-weight: 600; line-height: 1.4; }
+.home-past-play { display: grid; place-items: center; width: 51px; height: 51px; border-radius: 50%; background: var(--cyan-soft); color: #078bb3; }
+.home-past-play svg { width: 22px; height: 22px; margin-left: 3px; }
+.home-past-continue:not(:disabled):hover .home-past-play { background: var(--navy); color: #fff; }
+.home-past-continue:disabled { cursor: default; }
+.home-past-continue:disabled .home-past-play { background: #eef7fa; color: #7096a5; }
+@container home-assignments (max-width: 620px) {
+  .home-past-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px 24px; padding: 20px; }
+  .home-past-main { grid-column: 1 / -1; }
+  .home-past-continue { grid-column: 1 / -1; justify-self: end; flex-direction: row; }
+  .home-past-play { width: 42px; height: 42px; }
+}
+
 /* View navigation shares the existing student header. */
 .workspace[hidden], .assign-bar[hidden], .proto-bar[hidden], .save-error[hidden] { display: none; }
 .save-error { max-width: 460px; color: #a8352a; font-size: 13px; line-height: 1.45; }
@@ -3290,16 +3318,39 @@ function restoreDraft(snapshot) {
   lastEdit = null; lastRange = null; hidePop(); renderStep(); return true;
 }
 
+// Static reference records supplied in Kennady's Past Due screenshot. These do not
+// reclassify the active demos or overwrite their saved work.
+const HOME_PAST_ASSIGNMENTS = [
+  { id: 'states-of-matter', title: 'Solid, Liquid, Gases', type: 'Science', assigned: '2026-09-11', due: '2026-09-13', questions: 2 },
+  { id: 'building-blocks', title: 'Building with Blocks: The Magic of Matter and Energy', type: 'Argumentative Passage', assigned: '2026-09-15', due: '2026-09-18', questions: 1 },
+  { id: 'magnets', title: 'The Amazing Power of Magnets', type: 'Argumentative Passage', assigned: '2026-09-21', due: '2026-09-25', questions: 1 },
+  { id: 'sounds', title: 'The Sounds of a Busy Day', type: 'Argumentative Passage', assigned: '2026-09-24', due: '2026-09-25', questions: 1 }
+];
+function renderPastAssignments() {
+  const dateLabel = iso => { const [year, month, day] = iso.split('-'); return `${month}-${day}-${year}`; };
+  $('homeAssignments').innerHTML = `<div class="home-past-list">${HOME_PAST_ASSIGNMENTS.map(row => {
+    // Only resume a matching local assignment; never open unrelated content or reset a draft.
+    const canResume = row.id === 'sounds' && !LSCR && ptype === 'arg' && mode === 'ecr';
+    return `<article class="home-past-row" aria-labelledby="home-past-title-${row.id}">
+      <dl class="home-past-main"><dt>Title</dt><dd><h2 id="home-past-title-${row.id}">${esc(row.title)}</h2></dd><dt>Assignment Type</dt><dd>${esc(row.type)}</dd></dl>
+      <dl><dt>Date Assigned</dt><dd><time datetime="${row.assigned}">${dateLabel(row.assigned)}</time></dd><dt>Date Due</dt><dd class="home-past-due"><time datetime="${row.due}">${dateLabel(row.due)}</time></dd></dl>
+      <dl><dt># of Questions</dt><dd>${row.questions}</dd><dt>Teacher</dt><dd class="home-past-teacher"><span class="home-past-avatar" aria-hidden="true">KS</span><span>Kennady Scott</span></dd></dl>
+      <button type="button" class="home-past-continue" data-past-assignment="${row.id}" aria-label="Continue ${esc(row.title)}" ${canResume ? '' : 'disabled'}><span class="home-past-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4.7c0-1.3 1.4-2.1 2.5-1.4l12 7.3a1.65 1.65 0 0 1 0 2.8l-12 7.3C7.4 21.4 6 20.6 6 19.3Z"/></svg></span><span>Continue</span></button>
+    </article>`;
+  }).join('')}</div>`;
+  $('homeAssignments').querySelector('[data-past-assignment="sounds"]').onclick = e => { if (!e.currentTarget.disabled) showAssignment(); };
+}
 function renderHome() {
   document.querySelectorAll('[data-home-tab]').forEach(b => {
     const selected = b.dataset.homeTab === homeTab; b.setAttribute('aria-selected', selected); b.tabIndex = selected ? 0 : -1;
   });
   $('homeAssignments').setAttribute('aria-labelledby', `home-tab-${homeTab}`);
+  if (homeTab === 'past') { renderPastAssignments(); return; }
   if (homeTab !== 'active') {
     if (homeTab === 'completed' && scrComplete()) {
       $('homeAssignments').innerHTML = scrHomeCard(); $('resumeScr').onclick = () => showScr(); return;
     }
-    $('homeAssignments').innerHTML = `<div class="home-empty"><h2>${homeTab === 'past' ? 'No past due assignments' : 'No completed assignments yet'}</h2><p>${homeTab === 'past' ? 'You’re all caught up.' : 'Your completed assignments will appear here.'}</p></div>`;
+    $('homeAssignments').innerHTML = '<div class="home-empty"><h2>No completed assignments yet</h2><p>Your completed assignments will appear here.</p></div>';
     return;
   }
   const type = { arg: 'Argumentative', info: 'Informational', narr: 'Narrative' }[ptype];
