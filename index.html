@@ -3100,7 +3100,7 @@ function scrHomeCard() {
   const completed = scrComplete();
   return homeAssignmentRow({ id: 'scr', title: SCR.title, type: 'Short constructed response', questions: SCR.questions.length, completed: completed ? scrState.completedAt : null, isCompleted: completed }, {
     buttonId: 'resumeScr', action: completed ? 'View assignment' : 'Continue', icon: completed ? homeSubmittedIcon() : homePlayIcon(),
-    detail: `<div class="home-row-context"><span class="home-status">${completed ? 'Completed' : savedScrDraft ? 'In progress' : 'Ready to begin'}</span><span>Grades ${visibleBand(scrState.band)} · Short constructed response</span></div>
+    detail: `<div class="home-row-context"><span class="home-status">${completed ? 'Completed' : savedScrDraft ? 'In progress' : 'Ready to begin'}</span><span>Grades ${visibleBand(scrState.band)} · Short constructed response (SCR)</span></div>
       <p class="home-place">${completed ? '2 of 2 answers submitted' : `Question ${scrState.current + 1} of ${SCR.questions.length}`}</p>
       <div class="home-progress" aria-hidden="true">${SCR.questions.map((_, i) => `<span class="${scrState.submitted[i] ? 'done' : i === scrState.current && savedScrDraft ? 'current' : ''}"></span>`).join('')}</div>
       <span class="home-saved">${esc(saved)}</span>`
@@ -3407,12 +3407,13 @@ function renderHome() {
   // Active demos have no assignment/due dates in the supplied data; show missing dates honestly.
   const activeEcr = homeAssignmentRow({ id: 'ecr', title, type: `${type} Passage`, questions: mode === 'ecrq' ? questionSet.length + 1 : 1 }, {
     buttonId: 'resumeAssignment', action: 'Continue',
-    detail: `<div class="home-row-context"><span class="home-status">${savedDraft ? 'In progress' : 'Ready to begin'}</span><span>Grades ${visibleBand(ecrBand)} · ${mode === 'ecrq' ? 'Reading questions + writing' : 'Extended constructed response'}</span></div>
+    detail: `<div class="home-row-context"><span class="home-status">${savedDraft ? 'In progress' : 'Ready to begin'}</span><span>Grades ${visibleBand(ecrBand)} · ${mode === 'ecrq' ? 'Reading questions + writing (ECR + Q)' : 'Extended constructed response (ECR)'}</span></div>
       <p class="home-place">${savedDraft ? esc(place) : 'Read, plan, write, and revise.'}</p>
       <div class="home-progress" aria-hidden="true">${assignment.steps.map((_, i) => `<span class="${savedDraft && !inQuestions() ? i < current ? 'done' : i === current ? 'current' : '' : ''}"></span>`).join('')}</div>
       <span class="home-saved">${esc(saved)}</span>`
   });
-  $('homeAssignments').innerHTML = `<div class="home-assignment-list">${activeEcr}${scrComplete() ? '' : scrHomeCard()}</div>`;
+  // Keep both prototype entry points available, including after an SCR preview is submitted.
+  $('homeAssignments').innerHTML = `<div class="home-assignment-list">${activeEcr}${scrHomeCard()}</div>`;
   $('resumeAssignment').onclick = () => showAssignment();
   if ($('resumeScr')) $('resumeScr').onclick = () => showScr();
 }
