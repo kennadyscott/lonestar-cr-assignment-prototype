@@ -555,7 +555,7 @@
   .fb-demo button.on { background: #02384d; border-color: #02384d; color: #fff; }
   @media (max-width: 860px) { .fb-hero { grid-template-columns: 1fr; } .fb-crits { grid-template-columns: 1fr 1fr !important; } .fb-scale-labels { gap: 80px; } .fb-bar { display: none; } }
 
-/* ---------- Revision & Editing Tips panel: verbatim from CMS handoff/revision-editing-panel/revisioneditingpanel.css ---------- */
+/* ---------- Revision & Editing Tips panel: based on CMS handoff/revision-editing-panel/revisioneditingpanel.css ---------- */
 /* Revision and Editing Tips panel — append to public/static/css/student.css.
    One root class (.ret) and three band variants. Colors are fixed to the LoneStar CR light surface. */
 /* .ret-root is the size container: the @container rules below read its width, so the panel fills whatever column it is given. */
@@ -590,7 +590,7 @@
 .ret-luna .ret-step-rev[aria-selected="true"]{border-color:#2f80ed}
 .ret-luna .ret-step-ed[aria-selected="true"]{border-color:#2f9e63}
 .ret-luna .ret-ask{font-weight:800;font-size:19px;margin:0}
-.ret-luna .ret-cards{display:grid;gap:10px}
+.ret-luna .ret-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
 .ret-luna .ret-tip{display:grid;grid-template-columns:52px minmax(0,1fr) 52px;gap:10px;align-items:center;border-radius:16px;padding:10px;background:#f6f9fb;border:2px solid #e3eaf0}
 .ret-luna .ret-tip.ret-done{background:#e2f5ea;border-color:#2f9e63}
 .ret-luna .ret-letter{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:26px;color:#fff;background:#2f80ed}
@@ -617,6 +617,7 @@
 .ret-guided .ret-prog{height:8px;border-radius:999px;background:#e3eaf0;overflow:hidden}
 .ret-guided .ret-prog i{display:block;height:100%;background:#0a7c94;border-radius:999px;transition:width .2s}
 .ret-guided .ret-sec{border:1px solid #dfe6ec;border-radius:12px;overflow:hidden}
+.ret-guided .ret-sec-body{display:grid;grid-template-columns:minmax(0,1fr)}
 .ret-guided .ret-sec-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;background:#f6f9fb;font-weight:800;color:#02384d}
 .ret-guided .ret-sec-rev .ret-sec-head{background:#e3eefc;color:#1f5fbf}
 .ret-guided .ret-sec-ed .ret-sec-head{background:#e2f5ea;color:#1f6b45}
@@ -643,6 +644,7 @@
 .ret-writer .ret-n{font-size:12px;color:#66788a;font-variant-numeric:tabular-nums}
 .ret-writer .ret-k,.ret-guided .ret-k{font-weight:600;font-variant-numeric:tabular-nums}
 .ret-writer .ret-sec h5{margin:0 0 4px;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#66788a}
+.ret-writer .ret-items{display:grid;grid-template-columns:minmax(0,1fr)}
 .ret-writer .ret-item{border-top:1px solid #d9e1e8;padding:8px 0;display:grid;gap:4px}
 .ret-writer .ret-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
 .ret-writer .ret-move{font-weight:700}
@@ -662,15 +664,14 @@
 /* ---- Fill the passage panel ----
    The panel this replaces is the full width of the passage column (about 1,300px on a laptop,
    24px body type). Sizes above are for a narrow column; these container queries (on .ret-root) scale type
-   and lay lists out in two columns once the panel is wide, so the checklist fills the box
-   instead of sitting small in a corner. */
+   and spacing for wider panels. Checklist items always stay in a single column. */
 @container (min-width: 640px) {
   .ret{gap:16px}
   .ret-luna{font-size:20px}
   .ret-luna .ret-say{font-size:20px;padding:10px 16px}
   .ret-luna .ret-steps button{font-size:21px;min-height:64px}
   .ret-luna .ret-ask{font-size:23px}
-  .ret-luna .ret-cards{grid-template-columns:1fr 1fr;gap:12px}
+  .ret-luna .ret-cards{gap:12px}
   .ret-luna .ret-txt b{font-size:20px}
   .ret-luna .ret-txt span{font-size:16px}
   .ret-luna .ret-next{font-size:20px;min-height:58px}
@@ -680,7 +681,6 @@
   .ret-guided .ret-cnt,.ret .ret-cnt{font-size:14px}
   .ret-guided .ret-stage button{font-size:18px;min-height:52px}
   .ret-guided .ret-sec-head{font-size:19px;padding:12px 16px}
-  .ret-guided .ret-sec-body{display:grid;grid-template-columns:1fr 1fr}
   .ret-guided .ret-row{grid-template-columns:38px 32px minmax(0,1fr);padding:12px 16px;border-top:0;border-bottom:1px solid #edf1f5}
   .ret-guided .ret-row.ret-nobadge{grid-template-columns:38px minmax(0,1fr)}
   .ret-guided .ret-cb{width:30px;height:30px}
@@ -693,7 +693,6 @@
   .ret-writer .ret-n{font-size:14px}
   .ret-writer .ret-stage button{font-size:16px;min-height:46px}
   .ret-writer .ret-sec h5{font-size:14px}
-  .ret-writer .ret-items{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}
   .ret-writer .ret-item{padding:12px 0}
   .ret-writer .ret-what,.ret-writer .ret-how{font-size:15px}
   .ret-writer .ret-donebtn{font-size:14px;padding:5px 14px}
