@@ -1981,7 +1981,7 @@ function wordToolClick(e) {
   const cst = e.target.closest('[data-claim-starter]');
   if (cst) {
     e.preventDefault(); const box = $('claimBox'), tip = body.querySelector('[data-tip]');
-    if (!box) { if (tip) { tip.textContent = 'Your claim box is on Step 1.'; tip.classList.add('warn'); } return true; }
+    if (!box) { if (tip) { tip.textContent = 'Your claim box is on Step ' + (claimStep() + 1) + '.'; tip.classList.add('warn'); } return true; }
     if (!box.value.trim()) { box.value = ''; box.selectionStart = box.selectionEnd = 0; }
     insertWord(cst.dataset.claimStarter, tip, box); return true;
   }
@@ -2098,6 +2098,16 @@ const emph = t => {
   S1.byBand["9-12"] = { ...S1.byBand["9-12"], think: "This is an argumentative prompt. You will develop a precise, defensible claim and support it with evidence from the sources.", checklist: two };
 }
 const CLAIM_SECTION = { "2-3": 0, "4-5": 1, "6-8": 0, "9-12": 0 };   // Think · Answer the question · Introduction Paragraph
+// Which step holds the claim box, per band (Kennady, Nov 17): grades 2–3 type their claim on Step 2 (Prepare), after
+// highlighting, not on Step 1. Other bands are unchanged for now. The claim-writing supports move with the box.
+const CLAIM_STEP = { '2-3': 1, '4-5': 0, '6-8': 0, '9-12': 0 };
+const claimStep = () => (ptype === 'arg' ? CLAIM_STEP[document.body.dataset.band] ?? 0 : 0);
+{
+  const [S1, S2] = assignment.steps, claimTools = ["claim-starters", "custom-write-a-claim"];
+  for (const S of [S1, S2]) if (!S.byBand["4-5"].supports) S.byBand["4-5"].supports = [...S.supports];   // 4–5 keeps today's lists
+  S1.supports = S1.supports.filter(k => !claimTools.includes(k));
+  S2.supports = [...S2.supports, ...claimTools];
+}
 const claimText = () => (ptype === 'arg' ? (answers.claimBox || '').trim() : '');
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const withType = (s, stepIdx) => (ptype === 'arg' ? s : { ...s, think: undefined, claimBox: undefined, ...forBand(typeSteps[ptype][stepIdx]) });
@@ -2221,13 +2231,19 @@ function renderStep() {
   const claimBoxHtml = s.claimBox ? `<div class="claim-box"><div class="claim-q"><span>The question</span><p>${assignment.prompt.question}</p><small>${borrowTip}</small></div>
       <label class="field-label" for="claimBox">${emph(s.claimBox.label)}</label>
       <textarea id="claimBox" rows="2" placeholder="${s.claimBox.placeholder}">${esc(answers.claimBox || '')}</textarea></div>` : '';
-  if (s.think) html += claimBoxHtml;   // claim follows THINK; higher bands then check it
+  if (s.think && claimStep() === 0) html += claimBoxHtml;   // claim follows THINK; higher bands then check it
   if (s.checklist) html += `<ul class="checklist">${s.checklist.map((c, i) =>
     `<li><input type="checkbox" id="c${current}-${i}" ${answers[`c${current}-${i}`] ? 'checked' : ''}><label for="c${current}-${i}">${emph(c)}</label></li>`).join('')}</ul>`;
-  if (!s.think) html += claimBoxHtml;   // fallback for a step without THINK
+  if (!s.think && claimStep() === 0) html += claimBoxHtml;   // fallback for a step without THINK
   if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
     `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
     <p class="hl-tip">Tip: Click a highlight to change its color or remove it.</p>`;
+  if (current === 1 && claimStep() === 1) {   // 2–3: the question and claim box, after highlighting
+    const cb = forBand(assignment.steps[0]).claimBox;
+    html += `<div class="claim-box claim-box-2"><div class="claim-q"><span>The question</span><p>${assignment.prompt.question}</p><small>${borrowTip}</small></div>
+      <label class="field-label" for="claimBox">${emph(cb.label)}</label>
+      <textarea id="claimBox" rows="2" placeholder="${cb.placeholder}">${esc(answers.claimBox || '')}</textarea></div>`;
+  }
   if (s.bestEvidence && ptype === 'arg') html += `<div class="best-ev"><h4>${s.bestEvidence.title}</h4><ol>${s.bestEvidence.steps.map(x => `<li>${emph(x)}</li>`).join('')}</ol><p>${s.bestEvidence.tip}</p></div>`;
   // Claim box again on Step 2 (Kennady, Oct 5): between the BEST evidence box and Plan your writing, so students
   // can sharpen their claim once they've chosen their evidence. Same answer as Step 1's box.
@@ -2264,16 +2280,16 @@ function renderStep() {
   });
   if (current > tapStep() && tapOn()) html = html.replace('</h3>', '</h3>' + tapStripHtml());
   // Steps 2–4: the student's claim sits in the panel header, outside the scrolling area, so it never covers the work
-  const showClaim = ptype === 'arg' && current > 0, cs = $('claimStrip');
+  const showClaim = ptype === 'arg' && current > claimStep(), cs = $('claimStrip');
   cs.hidden = !showClaim; $('midEyebrow').hidden = showClaim;
   if (showClaim) {
     cs.className = 'claim-strip' + (claimText() ? '' : ' empty');
     cs.innerHTML = claimText()
       ? `<span class="cs-label">My claim</span><button type="button" class="cs-text" title="Show full claim" aria-expanded="false">${esc(claimText())}</button><button type="button" class="cs-edit" data-edit-claim>Edit</button>`
-      : `<span class="cs-label">My claim</span><span class="cs-text">Not typed yet.</span><button type="button" class="cs-edit" data-edit-claim>Go to Step 1</button>`;
+      : `<span class="cs-label">My claim</span><span class="cs-text">Not typed yet.</span><button type="button" class="cs-edit" data-edit-claim>Go to Step ${claimStep() + 1}</button>`;
     const t = cs.querySelector('button.cs-text');
     if (t) t.onclick = () => { const open = cs.classList.toggle('open'); t.setAttribute('aria-expanded', open); };
-    cs.querySelector('[data-edit-claim]').onclick = () => { current = 0; renderStep(); setTimeout(() => $('claimBox') && $('claimBox').focus(), 0); };
+    cs.querySelector('[data-edit-claim]').onclick = () => { current = claimStep(); renderStep(); setTimeout(() => $('claimBox') && $('claimBox').focus(), 0); };
   }
   $('step').innerHTML = html;
   const syncCount = el => { const c = $('step').querySelector(`[data-for="${el.id}"]`); if (!c) return;
@@ -2282,7 +2298,7 @@ function renderStep() {
     el.addEventListener('input', () => { answers[el.id] = el.type === 'checkbox' ? el.checked : el.value; syncCount(el); });
     syncCount(el);
   });
-  const cb = $('claimBox'); if (cb && current > 0) cb.addEventListener('input', () => {   // keep the header "My claim" strip in sync
+  const cb = $('claimBox'); if (cb && current > claimStep()) cb.addEventListener('input', () => {   // keep the header "My claim" strip in sync
     const cs = $('claimStrip'), v = cb.value.trim();
     cs.classList.toggle('empty', !v);
     cs.innerHTML = `<span class="cs-label">My claim</span><span class="cs-text">${v ? esc(v) : 'Not typed yet.'}</span>`;
