@@ -303,6 +303,7 @@
   mark.hl { color: inherit; border-radius: 3px; padding: 1px 0; cursor: pointer; }
   .hl-green { background: #bff0c9; }
   .hl-blue  { background: #cfe0ff; }
+  body.no-green mark.hl-green { background: none; cursor: text; }
   .hl-red   { background: #ffcfcf; }
   .hl-pop {
     position: fixed; z-index: 50; display: none; gap: 4px; padding: 6px;
@@ -1689,21 +1690,25 @@ const typeSteps = {
       // Oct 13: the prompt explanation is a THINK note; the two planning questions remain checkboxes.
       think: "This is an informational prompt. This means you will teach your reader about a topic using facts from the passages.",
       checklist: null,   // Nov 17 (Kennady): the two planning questions are removed for 2–3; Think box, then the TAP card. Other bands keep theirs.
-      supports: ["hint-audience", "hint-topic"],
+      supports: ["hint-topic", "hint-audience", "hint-purpose"],   // CMS order; Audience shows the passage set's AI hint, the others are static
       byBand: {
         "4-5": { instruction: R('4-5'), think: "This is an informational prompt. You will explain a topic using facts, not your opinion.", checklist: ["What is the topic, and what is the main idea of each passage?", "Which facts and details from the passages will you use to explain it?"] },
         "6-8": { instruction: R('6-8'), think: "Genre: informational. Explain and inform; keep your opinion out.", checklist: ["Identify the central idea of each passage and how the passages connect.", "Plan which facts, examples and quotations will develop each idea."] },
         "9-12": { instruction: R('9-12'), think: "Task: informational/explanatory response. Synthesize the sources; don’t argue.", checklist: ["Determine each source’s central idea and how the sources relate.", "Select the most relevant evidence and plan how to organize it for your reader."] } } },
-    { instruction: "Look back at the passages for facts that help you explain the topic. Select the words, then pick a color.",
-      highlights: HL(["Main idea", "Sentences that tell what a passage is mostly about"], ["Key details", "Facts and examples that explain the main idea"], ["Words to know", "Topic words you want to use in your writing"]),
-      supports: ["hint-key-details", "hint-main-idea"],
+    // Step 2 (Kennady, Nov 17, every band): the main idea box sits at the top, where the green "Main idea" highlight was. Students
+    // then highlight only key details that support it (and topic words). No TAP here; it moved to Step 1. Hints are the static CMS ones.
+    { title: "Find key details", instruction: "Look back at the passages for facts that help you explain the topic. Highlight each one in the color that matches what it shows.",
+      mainIdea: { label: "Type your main idea.", placeholder: "The main idea is…" },
+      highlights: [{ color: "blue", label: "Key details", hint: "Facts and examples that explain the main idea" }, { color: "red", label: "Words to know", hint: "Topic words you want to use in your writing" }],
+      supports: ["hint-main-idea", "hint-key-details"],
       byBand: {
-        "4-5": { title: "Highlight the passage", instruction: "Highlight facts that will help you explain the topic. Select text, then choose a color.",
-                 highlights: HL(["Main idea", "What each passage is mostly about"], ["Key details", "Facts and examples that explain the main idea"], ["Topic words", "Important vocabulary to use in your response"]) },
+        "4-5": { title: "Highlight the passage(s)", instruction: "Highlight facts that will help you explain the topic. Highlight each detail in the color that matches what it is.",
+                 highlights: [{ color: "blue", label: "Key details", hint: "Facts and examples that explain the main idea" }, { color: "red", label: "Topic words", hint: "Important vocabulary to use in your response" }] },
         "6-8": { instruction: "Annotate the passages for information you will use to explain the topic.",
-                 highlights: HL(["Central idea", "The key point each passage develops"], ["Supporting details", "Facts, examples or quotations that develop the central idea"], ["Domain vocabulary", "Precise topic words to use and define"]) },
-        "9-12": { instruction: "Annotate for evidence you can synthesize across the sources.",
-                  highlights: HL(["Central idea", "Each source’s central point about the topic"], ["Relevant evidence", "Facts, data or quotations you can synthesize"], ["Connections", "Where the sources agree, differ or build on each other"]) } } },
+                 mainIdea: { label: "Type your central idea.", placeholder: "The central idea is…" },
+                 highlights: [{ color: "blue", label: "Supporting details", hint: "Facts, examples or quotations that develop the central idea" }, { color: "red", label: "Domain vocabulary", hint: "Precise topic words to use and define" }] },
+        "9-12": { instruction: "Annotate for evidence that explains the topic. If there is more than one source, note how they connect.",
+                  highlights: [{ color: "blue", label: "Relevant evidence", hint: "Facts, data or quotations that support your central idea" }, { color: "red", label: "Domain vocabulary", hint: "Precise topic words to use and define" }] } } },
     { organizer: [SEC("Topic", "green", "Name your topic.", "What am I teaching about?"), SEC("Says", "purple", "Give a fact from the passage.", "What does the passage tell me?"), SEC("Means", "blue", "Tell what the fact shows.", "Why is this fact important?")],
       supports: ["info-hint-evidence", "ai-starters", "example-transitions", "example-description"],
       byBand: {
@@ -1994,26 +1999,35 @@ document.addEventListener('submit', e => {
 
 
 // Informational (✦ AI per passage)
-scaffold("hint-audience", "Hint: Audience", {   // static and generic for every passage (Oct 12)
-  "2-3": "Your <b>audience</b> is the person who will read your writing. Pretend you are writing for a friend who does not know about the topic. Teach them!<ul><li>Use clear words.</li><li>Explain each idea.</li></ul>",
-  "4-5": "Your <b>audience</b> is who will read your writing. Write for a classmate who doesn’t know much about the topic.<ul><li>Explain each idea clearly, like you are teaching it.</li><li>Tell what any new or hard words mean.</li></ul>",
-  "6-8": "Your <b>audience</b> is readers your age who know little about the topic.<ul><li>Define key terms the first time you use them.</li><li>Explain why each detail matters, not just what it is.</li></ul>",
-  "9-12": "Write for an informed general <b>audience</b>: a reader who is smart but new to this topic.<ul><li>Keep a formal, objective tone.</li><li>Anticipate what they need defined or explained.</li></ul>" });
+scaffold("hint-audience", "Hint: Audience", {   // Nov 17: students see the passage set's AI hint only [Sample text for the Sounds passages]
+  "2-3": kidAi() + "Your audience is readers who may not know how sounds help us, like your classmates. Explain words such as <i>alarm</i> and <i>whisper</i> so they can understand why each sound matters.",
+  "4-5": aiTag + "Your audience is students your age who have not read these passages. Explain how each sound helps people, and tell what words like <i>focus</i> mean.",
+  "6-8": aiTag + "Your audience is readers your age who know little about how sound affects daily life. Define terms such as <i>warning signal</i> and explain why each detail matters.",
+  "9-12": aiTag + "Write for an informed general reader who has not read these sources. Define terms the sources use, and keep a formal, objective tone." });
+scaffold("hint-purpose", "Hint: Purpose", {   // static, from CMS (custom-hint-purpose)
+  "2-3": "Your purpose is why you are writing. Your job is to teach your reader about the topic.<ul><li>Tell your main idea.</li><li>Give details from the passages that explain it.</li></ul>",
+  "4-5": "Your purpose is the reason you are writing. In informational writing, your purpose is to inform your audience about the topic.<ul><li>State a clear main idea about the topic.</li><li>Support it with facts and details from the passages.</li></ul>",
+  "6-8": "Your purpose is to inform your audience about the topic, not to persuade them. Explain it clearly so a reader new to the topic can understand it.<ul><li>State a central idea that answers the prompt.</li><li>Develop it with relevant facts, examples and quotations from the passages.</li></ul>",
+  "9-12": "Your purpose is to inform and explain: help your audience understand the topic clearly and objectively, without arguing a position.<ul><li>Present a precise central idea that sets the scope of your response.</li><li>Develop it with well-chosen details from the sources, and explain how each one supports it.</li></ul>" });
+assignment.luna.supports["hint-purpose"].color = "green";
 scaffold("hint-topic", "Hint: Topic & Subtopics", {   // static and generic for every passage (Oct 12)
   "2-3": "The <b>topic</b> is what your writing is all about. To find it, ask:<ul><li>What is the question asking me to explain?</li><li>What are the passages mostly about?</li></ul>Say your topic in a few words, like <i>how bees help plants</i>. Then pick two or three smaller parts to write about.",
   "4-5": "<p class=\"sp-sub\"><b>Topic</b></p>Your <b>topic</b> is the big subject you are explaining.<ul><li>Reread the question. What does it ask you to explain?</li><li>Say the topic in a few words.</li></ul><p class=\"sp-sub\"><b>Subtopics</b></p><b>Subtopics</b> are the smaller parts of your topic.<ul><li>Look for ideas that show up in both passages.</li><li>Pick two or three subtopics, one for each part of your answer.</li></ul>",
   "6-8": "<p class=\"sp-sub\"><b>Topic</b></p>Your <b>topic</b> is the subject you are explaining.<ul><li>Name it in one clear phrase that answers the prompt.</li></ul><p class=\"sp-sub\"><b>Subtopics</b></p><b>Subtopics</b> are the main points that develop your topic.<ul><li>Group the passages’ facts into two or three subtopics.</li><li>Make sure each subtopic has enough evidence for its own paragraph.</li></ul>",
   "9-12": "<p class=\"sp-sub\"><b>Topic</b></p>Define your <b>topic</b> precisely.<ul><li>State it in a way that sets the scope of your response.</li></ul><p class=\"sp-sub\"><b>Subtopics</b></p>Organize the topic into <b>subtopics</b>.<ul><li>Choose an organizing principle, such as cause and effect, compare and contrast, or categories.</li><li>Draw each subtopic from both sources where you can.</li></ul>" });
-scaffold("hint-key-details", "Hint: Key Details", {
-  "2-3": kidAi() + "<b>Key details</b> are facts that teach about the topic. Look for these:<ul><li>Whispering keeps a class calm.</li><li>A fire alarm tells us to get out.</li><li>Quiet helps us sleep.</li></ul>",
-  "4-5": aiTag + "Look for facts that explain how a sound helps:<ul><li>Whispering keeps the classroom calm (Passage 1, paragraph 2)</li><li>A fire alarm tells us to leave safely (Passage 1, paragraph 3)</li><li>Quiet helps us sleep (Passage 2, paragraph 3)</li></ul>",
-  "6-8": aiTag + "Strong details are specific: a fire alarm “gets everyone’s attention” (P1 ¶3); “our bodies need calm and silence to get deep, healthy sleep” (P2 ¶3).",
-  "9-12": aiTag + "Prioritize details that do the most explanatory work, and pair details across sources, such as alarms (P1 ¶3) with the need for quiet at night (P2 ¶3)." });
-scaffold("hint-main-idea", "Hint: Main Idea", {
-  "2-3": kidAi() + "The <b>main idea</b> is what a passage is mostly about.<br><b>Passage 1:</b> Sounds help us know what is happening.<br><b>Passage 2:</b> Quiet helps us rest.",
-  "4-5": aiTag + "<b>Passage 1:</b> Sounds help us understand what is happening around us.<br><b>Passage 2:</b> Quiet helps people rest, focus and stay safe.",
-  "6-8": aiTag + "<b>Central idea, Passage 1:</b> sounds give us information and help us act. <b>Passage 2:</b> quiet supports focus, rest and safety. Together, both sound and silence serve important purposes.",
-  "9-12": aiTag + "Synthesize: the sources present sound and silence as complementary, each meeting distinct human needs." });
+assignment.luna.supports["hint-topic"].title = "Hint: Topic"; assignment.luna.supports["hint-topic"].byBand["4-5"].title = "Hint: Topic & Subtopics";   // CMS titles
+scaffold("hint-key-details", "Hint: Key Details", {   // static, from CMS (Nov 17: no AI text on this card)
+  "2-3": "<b>Key details</b> are facts and examples that teach about the main idea. Look for:<ul><li>Facts and numbers</li><li>Examples that show what the passage means</li><li>Sentences that tell how or why</li></ul>",
+  "4-5": "Key details are the facts and examples that best explain the main idea.<ul><li>Choose details that explain the main idea, not just interesting facts.</li><li>Look for facts, numbers and examples.</li><li>Write down where each detail comes from, like (Passage 1, paragraph 2).</li></ul>",
+  "6-8": "<b>Relevant evidence</b> is the specific facts, examples and quotations that develop your central idea.<ul><li>Choose details that are specific: a number, a quotation or a precise example.</li><li>Note where each one comes from, like (P1 ¶3).</li></ul>",
+  "9-12": "Prioritize evidence that does the most explanatory work. When you have more than one source, pair related details from each." });
+for (const b of ["6-8"]) assignment.luna.supports["hint-key-details"].byBand[b].title = "Hint: Relevant Evidence";
+scaffold("hint-main-idea", "Hint: Main Idea", {   // static, from CMS (Nov 17: no AI text on this card)
+  "2-3": "The main idea is what a passage is mostly about.<ul><li>Ask: What is this passage mostly about?</li><li>Say it in one sentence: This passage is mostly about ___.</li></ul>",
+  "4-5": "The <b>main idea</b> is the most important point a passage makes about the topic. Check the title, the first paragraph and the details that repeat.",
+  "6-8": "The <b>central idea</b> is the key point a passage develops. Find it by asking what most of the details have in common.<ul><li>State it as a full sentence, not just a topic: The passage shows that ___.</li><li>If there is more than one passage, find the central idea of each.</li><li>Your central idea becomes your thesis in the introduction.</li></ul>",
+  "9-12": "The central idea is the insight a source develops about its topic. When you have more than one source, decide how their central ideas connect." });
+assignment.luna.supports["hint-main-idea"].byBand["6-8"].title = "Hint: Central Idea";
 scaffold("info-hint-evidence", "Hint: Evidence", {
   "2-3": kidAi() + "Pick one fact for each idea. Tell where you found it, like “In paragraph 3, it says…” Then tell what it shows.",
   "4-5": aiTag + "Choose one fact for each idea. Say which passage and paragraph it came from, then explain what it shows about how sounds help people.",
@@ -2108,6 +2122,12 @@ const claimStep = () => (ptype === 'arg' ? CLAIM_STEP[document.body.dataset.band
   S1.supports = S1.supports.filter(k => !claimTools.includes(k));
   S2.supports = [...S2.supports, ...claimTools];
 }
+// The header strip on later steps: the claim (Argumentative) or the main / central idea typed on Step 2 (Informational).
+const stripInfo = () => {
+  if (ptype === 'arg') return { label: 'My claim', text: claimText(), step: claimStep(), box: 'claimBox' };
+  if (ptype === 'info') return { label: ['2-3', '4-5'].includes(document.body.dataset.band) ? 'My main idea' : 'My central idea', text: (answers.mainIdea || '').trim(), step: 1, box: 'mainIdea' };
+  return null;
+};
 const claimText = () => (ptype === 'arg' ? (answers.claimBox || '').trim() : '');
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const withType = (s, stepIdx) => (ptype === 'arg' ? s : { ...s, think: undefined, claimBox: undefined, ...forBand(typeSteps[ptype][stepIdx]) });
@@ -2170,7 +2190,8 @@ const forBand = obj => {
 const TAP_BANDS = ['2-3', '4-5', '6-8', '9-12'];
 // Which step shows the TAP card, per band (Kennady, Nov 17): 2–3 moves to Step 1, right under the Think box; other bands stay on Step 2 for now.
 const TAP_STEP = { '2-3': 0, '4-5': 1, '6-8': 1, '9-12': 1 };
-const tapStep = () => TAP_STEP[document.body.dataset.band] ?? 1;
+// Informational (Kennady, Nov 17): TAP is on Step 1 in every band. Other types: 2–3 only so far.
+const tapStep = () => (ptype === 'info' ? 0 : TAP_STEP[document.body.dataset.band] ?? 1);
 const TAP_PICK = ['2-3', '4-5'];
 const TAP = {
   audience: { "2-3": ["My teacher", "My class", "A friend", "My family"],
@@ -2204,7 +2225,7 @@ function tapCardHtml() {
   const opts = (name, list, sel) => `<div class="tap-opts" role="radiogroup">${list.map(v =>
     `<label><input type="radio" name="${name}" value="${esc(v)}" ${v === sel ? 'checked' : ''}>${esc(v)}</label>`).join('')}</div>`;
   const kid = band === '2-3';
-  return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">${kid ? 'Before you start, make a quick plan.' : 'Now that you have your evidence, make a quick plan.'}</p>
+  return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">${kid || tapStep() === 0 ? 'Before you start, make a quick plan.' : 'Now that you have your evidence, make a quick plan.'}</p>
     <div class="tap-row"><label for="tapTopic"><span class="tap-letter">T</span>Topic: What are you writing about?</label>
       <textarea id="tapTopic" rows="1" placeholder="I am writing about…">${esc(answers.tapTopic || '')}</textarea>${tapInfoNote()}</div>
     <div class="tap-row"><span class="tap-q"><span class="tap-letter">A</span>Audience: Who will read it?</span>${opts('tapAudience', aud, answers.tapAudience)}</div>
@@ -2235,6 +2256,8 @@ function renderStep() {
   if (s.checklist) html += `<ul class="checklist">${s.checklist.map((c, i) =>
     `<li><input type="checkbox" id="c${current}-${i}" ${answers[`c${current}-${i}`] ? 'checked' : ''}><label for="c${current}-${i}">${emph(c)}</label></li>`).join('')}</ul>`;
   if (!s.think && claimStep() === 0) html += claimBoxHtml;   // fallback for a step without THINK
+  if (s.mainIdea) html += `<div class="claim-box"><label class="field-label" for="mainIdea">${emph(s.mainIdea.label)}</label>
+      <textarea id="mainIdea" rows="2" placeholder="${s.mainIdea.placeholder}">${esc(answers.mainIdea || '')}</textarea></div>`;
   if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
     `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
     <p class="hl-tip">Tip: Click a highlight to change its color or remove it.</p>`;
@@ -2280,17 +2303,19 @@ function renderStep() {
   });
   if (current > tapStep() && tapOn()) html = html.replace('</h3>', '</h3>' + tapStripHtml());
   // Steps 2–4: the student's claim sits in the panel header, outside the scrolling area, so it never covers the work
-  const showClaim = ptype === 'arg' && current > claimStep(), cs = $('claimStrip');
+  const strip = stripInfo(), showClaim = !!strip && current > strip.step, cs = $('claimStrip');
   cs.hidden = !showClaim; $('midEyebrow').hidden = showClaim;
   if (showClaim) {
-    cs.className = 'claim-strip' + (claimText() ? '' : ' empty');
-    cs.innerHTML = claimText()
-      ? `<span class="cs-label">My claim</span><button type="button" class="cs-text" title="Show full claim" aria-expanded="false">${esc(claimText())}</button><button type="button" class="cs-edit" data-edit-claim>Edit</button>`
-      : `<span class="cs-label">My claim</span><span class="cs-text">Not typed yet.</span><button type="button" class="cs-edit" data-edit-claim>Go to Step ${claimStep() + 1}</button>`;
+    cs.className = 'claim-strip' + (strip.text ? '' : ' empty');
+    cs.innerHTML = strip.text
+      ? `<span class="cs-label">${strip.label}</span><button type="button" class="cs-text" title="Show it all" aria-expanded="false">${esc(strip.text)}</button><button type="button" class="cs-edit" data-edit-claim>Edit</button>`
+      : `<span class="cs-label">${strip.label}</span><span class="cs-text">Not typed yet.</span><button type="button" class="cs-edit" data-edit-claim>Go to Step ${strip.step + 1}</button>`;
     const t = cs.querySelector('button.cs-text');
     if (t) t.onclick = () => { const open = cs.classList.toggle('open'); t.setAttribute('aria-expanded', open); };
-    cs.querySelector('[data-edit-claim]').onclick = () => { current = claimStep(); renderStep(); setTimeout(() => $('claimBox') && $('claimBox').focus(), 0); };
+    cs.querySelector('[data-edit-claim]').onclick = () => { current = strip.step; renderStep(); setTimeout(() => $(strip.box) && $(strip.box).focus(), 0); };
   }
+  // A prompt type without the green highlight (Informational) doesn't show green marks left by another type's sample.
+  { const i = steps.findIndex(st => st.highlights); document.body.classList.toggle('no-green', !withType(forBand(steps[i]), i).highlights.some(h => h.color === 'green')); }
   $('step').innerHTML = html;
   const syncCount = el => { const c = $('step').querySelector(`[data-for="${el.id}"]`); if (!c) return;
     const n = el.value.length, max = +el.dataset.max; c.textContent = `${n} / ${max} characters`; c.classList.toggle('over', n > max); };
