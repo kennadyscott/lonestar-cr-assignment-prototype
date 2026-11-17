@@ -1698,9 +1698,10 @@ const typeSteps = {
       checklist: null,   // Nov 17 (Kennady): the two planning questions are removed for 2–3; Think box, then the TAP card. Other bands keep theirs.
       supports: ["hint-topic", "hint-audience", "hint-purpose"],   // CMS order; Audience shows the passage set's AI hint, the others are static
       byBand: {
-        "4-5": { instruction: R('4-5'), think: "This is an informational prompt. You will explain a topic using facts, not your opinion.", checklist: ["What is the topic, and what is the main idea of each passage?", "Which facts and details from the passages will you use to explain it?"] },
-        "6-8": { instruction: R('6-8'), think: "Genre: informational. Explain and inform; keep your opinion out.", checklist: ["Identify the central idea of each passage and how the passages connect.", "Plan which facts, examples and quotations will develop each idea."] },
-        "9-12": { instruction: R('9-12'), think: "Task: informational/explanatory response. Synthesize the sources; don’t argue.", checklist: ["Determine each source’s central idea and how the sources relate.", "Select the most relevant evidence and plan how to organize it for your reader."] } } },
+        // Nov 17 (Kennady): the Step 1 checklist questions are removed for every band; Think box, then the TAP card.
+        "4-5": { instruction: "Read the prompt and the passage(s).", think: "This is an informational prompt. You will explain a topic using facts, not your opinion." },
+        "6-8": { instruction: "Read the passage(s) closely and note key details as you go.", think: "This is an informational prompt. Explain and inform; keep your opinion out." },
+        "9-12": { instruction: "Read the passage(s) critically and consider how they work together.", think: "This is an informational prompt. Synthesize the sources; don’t argue." } } },
     // Step 2 (Kennady, Nov 17, every band): the main idea box sits at the top, where the green "Main idea" highlight was. Students
     // then highlight only key details that support it (and topic words). No TAP here; it moved to Step 1. Hints are the static CMS ones.
     { title: "Find key details", instruction: "Look back at the passages for facts that help you explain the topic. Highlight each one in the color that matches what it shows.",
