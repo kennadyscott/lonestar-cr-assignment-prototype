@@ -1685,10 +1685,10 @@ const SEC = (keyword, color, text, ask) => (ask ? { keyword, color, text, ask } 
 
 const typeSteps = {
   info: [
-    { instruction: R('2-3'),
+    { instruction: "Read the prompt and the passage(s).",   // matches CMS (Nov 17); no questions follow for 2–3
       // Oct 13: the prompt explanation is a THINK note; the two planning questions remain checkboxes.
       think: "This is an informational prompt. This means you will teach your reader about a topic using facts from the passages.",
-      checklist: ["What is the topic? What is the main idea?", "What facts and details from the passages will help you explain it?"],
+      checklist: null,   // Nov 17 (Kennady): the two planning questions are removed for 2–3; Think box, then the TAP card. Other bands keep theirs.
       supports: ["hint-audience", "hint-topic"],
       byBand: {
         "4-5": { instruction: R('4-5'), think: "This is an informational prompt. You will explain a topic using facts, not your opinion.", checklist: ["What is the topic, and what is the main idea of each passage?", "Which facts and details from the passages will you use to explain it?"] },
