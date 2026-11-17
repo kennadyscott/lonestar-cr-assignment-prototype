@@ -331,6 +331,7 @@
   .best-ev p { margin: 0; font-size: calc(13px * var(--fs)); color: #33454f; }
   .claim-box-2 { margin-top: 16px; }
   .claim-box-2 .cb2-sub { margin: 0 0 6px; font-size: calc(13px * var(--fs)); color: var(--muted); }
+  .tap-card-top { margin: 0 0 16px !important; }
   .tap-card { margin-top: 18px; border: 1px solid #cfe3ec; border-radius: 12px; padding: 14px 16px; background: #f6fbfd; }
   .tap-card h4 { margin: 0 0 2px; font-size: calc(15px * var(--fs)); color: var(--navy, #0d4257); }
   .tap-card .tap-sub { margin: 0 0 10px; font-size: calc(13px * var(--fs)); color: var(--muted); }
@@ -2157,6 +2158,9 @@ const forBand = obj => {
 // TAP planning (Topic, Audience, Purpose): every grade band, end of Step 2 (Prepare), every prompt type. Optional.
 // 2–3 and 4–5 pick Audience and Purpose (Purpose pre-selected from the prompt type); 6–7 and 8–12 write all three. [Draft wording]
 const TAP_BANDS = ['2-3', '4-5', '6-8', '9-12'];
+// Which step shows the TAP card, per band (Kennady, Nov 17): 2–3 moves to Step 1, right under the Think box; other bands stay on Step 2 for now.
+const TAP_STEP = { '2-3': 0, '4-5': 1, '6-8': 1, '9-12': 1 };
+const tapStep = () => TAP_STEP[document.body.dataset.band] ?? 1;
 const TAP_PICK = ['2-3', '4-5'];
 const TAP = {
   audience: { "2-3": ["My teacher", "My class", "A friend", "My family"],
@@ -2190,7 +2194,7 @@ function tapCardHtml() {
   const opts = (name, list, sel) => `<div class="tap-opts" role="radiogroup">${list.map(v =>
     `<label><input type="radio" name="${name}" value="${esc(v)}" ${v === sel ? 'checked' : ''}>${esc(v)}</label>`).join('')}</div>`;
   const kid = band === '2-3';
-  return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">${kid ? 'Now make a plan before you write.' : 'Now that you have your evidence, make a quick plan.'}</p>
+  return `<div class="tap-card"><h4>Plan your writing</h4><p class="tap-sub">${kid ? 'Before you start, make a quick plan.' : 'Now that you have your evidence, make a quick plan.'}</p>
     <div class="tap-row"><label for="tapTopic"><span class="tap-letter">T</span>Topic: What are you writing about?</label>
       <textarea id="tapTopic" rows="1" placeholder="I am writing about…">${esc(answers.tapTopic || '')}</textarea>${tapInfoNote()}</div>
     <div class="tap-row"><span class="tap-q"><span class="tap-letter">A</span>Audience: Who will read it?</span>${opts('tapAudience', aud, answers.tapAudience)}</div>
@@ -2211,6 +2215,7 @@ function renderStep() {
     `<button class="${i < current ? 'done' : i === current ? 'active' : ''}" data-i="${i}"><div class="bar"></div>${i + 1}. ${st.label}</button>`).join('');
   let html = `<h3>${s.title}</h3><p class="instr">${emph(s.instruction)}</p>`;
   if (s.think) html += `<div class="think-box"><span>Think</span><p>${emph(s.think)}</p></div>`;
+  if (current === 0 && tapStep() === 0 && tapOn()) html += tapCardHtml().replace('class="tap-card"', 'class="tap-card tap-card-top"');
   // The prompt question sits right above the claim box, so students can reuse its words in their claim
   const borrowTip = { "2-3": "Use words from the question in your answer.", "4-5": "Turn the question into a statement that takes a side.", "6-8": "Answer the question directly, using its key words.", "9-12": "Respond to the question directly and precisely." }[document.body.dataset.band];
   const claimBoxHtml = s.claimBox ? `<div class="claim-box"><div class="claim-q"><span>The question</span><p>${assignment.prompt.question}</p><small>${borrowTip}</small></div>
@@ -2229,7 +2234,7 @@ function renderStep() {
   if (s.bestEvidence && ptype === 'arg') html += `<div class="claim-box claim-box-2"><label class="field-label" for="claimBox">${emph('Your claim')}</label>
       <p class="cb2-sub">Now that you’ve chosen your evidence, does your claim still fit? Make it stronger if you can.</p>
       <textarea id="claimBox" rows="2" placeholder="Type your claim in one sentence.">${esc(answers.claimBox || '')}</textarea></div>`;
-  if (current === 1 && tapOn()) html += tapCardHtml();
+  if (current === 1 && tapStep() === 1 && tapOn()) html += tapCardHtml();
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
       const k = ansKey(current, i);
@@ -2257,7 +2262,7 @@ function renderStep() {
              <textarea id="${k}" class="${f.big ? 'big' : ''}" placeholder="${f.placeholder}" style="margin-bottom:16px" ${f.maxChars ? `data-max="${f.maxChars}"` : ''}>${esc(answers[k] || '')}</textarea>`;
     if (f.maxChars) html += `<div class="char-count" data-for="${k}"></div>`;
   });
-  if (current >= 2 && tapOn()) html = html.replace('</h3>', '</h3>' + tapStripHtml());
+  if (current > tapStep() && tapOn()) html = html.replace('</h3>', '</h3>' + tapStripHtml());
   // Steps 2–4: the student's claim sits in the panel header, outside the scrolling area, so it never covers the work
   const showClaim = ptype === 'arg' && current > 0, cs = $('claimStrip');
   cs.hidden = !showClaim; $('midEyebrow').hidden = showClaim;
