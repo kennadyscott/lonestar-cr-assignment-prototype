@@ -262,6 +262,7 @@
   .claim-q small { display: block; margin-top: 4px; color: var(--muted); font-size: calc(12.5px * var(--fs)); }
 
   .claim-box textarea { min-height: 64px; }
+  .claim-tip { display: block; margin-top: 4px; color: var(--muted); font-size: calc(12.5px * var(--fs)); }
   .claim-pin { display: flex; gap: 10px; align-items: center; padding: 10px 12px; margin: 0 0 14px; border-radius: 10px; background: #eaf8ee; border: 1px solid #bfe3cb; position: sticky; top: 0; z-index: 2; }
   .claim-pin span { flex: none; font-size: calc(11px * var(--fs)); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #256b41; }
   .claim-pin p { margin: 0; flex: 1; font-weight: 600; color: var(--text); }
@@ -2120,15 +2121,36 @@ const emph = t => {
   S1.byBand["9-12"] = { ...S1.byBand["9-12"], think: "This is an argumentative prompt. You will develop a precise, defensible claim and support it with evidence from the sources.", checklist: two };
 }
 const CLAIM_SECTION = { "2-3": 0, "4-5": 1, "6-8": 0, "9-12": 0 };   // Think · Answer the question · Introduction Paragraph
-// Which step holds the claim box, per band (Kennady, Nov 17): grades 2–3 type their claim on Step 2 (Prepare), after
-// highlighting, not on Step 1. Other bands are unchanged for now. The claim-writing supports move with the box.
-const CLAIM_STEP = { '2-3': 1, '4-5': 0, '6-8': 0, '9-12': 0 };
+// Argumentative, every band (Kennady's Nov 17 slide): Step 1 is the Think box and the TAP card. Step 2 is writing the claim, then
+// selecting evidence for it, then the counterclaim. The green "Ideas for my claim" highlight goes (the claim box takes its place),
+// the "Choose your best evidence" box is cut to one line, and the second claim box and the Step 1 claim checks are gone.
+const CLAIM_STEP = { '2-3': 1, '4-5': 1, '6-8': 1, '9-12': 1 };
 const claimStep = () => (ptype === 'arg' ? CLAIM_STEP[document.body.dataset.band] ?? 0 : 0);
 {
-  const [S1, S2] = assignment.steps, claimTools = ["claim-starters", "custom-write-a-claim"];
-  for (const S of [S1, S2]) if (!S.byBand["4-5"].supports) S.byBand["4-5"].supports = [...S.supports];   // 4–5 keeps today's lists
+  const [S1, S2] = assignment.steps, claimTools = ["claim-starters", "custom-write-a-claim", "custom-write-a-claim-2"], B = ["4-5", "6-8", "9-12"];
+  // Claim-writing supports move to Step 2 with the box, in every band.
+  for (const b of B) if (!S2.byBand[b].supports && b === "4-5") S2.byBand[b].supports = [...S2.supports];
+  const moved = { base: S1.supports.filter(k => claimTools.includes(k)) };
+  for (const b of B) if (S1.byBand[b].supports) moved[b] = S1.byBand[b].supports.filter(k => claimTools.includes(k));
   S1.supports = S1.supports.filter(k => !claimTools.includes(k));
-  S2.supports = [...S2.supports, ...claimTools];
+  for (const b of B) if (S1.byBand[b].supports) S1.byBand[b].supports = S1.byBand[b].supports.filter(k => !claimTools.includes(k));
+  S2.supports = [...S2.supports, ...moved.base];
+  let last = moved.base;
+  for (const b of B) { last = moved[b] || last; if (S2.byBand[b].supports) S2.byBand[b].supports = [...S2.byBand[b].supports, ...last]; }
+  // Step 1: no claim checks (the claim isn't written yet).
+  for (const b of B) S1.byBand[b].checklist = null;
+  S1.byBand["4-5"].instruction = "Read the prompt and the passage(s).";
+  // Step 2: no green highlight; instructions follow the new order. [Draft wording]
+  const noGreen = hs => hs.filter(h => h.color !== 'green');
+  S2.highlights = noGreen(S2.highlights);
+  for (const b of B) if (S2.byBand[b].highlights) S2.byBand[b].highlights = noGreen(S2.byBand[b].highlights);
+  S2.title = "Write your claim and find evidence";
+  S2.instruction = "Type your claim. Then look back at the passages for evidence that shows your side is right. Select the words, then pick a color.";
+  S2.byBand["4-5"].title = "Write your claim and find evidence";
+  S2.byBand["4-5"].instruction = "Type your claim. Then highlight evidence in the passages that supports it. Select text, then choose a color.";
+  S2.byBand["6-8"].instruction = "Type your claim. Then highlight your best evidence for it, and details someone who disagrees could use.";
+  S2.byBand["9-12"].instruction = "State your claim. Then annotate the evidence that substantiates it and the points you will need to rebut.";
+  S2.byBand["6-8"].bestEvidence = { title: "Choose your best evidence", steps: [], tip: "Keep the two or three details that best prove your reasons. Remove the highlight from the rest." };
 }
 // The header strip on later steps: the claim (Argumentative) or the main / central idea typed on Step 2 (Informational).
 const stripInfo = () => {
@@ -2198,7 +2220,7 @@ const TAP_BANDS = ['2-3', '4-5', '6-8', '9-12'];
 // Which step shows the TAP card, per band (Kennady, Nov 17): 2–3 moves to Step 1, right under the Think box; other bands stay on Step 2 for now.
 const TAP_STEP = { '2-3': 0, '4-5': 1, '6-8': 1, '9-12': 1 };
 // Informational (Kennady, Nov 17): TAP is on Step 1 in every band. Other types: 2–3 only so far.
-const tapStep = () => (ptype === 'info' ? 0 : TAP_STEP[document.body.dataset.band] ?? 1);
+const tapStep = () => (ptype === 'info' || ptype === 'arg' ? 0 : TAP_STEP[document.body.dataset.band] ?? 1);
 const TAP_PICK = ['2-3', '4-5'];
 const TAP = {
   audience: { "2-3": ["My teacher", "My class", "A friend", "My family"],
@@ -2271,23 +2293,17 @@ function renderStep() {
   if (s.checklist) html += `<ul class="checklist">${s.checklist.map((c, i) =>
     `<li><input type="checkbox" id="c${current}-${i}" ${answers[`c${current}-${i}`] ? 'checked' : ''}><label for="c${current}-${i}">${emph(c)}</label></li>`).join('')}</ul>`;
   if (!s.think && claimStep() === 0) html += claimBoxHtml;   // fallback for a step without THINK
+  if (current === 1 && claimStep() === 1) {   // Argumentative: the claim box at the top of Step 2, before the evidence colors
+    const cb = forBand(assignment.steps[0]).claimBox;
+    html += `<div class="claim-box"><label class="field-label" for="claimBox">${emph(cb.label)}</label>
+      <textarea id="claimBox" rows="2" placeholder="${cb.placeholder}">${esc(answers.claimBox || '')}</textarea><small class="claim-tip">${borrowTip}</small></div>`;
+  }
   if (s.mainIdea) html += `<div class="claim-box"><label class="field-label" for="mainIdea">${emph(s.mainIdea.label)}</label>
       <textarea id="mainIdea" rows="2" placeholder="${s.mainIdea.placeholder}">${esc(answers.mainIdea || '')}</textarea></div>`;
   if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
     `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
     <p class="hl-tip">Tip: Click a highlight to change its color or remove it.</p>`;
-  if (current === 1 && claimStep() === 1) {   // 2–3: the question and claim box, after highlighting
-    const cb = forBand(assignment.steps[0]).claimBox;
-    html += `<div class="claim-box claim-box-2"><div class="claim-q"><span>The question</span><p>${assignment.prompt.question}</p><small>${borrowTip}</small></div>
-      <label class="field-label" for="claimBox">${emph(cb.label)}</label>
-      <textarea id="claimBox" rows="2" placeholder="${cb.placeholder}">${esc(answers.claimBox || '')}</textarea></div>`;
-  }
-  if (s.bestEvidence && ptype === 'arg') html += `<div class="best-ev"><h4>${s.bestEvidence.title}</h4><ol>${s.bestEvidence.steps.map(x => `<li>${emph(x)}</li>`).join('')}</ol><p>${s.bestEvidence.tip}</p></div>`;
-  // Claim box again on Step 2 (Kennady, Oct 5): between the BEST evidence box and Plan your writing, so students
-  // can sharpen their claim once they've chosen their evidence. Same answer as Step 1's box.
-  if (s.bestEvidence && ptype === 'arg') html += `<div class="claim-box claim-box-2"><label class="field-label" for="claimBox">${emph('Your claim')}</label>
-      <p class="cb2-sub">Now that you’ve chosen your evidence, does your claim still fit? Make it stronger if you can.</p>
-      <textarea id="claimBox" rows="2" placeholder="Type your claim in one sentence.">${esc(answers.claimBox || '')}</textarea></div>`;
+  if (s.bestEvidence && ptype === 'arg') html += `<div class="best-ev"><h4>${s.bestEvidence.title}</h4>${s.bestEvidence.steps.length ? `<ol>${s.bestEvidence.steps.map(x => `<li>${emph(x)}</li>`).join('')}</ol>` : ''}<p>${s.bestEvidence.tip}</p></div>`;
   if (current === 1 && tapStep() === 1 && tapOn()) html += tapCardHtml();
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
