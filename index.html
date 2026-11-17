@@ -1074,6 +1074,7 @@
 }
 
 .proto-bar .band[hidden], #scrDraftNote[hidden], #scrDictionaryPanel[hidden] { display: none; }
+.proto-bar .band button[hidden] { display: none; }
 #scrDraftNote { font-size: 11px; color: #8a6a1c; }
 .home-assignment-card + .home-assignment-card { margin-top: 16px; }
 #scrView #scrToolbar > .rte-bar { width: 100%; padding: 0; border: 0; }
@@ -1131,6 +1132,7 @@ body[data-band="9-12"] #scrView .scr-intro { display: none; }
   <div class="band" id="ptype" title="Prompt type">
     <span>PROMPT</span>
     <button data-ptype="arg">Argumentative</button>
+    <button data-ptype="opin">Opinion</button>
     <button data-ptype="info">Informational</button>
     <button data-ptype="narr">Narrative</button>
   </div>
@@ -1673,7 +1675,14 @@ const setSupports = step => (LSCR ? LSCR.supports.filter(sp => sp.steps.includes
 // the default and higher bands override it (cascade 2–3 → 4–5 → 6–8 → 9–12).
 // ✦ = AI-written per passage in the product (sample text here). [Draft wording for review]
 let ptype = 'arg';
-const TYPE_KEYS = ['arg', 'info', 'narr'];
+const TYPE_KEYS = ['arg', 'opin', 'info', 'narr'];
+// Opinion (Kennady, Nov 17): Argumentative for grades 2–5, worded as opinion. It uses every Argumentative step, support and
+// organizer; "argumentative" reads "opinion" and "argument(s)" reads "opinion(s)". Only the 2–3 and 4–5 bands offer it.
+const isArg = () => ptype === 'arg' || ptype === 'opin';
+const OPINION_BANDS = ['2-3', '4-5'];
+const opinWords = html => String(html).split(/(<[^>]+>)/).map(part => part.startsWith('<') ? part : part
+  .replace(/ARGUMENTATIVE/g, 'OPINION').replace(/Argumentative/g, 'Opinion').replace(/an argumentative/g, 'an opinion').replace(/argumentative/g, 'opinion')
+  .replace(/Arguments\b/g, 'Opinions').replace(/arguments\b/g, 'opinions').replace(/Argument\b/g, 'Opinion').replace(/an argument\b/g, 'an opinion').replace(/argument\b/g, 'opinion')).join('');
 const typeSuffix = () => (ptype === 'arg' ? '' : '-' + ptype);
 const argPrompt = { ...assignment.prompt };
 const typePrompts = {
@@ -1772,7 +1781,7 @@ const typeStarters = {
           "9-12": ["Silence had always been my refuge, until", "Each time the sound returned,", "Then, without warning,", "Only later did I understand"] }
 };
 const pickBand = (map, band) => { const order = ['2-3', '4-5', '6-8', '9-12']; for (let i = order.indexOf(band); i >= 0; i--) if (map[order[i]]) return map[order[i]]; return map['2-3']; };
-const startersFor = band => pickBand(typeStarters[ptype], band);
+const startersFor = band => pickBand(typeStarters[ptype === 'opin' ? 'arg' : ptype], band);
 
 // ---------- Luna scaffolds: every band, every type ----------
 const aiTag = '<span class="ai-tag">✦ AI hint for this passage</span>';
@@ -1925,7 +1934,7 @@ const WORD_CHOICE = {
 };
 function wordChoiceTip() {
   const b = document.body.dataset.band, aud = typeof tapOn === 'function' && tapOn() && answers.tapAudience;
-  return `<div class="wt-choice"><p class="wt-ask">Word choice</p><p>${pickBand(WORD_CHOICE.band, b)} ${pickBand(WORD_CHOICE.type[ptype], b)}</p>${aud ? `<p class="wt-aud">Your audience: <b>${esc(aud)}</b></p>` : ''}</div>`;
+  return `<div class="wt-choice"><p class="wt-ask">Word choice</p><p>${pickBand(WORD_CHOICE.band, b)} ${pickBand(WORD_CHOICE.type[ptype === 'opin' ? 'arg' : ptype], b)}</p>${aud ? `<p class="wt-aud">Your audience: <b>${esc(aud)}</b></p>` : ''}</div>`;
 }
 function describeUI() {
   const swaps = wordBand(SWAPS), q = wt.swap.trim().toLowerCase(), hit = q && swaps[q];
@@ -2106,7 +2115,7 @@ const KEY_TERMS = {
 };
 const emph = t => {
   if (!t) return t;
-  const re = new RegExp('\\b(' + KEY_TERMS[ptype].join('|') + ')\\b', 'gi');
+  const re = new RegExp('\\b(' + (ptype === 'opin' ? [...KEY_TERMS.arg, 'opinions?'] : KEY_TERMS[ptype]).join('|') + ')\\b', 'gi');
   return String(t).split(/(<[^>]+>)/).map(part => (part.startsWith('<') ? part : part.replace(re, '<b>$1</b>'))).join('');
 };
 // Reviewer feedback (Step 1, Sept 29): students type their claim in Step 1. For 4–12 the genre line is a
@@ -2125,7 +2134,7 @@ const CLAIM_SECTION = { "2-3": 0, "4-5": 1, "6-8": 0, "9-12": 0 };   // Think ·
 // selecting evidence for it, then the counterclaim. The green "Ideas for my claim" highlight goes (the claim box takes its place),
 // the "Choose your best evidence" box is cut to one line, and the second claim box and the Step 1 claim checks are gone.
 const CLAIM_STEP = { '2-3': 1, '4-5': 1, '6-8': 1, '9-12': 1 };
-const claimStep = () => (ptype === 'arg' ? CLAIM_STEP[document.body.dataset.band] ?? 0 : 0);
+const claimStep = () => (isArg() ? CLAIM_STEP[document.body.dataset.band] ?? 0 : 0);
 {
   const [S1, S2] = assignment.steps, claimTools = ["claim-starters", "custom-write-a-claim", "custom-write-a-claim-2"], B = ["4-5", "6-8", "9-12"];
   // Claim-writing supports move to Step 2 with the box, in every band.
@@ -2138,7 +2147,8 @@ const claimStep = () => (ptype === 'arg' ? CLAIM_STEP[document.body.dataset.band
   let last = moved.base;
   for (const b of B) { last = moved[b] || last; if (S2.byBand[b].supports) S2.byBand[b].supports = [...S2.byBand[b].supports, ...last]; }
   // Step 1: no claim checks (the claim isn't written yet).
-  for (const b of B) S1.byBand[b].checklist = null;
+  // The claim checks move with the box: right under it on Step 2 (Kennady, Nov 17: "Move these little checks right after they write their claim in Step 2").
+  for (const b of B) { S1.byBand[b].claimChecks = S1.byBand[b].checklist; S1.byBand[b].checklist = null; }
   S1.byBand["4-5"].instruction = "Read the prompt and the passage(s).";
   // Step 2: no green highlight; instructions follow the new order. [Draft wording]
   const noGreen = hs => hs.filter(h => h.color !== 'green');
@@ -2154,12 +2164,12 @@ const claimStep = () => (ptype === 'arg' ? CLAIM_STEP[document.body.dataset.band
 }
 // The header strip on later steps: the claim (Argumentative) or the main / central idea typed on Step 2 (Informational).
 const stripInfo = () => {
-  if (ptype === 'arg') return { label: 'My claim', text: claimText(), step: claimStep(), box: 'claimBox' };
+  if (isArg()) return { label: 'My claim', text: claimText(), step: claimStep(), box: 'claimBox' };
   return null;   // Informational (Kennady, Nov 17): the main idea sits in the TAP box on Steps 3–4, not in the header
 };
-const claimText = () => (ptype === 'arg' ? (answers.claimBox || '').trim() : '');
+const claimText = () => (isArg() ? (answers.claimBox || '').trim() : '');
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const withType = (s, stepIdx) => (ptype === 'arg' ? s : { ...s, think: undefined, claimBox: undefined, ...forBand(typeSteps[ptype][stepIdx]) });
+const withType = (s, stepIdx) => (isArg() ? s : { ...s, think: undefined, claimBox: undefined, ...forBand(typeSteps[ptype][stepIdx]) });
 const ansKey = (step, i) => `o${step}-${document.body.dataset.band}${typeSuffix()}-${i}`;
 
 /* ---------------- Render ---------------- */
@@ -2220,7 +2230,7 @@ const TAP_BANDS = ['2-3', '4-5', '6-8', '9-12'];
 // Which step shows the TAP card, per band (Kennady, Nov 17): 2–3 moves to Step 1, right under the Think box; other bands stay on Step 2 for now.
 const TAP_STEP = { '2-3': 0, '4-5': 1, '6-8': 1, '9-12': 1 };
 // Informational (Kennady, Nov 17): TAP is on Step 1 in every band. Other types: 2–3 only so far.
-const tapStep = () => (ptype === 'info' || ptype === 'arg' ? 0 : TAP_STEP[document.body.dataset.band] ?? 1);
+const tapStep = () => (ptype === 'info' || isArg() ? 0 : TAP_STEP[document.body.dataset.band] ?? 1);
 const TAP_PICK = ['2-3', '4-5'];
 const TAP = {
   audience: { "2-3": ["My teacher", "My class", "A friend", "My family"],
@@ -2235,7 +2245,7 @@ const TAP = {
 };
 const tapOn = () => TAP_BANDS.includes(document.body.dataset.band);
 const tapPicks = () => TAP_PICK.includes(document.body.dataset.band);
-const tapPurpose = () => answers.tapPurpose || (tapPicks() ? pickBand(TAP.purpose, document.body.dataset.band).find(x => x[0] === ptype)[1] : '');
+const tapPurpose = () => answers.tapPurpose || (tapPicks() ? pickBand(TAP.purpose, document.body.dataset.band).find(x => x[0] === (ptype === 'opin' ? 'arg' : ptype))[1] : '');
 // Informational only (Kennady, Oct 12): a small note under the Topic box.
 const tapInfoNote = () => ptype === 'info' ? `<p class="tap-note">Avoid using words like “I think” or “In my opinion” in informational writing.</p>` : '';
 function tapCardHtml() {
@@ -2297,13 +2307,15 @@ function renderStep() {
     const cb = forBand(assignment.steps[0]).claimBox;
     html += `<div class="claim-box"><label class="field-label" for="claimBox">${emph(cb.label)}</label>
       <textarea id="claimBox" rows="2" placeholder="${cb.placeholder}">${esc(answers.claimBox || '')}</textarea><small class="claim-tip">${borrowTip}</small></div>`;
+    const checks = forBand(assignment.steps[0]).claimChecks;
+    if (checks) html += `<ul class="checklist">${checks.map((c, i) => `<li><input type="checkbox" id="cc-${i}" ${answers[`cc-${i}`] ? 'checked' : ''}><label for="cc-${i}">${emph(c)}</label></li>`).join('')}</ul>`;
   }
   if (s.mainIdea) html += `<div class="claim-box"><label class="field-label" for="mainIdea">${emph(s.mainIdea.label)}</label>
       <textarea id="mainIdea" rows="2" placeholder="${s.mainIdea.placeholder}">${esc(answers.mainIdea || '')}</textarea></div>`;
   if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
     `<li><span class="sw hl-${h.color}"></span><span><b>${h.label}</b><small>${h.hint}</small></span><span class="count" data-count="${h.color}">0</span></li>`).join('')}</ul>
     <p class="hl-tip">Tip: Click a highlight to change its color or remove it.</p>`;
-  if (s.bestEvidence && ptype === 'arg') html += `<div class="best-ev"><h4>${s.bestEvidence.title}</h4>${s.bestEvidence.steps.length ? `<ol>${s.bestEvidence.steps.map(x => `<li>${emph(x)}</li>`).join('')}</ol>` : ''}<p>${s.bestEvidence.tip}</p></div>`;
+  if (s.bestEvidence && isArg()) html += `<div class="best-ev"><h4>${s.bestEvidence.title}</h4>${s.bestEvidence.steps.length ? `<ol>${s.bestEvidence.steps.map(x => `<li>${emph(x)}</li>`).join('')}</ol>` : ''}<p>${s.bestEvidence.tip}</p></div>`;
   if (current === 1 && tapStep() === 1 && tapOn()) html += tapCardHtml();
   if (s.organizer) {
     html += `<div class="org">${s.organizer.map((sec, i) => {
@@ -2347,6 +2359,7 @@ function renderStep() {
   }
   // A prompt type without the green highlight (Informational) doesn't show green marks left by another type's sample.
   { const i = steps.findIndex(st => st.highlights); document.body.classList.toggle('no-green', !withType(forBand(steps[i]), i).highlights.some(h => h.color === 'green')); }
+  if (ptype === 'opin') html = opinWords(html);
   $('step').innerHTML = html;
   const syncCount = el => { const c = $('step').querySelector(`[data-for="${el.id}"]`); if (!c) return;
     const n = el.value.length, max = +el.dataset.max; c.textContent = `${n} / ${max} characters`; c.classList.toggle('over', n > max); };
@@ -2398,7 +2411,7 @@ function renderStep() {
     return `<div class="support-item ${sp.color === 'sand' ? 'sand' : i % 2 ? 'blue' : ''}">
       <button class="support" data-id="${id}" data-cms-key="${CMS_SCAFFOLD_KEYS[id] || id}" aria-expanded="false"><span class="ic">${ICON_LIST}</span><span>${sp.title}</span>${chev}</button>
       <div class="support-body" hidden>${id === 'ai-starters' ? sp.reply.replace('{{STARTERS}}', startersList()) : WORD_TOOLS[id] ? WORD_TOOLS[id]() : sp.reply}</div></div>`;
-  }).join('');
+  }).map(h => (ptype === 'opin' ? opinWords(h) : h)).join('');
 }
 // ---------- Step 4: combine organizer → essay, Revise / Edit checklist ----------
 function essayKey() { return `essay-${document.body.dataset.band}${typeSuffix()}`; }
@@ -2974,11 +2987,18 @@ $('passage').addEventListener('scroll', () => $('hlPop').classList.remove('show'
 addEventListener('scroll', () => $('hlPop').classList.remove('show'));
 
 // Grade band (prototype control) — remembered per browser
+// Opinion is offered for 2–3 and 4–5 only: its pill hides at 6–7 and up, and the higher bands hide while it is picked.
+const syncOpinion = () => {
+  const high = !OPINION_BANDS.includes(document.body.dataset.band);
+  const pill = document.querySelector('#ptype [data-ptype="opin"]'); if (pill) pill.hidden = high && ptype !== 'opin';
+  document.querySelectorAll('#band button').forEach(x => { x.hidden = ptype === 'opin' && !OPINION_BANDS.includes(x.dataset.band); });
+};
 const setBand = b => {
   document.body.dataset.band = b;
   document.querySelectorAll('#band button').forEach(x => x.classList.toggle('on', x.dataset.band === b));
   try { localStorage.setItem('lscr-band', b); } catch (e) {}
   rv.tab = 'revise'; rv.showPassage = false;
+  syncOpinion();
   renderStep();
 };
 let savedBand = '2-3';
@@ -2994,9 +3014,11 @@ try { savedMode = localStorage.getItem('lscr-mode') || 'ecr'; } catch (e) {}
 setMode(LSCR ? (LSCR.questions.length ? 'ecrq' : 'ecr') : savedMode === 'ecrq' ? 'ecrq' : 'ecr');
 const setPtype = t => {
   ptype = t;
+  if (t === 'opin' && !OPINION_BANDS.includes(document.body.dataset.band)) { document.body.dataset.band = '4-5'; document.querySelectorAll('#band button').forEach(x => x.classList.toggle('on', x.dataset.band === '4-5')); }
+  syncOpinion();
   document.querySelectorAll('#ptype button').forEach(x => x.classList.toggle('on', x.dataset.ptype === t));
   try { localStorage.setItem('lscr-ptype', t); } catch (e) {}
-  if (!LSCR) assignment.prompt = typePrompts[t];
+  if (!LSCR) assignment.prompt = typePrompts[t === 'opin' ? 'arg' : t];
   $('promptQ').innerHTML = assignment.prompt.question;
   $('promptDirections').innerHTML = assignment.prompt.directions;
   rv.tab = 'revise';
@@ -3423,7 +3445,7 @@ function restoreDraft(snapshot) {
   [['band', snapshot.band], ['ptype', ptype], ['mode', mode]].forEach(([id, value]) => {
     $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset[id] === value));
   });
-  if (!LSCR) assignment.prompt = typePrompts[ptype];
+  if (!LSCR) assignment.prompt = typePrompts[ptype === 'opin' ? 'arg' : ptype];
   $('promptQ').innerHTML = assignment.prompt.question; $('promptDirections').innerHTML = assignment.prompt.directions;
   lastEdit = null; lastRange = null; hidePop(); renderStep(); return true;
 }
@@ -3495,7 +3517,7 @@ function renderHome() {
     if ($('resumeScr')) $('resumeScr').onclick = () => showScr();
     return;
   }
-  const type = { arg: 'Argumentative', info: 'Informational', narr: 'Narrative' }[ptype];
+  const type = { arg: 'Argumentative', opin: 'Opinion', info: 'Informational', narr: 'Narrative' }[ptype];
   const place = inQuestions() ? `Question ${qi + 1} of ${questionSet.length}` : `Step ${current + 1} of ${assignment.steps.length} · ${assignment.steps[current].label}`;
   const title = LSCR?.title || assignment.passages[0]?.title || 'Writing assignment';
   const savedAt = savedDraft && new Date(savedDraft.savedAt);
