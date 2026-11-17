@@ -282,6 +282,9 @@
   .claim-strip.empty .cs-label, .claim-strip.empty .cs-edit { color: #8a6a1c; }
   .claim-strip.empty .cs-text { font-weight: 400; color: var(--muted); cursor: default; }
   /* Word tools */
+  .starter-list { display: grid; gap: 6px; margin: 8px 0 0; }
+  .starter-btn { text-align: left; padding: 7px 10px; border: 1px solid #cce6ef; border-radius: 8px; background: var(--cyan-softer); color: var(--navy); font: inherit; font-size: calc(13.5px * var(--fs)); line-height: 1.4; cursor: pointer; }
+  .starter-btn:hover { background: var(--cyan-soft); }
   .wt-ask { margin: 0 0 6px; font-weight: 700; color: var(--navy); }
   .wt-purposes { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
   .wt-purpose { border: 1px solid var(--border); background: var(--surface); color: var(--navy); border-radius: 999px; padding: 5px 10px; font: inherit; font-size: calc(13px * var(--fs)); font-weight: 600; cursor: pointer; }
@@ -348,6 +351,9 @@
   .tap-opts label:has(input:focus-visible) { outline: 3px solid #1fb3de; outline-offset: 2px; }
   .tap-strip { margin: -4px 0 12px; padding: 6px 10px; border-radius: 8px; background: #f6fbfd; border: 1px solid #cfe3ec; font-size: calc(13px * var(--fs)); color: #33454f; }
   .tap-strip b { color: var(--navy, #0d4257); }
+  .tap-box { display: grid; gap: 4px; padding: 8px 12px; }
+  .tap-box-label { justify-self: start; font-size: calc(10.5px * var(--fs)); font-weight: 800; letter-spacing: .1em; color: #fff; background: var(--navy, #0d4257); border-radius: 5px; padding: 1px 7px; }
+  .tap-box-edit { margin-left: 6px; height: 22px; padding: 0 8px; border-radius: 6px; border: 1px solid #cfe3ec; background: #fff; color: var(--navy, #0d4257); font: inherit; font-size: calc(12px * var(--fs)); font-weight: 700; cursor: pointer; }
   .char-count { text-align: right; font-size: calc(13px * var(--fs)); color: var(--muted); margin: -10px 0 16px; }
   .char-count.over { color: #b3261e; font-weight: 600; }
 
@@ -1845,7 +1851,8 @@ assignment.luna.supports["ai-starters"].byType = Object.fromEntries([
 // The starter list shown in the card: one per organizer section, labelled with the section keyword
 function startersList() {
   const i = assignment.steps.findIndex(st => st.organizer), org = withType(forBand(assignment.steps[i]), i).organizer, list = startersFor(document.body.dataset.band);
-  return '<ul>' + org.map((sec, j) => list[j] ? `<li><b>${sec.keyword}:</b> <i>${list[j]}…</i></li>` : '').join('') + '</ul>';
+  // Each starter is a button that goes straight into its organizer box, like SCR (Kennady, Nov 17). It fills an empty box only.
+  return '<div class="starter-list">' + org.map((sec, j) => list[j] ? `<button type="button" class="starter-btn" data-push-starter="${j}"><b>${sec.keyword}:</b> ${list[j]}…</button>` : '').join('') + '</div>';
 }
 const fullTransitions = assignment.luna.supports["example-transitions"].reply, fullDescription = assignment.luna.supports["example-description"].reply;
 scaffold("example-transitions", "Example Transition Words", {
@@ -2125,8 +2132,7 @@ const claimStep = () => (ptype === 'arg' ? CLAIM_STEP[document.body.dataset.band
 // The header strip on later steps: the claim (Argumentative) or the main / central idea typed on Step 2 (Informational).
 const stripInfo = () => {
   if (ptype === 'arg') return { label: 'My claim', text: claimText(), step: claimStep(), box: 'claimBox' };
-  if (ptype === 'info') return { label: ['2-3', '4-5'].includes(document.body.dataset.band) ? 'My main idea' : 'My central idea', text: (answers.mainIdea || '').trim(), step: 1, box: 'mainIdea' };
-  return null;
+  return null;   // Informational (Kennady, Nov 17): the main idea sits in the TAP box on Steps 3–4, not in the header
 };
 const claimText = () => (ptype === 'arg' ? (answers.claimBox || '').trim() : '');
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -2233,6 +2239,14 @@ function tapCardHtml() {
 }
 function tapStripHtml() {
   const t = (answers.tapTopic || '').trim(), a = (answers.tapAudience || '').trim(), p = tapPurpose().trim();
+  if (ptype === 'info') {
+    // One box, labelled TAP: the Step 1 plan plus the main / central idea typed on Step 2 (shown from Step 3 on).
+    const idea = (answers.mainIdea || '').trim(), ideaLabel = ['2-3', '4-5'].includes(document.body.dataset.band) ? 'Main idea' : 'Central idea';
+    const purpose = p ? p.replace(/^To /, '').replace(/^./, c => c.toLowerCase()) : '';
+    return `<div class="tap-strip tap-box"><span class="tap-box-label">TAP</span>
+      <div><b>Topic:</b> ${t ? esc(t) : '<i>not typed yet</i>'}${a ? ` · <b>Audience:</b> ${esc(a)}` : ''}${purpose ? ` · <b>Purpose:</b> to ${esc(purpose)}` : ''}</div>
+      ${current > 1 ? `<div><b>${ideaLabel}:</b> ${idea ? esc(idea) : '<i>not typed yet</i>'} <button type="button" class="tap-box-edit" data-edit-idea>${idea ? 'Edit' : 'Go to Step 2'}</button></div>` : ''}</div>`;
+  }
   if (!t && !a) return '';
   return `<div class="tap-strip"><b>My plan:</b> ${t ? esc(t) : '<i>no topic yet</i>'}${a ? ` · <b>For:</b> ${esc(a)}` : ''}${p ? ` · <b>To:</b> ${esc(p.replace(/^To /, '').replace(/^./, c => c.toLowerCase()))}` : ''}</div>`;
 }
@@ -2852,10 +2866,12 @@ function useStarters(which) {
   renderStep();
 }
 $('step').addEventListener('click', e => { const b = e.target.closest('[data-starter]'); if (b) useStarters(+b.dataset.starter); });
+$('step').addEventListener('click', e => { if (e.target.closest('[data-edit-idea]')) { current = 1; renderStep(); setTimeout(() => $('mainIdea') && $('mainIdea').focus(), 0); } });
 $('supports').addEventListener('mousedown', e => { if (e.target.closest('[data-word]')) e.preventDefault(); });   // keep the student's cursor
 $('supports').addEventListener('click', e => {
   if (wordToolClick(e)) return;
   if (e.target.closest('[data-fill-starters]')) return useStarters('all');
+  const ps = e.target.closest('[data-push-starter]'); if (ps) return useStarters(+ps.dataset.pushStarter);
   const b = e.target.closest('.support'); if (!b) return;
   const item = b.parentElement, opening = !item.classList.contains('open');
   // one open at a time
