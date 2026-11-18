@@ -353,6 +353,14 @@
   .tap-opts label:has(input:focus-visible) { outline: 3px solid #1fb3de; outline-offset: 2px; }
   .tap-strip { margin: -4px 0 12px; padding: 6px 10px; border-radius: 8px; background: #f6fbfd; border: 1px solid #cfe3ec; font-size: calc(13px * var(--fs)); color: #33454f; }
   .tap-strip b { color: var(--navy, #0d4257); }
+  .idea-box { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; padding: 8px 10px 8px 12px; border-radius: 10px; background: #eaf8ee; border: 1px solid #bfe3cb; }
+  .idea-box.empty { background: #fff8e6; border-color: #f0dcb8; }
+  .idea-label { flex: none; font-size: calc(11px * var(--fs)); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #1d6b3a; }
+  .idea-box.empty .idea-label { color: #8a6a1c; }
+  .idea-text { flex: 1 1 auto; min-width: 0; color: var(--navy, #0d4257); font-weight: 600; }
+  .idea-box.empty .idea-text { font-weight: 400; color: var(--muted); }
+  .idea-edit { flex: none; height: 26px; padding: 0 10px; border-radius: 7px; border: 1px solid #bfe3cb; background: #fff; color: #1d6b3a; font: inherit; font-size: calc(12.5px * var(--fs)); font-weight: 700; cursor: pointer; }
+  .idea-box.empty .idea-edit { border-color: #f0dcb8; color: #8a6a1c; }
   .tap-box { display: grid; gap: 4px; padding: 8px 12px; }
   .tap-box-label { justify-self: start; font-size: calc(10.5px * var(--fs)); font-weight: 800; letter-spacing: .1em; color: #fff; background: var(--navy, #0d4257); border-radius: 5px; padding: 1px 7px; }
   .tap-box-edit { margin-left: 6px; height: 22px; padding: 0 8px; border-radius: 6px; border: 1px solid #cfe3ec; background: #fff; color: var(--navy, #0d4257); font: inherit; font-size: calc(12px * var(--fs)); font-weight: 700; cursor: pointer; }
@@ -2170,6 +2178,11 @@ const stripInfo = () => {
   if (ptype === 'narr') return { label: 'My story idea', text: (answers.storyIdea || '').trim(), step: 1, box: 'storyIdea' };
   return null;   // Informational (Kennady, Nov 17): the main idea sits in the TAP box on Steps 3–4, not in the header
 };
+const ideaInfo = () => {
+  if (isArg()) return { label: 'My claim', text: claimText(), box: 'claimBox' };
+  if (ptype === 'narr') return { label: 'My story idea', text: (answers.storyIdea || '').trim(), box: 'storyIdea' };
+  return { label: ['2-3', '4-5'].includes(document.body.dataset.band) ? 'My main idea' : 'My central idea', text: (answers.mainIdea || '').trim(), box: 'mainIdea' };
+};
 const claimText = () => (isArg() ? (answers.claimBox || '').trim() : '');
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const withType = (s, stepIdx) => (isArg() ? s : { ...s, think: undefined, claimBox: undefined, ...forBand(typeSteps[ptype][stepIdx]) });
@@ -2358,9 +2371,15 @@ function renderStep() {
              <textarea id="${k}" class="${f.big ? 'big' : ''}" placeholder="${f.placeholder}" style="margin-bottom:16px" ${f.maxChars ? `data-max="${f.maxChars}"` : ''}>${esc(answers[k] || '')}</textarea>`;
     if (f.maxChars) html += `<div class="char-count" data-for="${k}"></div>`;
   });
-  if (current > tapStep() && tapOn()) html = html.replace('</h3>', '</h3>' + tapStripHtml());
+  // Nov 18 (Kennady): the reminder of what the student typed on Step 2 (claim / main or central idea / story idea) sits inside
+  // the step on Steps 3–4, right under the instruction and above the graphic organizer, not in the panel header.
+  const idea = ideaInfo();
+  if (current > 1) {
+    const box = `<div class="idea-box${idea.text ? '' : ' empty'}"><span class="idea-label">${idea.label}</span><span class="idea-text">${idea.text ? esc(idea.text) : 'Not typed yet.'}</span><button type="button" class="idea-edit" data-edit-idea>${idea.text ? 'Edit' : 'Go to Step 2'}</button></div>`;
+    html = html.includes('<p class="instr">') ? html.replace(/(<p class="instr">[\s\S]*?<\/p>)/, '$1' + box) : html.replace('</h3>', '</h3>' + box);
+  }
   // Steps 2–4: the student's claim sits in the panel header, outside the scrolling area, so it never covers the work
-  const strip = stripInfo(), showClaim = !!strip && current > strip.step, cs = $('claimStrip');
+  const strip = stripInfo(), showClaim = false, cs = $('claimStrip');   // header strip retired Nov 18; see the idea box above
   cs.hidden = !showClaim; $('midEyebrow').hidden = showClaim;
   if (showClaim) {
     cs.className = 'claim-strip' + (strip.text ? '' : ' empty');
@@ -2910,7 +2929,7 @@ function useStarters(which) {
   renderStep();
 }
 $('step').addEventListener('click', e => { const b = e.target.closest('[data-starter]'); if (b) useStarters(+b.dataset.starter); });
-$('step').addEventListener('click', e => { if (e.target.closest('[data-edit-idea]')) { current = 1; renderStep(); setTimeout(() => $('mainIdea') && $('mainIdea').focus(), 0); } });
+$('step').addEventListener('click', e => { if (e.target.closest('[data-edit-idea]')) { const b = ideaInfo().box; current = 1; renderStep(); setTimeout(() => $(b) && $(b).focus(), 0); } });
 $('supports').addEventListener('mousedown', e => { if (e.target.closest('[data-word]')) e.preventDefault(); });   // keep the student's cursor
 $('supports').addEventListener('click', e => {
   if (wordToolClick(e)) return;
