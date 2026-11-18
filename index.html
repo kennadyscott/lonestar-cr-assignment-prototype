@@ -1743,7 +1743,8 @@ const typeSteps = {
         "4-5": { instruction: R('4-5'), think: "This is a narrative prompt. You will write a story with characters, a setting and events.", checklist: ["Who is your main character, and where and when does the story take place?", "What sound causes the problem, and how will it be solved?"] },
         "6-8": { instruction: R('6-8'), think: "Genre: narrative. Develop a real or imagined experience with descriptive details.", checklist: ["Establish a narrator or point of view, characters and a setting.", "Plan a clear sequence of events: what sound drives the conflict, and how is it resolved?"] },
         "9-12": { instruction: R('9-12'), think: "Task: narrative. Craft a story with a purposeful structure and vivid, precise language.", checklist: ["Decide on point of view and how you will reveal character.", "Plan how the sound builds tension or reflection toward a meaningful resolution."] } } },
-    { title: "Find story ideas", instruction: "Look back at the passages for sounds and words you can use in your story. Select the words, then pick a color.",
+    { storyIdea: { label: "Type your story idea.", placeholder: "My story is about…", tip: "Use the prompt to help you plan your story." },   // Nov 17: moved here from Step 1 (CMS wording), every band
+      title: "Find story ideas", instruction: "Look back at the passages for sounds and words you can use in your story. Select the words, then pick a color.",
       highlights: HL(["Sound ideas", "Sounds your story could use"], ["Describing words", "Words that help readers hear and see"], ["Story ideas", "Things that could happen in your story"]),
       supports: ["narr-problem", "narr-sequence"],
       byBand: {
@@ -2165,6 +2166,7 @@ const claimStep = () => (isArg() ? CLAIM_STEP[document.body.dataset.band] ?? 0 :
 // The header strip on later steps: the claim (Argumentative) or the main / central idea typed on Step 2 (Informational).
 const stripInfo = () => {
   if (isArg()) return { label: 'My claim', text: claimText(), step: claimStep(), box: 'claimBox' };
+  if (ptype === 'narr') return { label: 'My story idea', text: (answers.storyIdea || '').trim(), step: 1, box: 'storyIdea' };
   return null;   // Informational (Kennady, Nov 17): the main idea sits in the TAP box on Steps 3–4, not in the header
 };
 const claimText = () => (isArg() ? (answers.claimBox || '').trim() : '');
@@ -2230,7 +2232,8 @@ const TAP_BANDS = ['2-3', '4-5', '6-8', '9-12'];
 // Which step shows the TAP card, per band (Kennady, Nov 17): 2–3 moves to Step 1, right under the Think box; other bands stay on Step 2 for now.
 const TAP_STEP = { '2-3': 0, '4-5': 1, '6-8': 1, '9-12': 1 };
 // Informational (Kennady, Nov 17): TAP is on Step 1 in every band. Other types: 2–3 only so far.
-const tapStep = () => (ptype === 'info' || isArg() ? 0 : TAP_STEP[document.body.dataset.band] ?? 1);
+// Nov 17 (Kennady): the TAP card is on Step 1, under the Think box, for every prompt type and band.
+const tapStep = () => 0;
 const TAP_PICK = ['2-3', '4-5'];
 const TAP = {
   audience: { "2-3": ["My teacher", "My class", "A friend", "My family"],
@@ -2310,6 +2313,8 @@ function renderStep() {
     const checks = forBand(assignment.steps[0]).claimChecks;
     if (checks) html += `<ul class="checklist">${checks.map((c, i) => `<li><input type="checkbox" id="cc-${i}" ${answers[`cc-${i}`] ? 'checked' : ''}><label for="cc-${i}">${emph(c)}</label></li>`).join('')}</ul>`;
   }
+  if (s.storyIdea) html += `<div class="claim-box"><label class="field-label" for="storyIdea">${emph(s.storyIdea.label)}</label>
+      <textarea id="storyIdea" rows="2" placeholder="${s.storyIdea.placeholder}">${esc(answers.storyIdea || '')}</textarea><small class="claim-tip">${s.storyIdea.tip}</small></div>`;
   if (s.mainIdea) html += `<div class="claim-box"><label class="field-label" for="mainIdea">${emph(s.mainIdea.label)}</label>
       <textarea id="mainIdea" rows="2" placeholder="${s.mainIdea.placeholder}">${esc(answers.mainIdea || '')}</textarea></div>`;
   if (s.highlights) html += `<ul class="hl-legend">${s.highlights.map(h =>
