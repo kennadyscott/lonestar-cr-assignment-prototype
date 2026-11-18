@@ -338,6 +338,7 @@
   .claim-box-2 .cb2-sub { margin: 0 0 6px; font-size: calc(13px * var(--fs)); color: var(--muted); }
   .tap-card-top { margin: 0 0 16px !important; }
   .tap-card { margin-top: 18px; border: 1px solid #cfe3ec; border-radius: 12px; padding: 14px 16px; background: #f6fbfd; }
+  .tap-note p { margin: 0; color: var(--navy, #0d4257); }
   .tap-card h4 { margin: 0 0 2px; font-size: calc(15px * var(--fs)); color: var(--navy, #0d4257); }
   .tap-card .tap-sub { margin: 0 0 10px; font-size: calc(13px * var(--fs)); color: var(--muted); }
   .tap-row { margin-top: 10px; }
@@ -2274,6 +2275,13 @@ function tapCardHtml() {
     <div class="tap-row"><span class="tap-q"><span class="tap-letter">P</span>Purpose: Why are you writing?</span>${opts('tapPurpose', pickBand(TAP.purpose, band).map(x => x[1]), pur)}</div></div>`;
 }
 function tapStripHtml() {
+  // Nov 18 (Kennady): students no longer type a plan on Step 1, so later steps show no Topic · Audience · Purpose line.
+  // Informational keeps its main / central idea line from Step 3 on, with the Edit link back to Step 2.
+  if (tapStep() === 0) {
+    if (ptype !== 'info' || current < 2) return '';
+    const idea = (answers.mainIdea || '').trim(), ideaLabel = ['2-3', '4-5'].includes(document.body.dataset.band) ? 'My main idea' : 'My central idea';
+    return `<div class="tap-strip tap-box"><div><b>${ideaLabel}:</b> ${idea ? esc(idea) : '<i>not typed yet</i>'} <button type="button" class="tap-box-edit" data-edit-idea>${idea ? 'Edit' : 'Go to Step 2'}</button></div></div>`;
+  }
   const t = (answers.tapTopic || '').trim(), a = (answers.tapAudience || '').trim(), p = tapPurpose().trim();
   if (ptype === 'info') {
     // One box, labelled TAP: the Step 1 plan plus the main / central idea typed on Step 2 (shown from Step 3 on).
@@ -2296,7 +2304,8 @@ function renderStep() {
     `<button class="${i < current ? 'done' : i === current ? 'active' : ''}" data-i="${i}"><div class="bar"></div>${i + 1}. ${st.label}</button>`).join('');
   let html = `<h3>${s.title}</h3><p class="instr">${emph(s.instruction)}</p>`;
   if (s.think) html += `<div class="think-box"><span>Think</span><p>${emph(s.think)}</p></div>`;
-  if (current === 0 && tapStep() === 0 && tapOn()) html += tapCardHtml().replace('class="tap-card"', 'class="tap-card tap-card-top"');
+  // Nov 18 (Kennady): no planning card on Step 1. One box reminds students to think about Topic, Audience and Purpose; nothing is typed.
+  if (current === 0 && tapStep() === 0 && tapOn()) html += `<div class="tap-card tap-card-top tap-note"><p>Take a moment to think about your Topic, Audience, and Purpose.</p></div>`;
   // The prompt question sits right above the claim box, so students can reuse its words in their claim
   const borrowTip = { "2-3": "Use words from the question in your answer.", "4-5": "Turn the question into a statement that takes a side.", "6-8": "Answer the question directly, using its key words.", "9-12": "Respond to the question directly and precisely." }[document.body.dataset.band];
   const claimBoxHtml = s.claimBox ? `<div class="claim-box"><div class="claim-q"><span>The question</span><p>${assignment.prompt.question}</p><small>${borrowTip}</small></div>
