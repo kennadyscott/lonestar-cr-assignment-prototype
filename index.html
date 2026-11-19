@@ -3651,7 +3651,9 @@ else { setPageView('assignment'); syncTaskControls('assignment'); }
   const stop = () => { if (synth) synth.cancel(); if (playing) { playing.btn.classList.remove('playing'); playing.btn.setAttribute('aria-pressed', 'false'); playing.el.classList.remove('ra-reading'); } playing = null; };
   const speak = (btn, el) => {
     const again = playing && playing.btn === btn; stop(); if (again || !synth) return;
-    const text = (el.innerText || '').replace(/\s+/g, ' ').trim(); if (!text) return;
+    // Never read what the student typed: the idea reminder reads only its label (and "Not typed yet" when empty).
+    const src = el.matches('.idea-box') ? [el.querySelector('.idea-label'), el.classList.contains('empty') && el.querySelector('.idea-text')].filter(Boolean).map((x) => x.innerText).join('. ') : el.innerText;
+    const text = (src || '').replace(/\s+/g, ' ').trim(); if (!text) return;
     const u = new SpeechSynthesisUtterance(text); u.rate = rate(); const v = voice(); if (v) u.voice = v;
     u.onend = u.onerror = () => { if (playing && playing.btn === btn) stop(); };
     playing = { btn, el }; btn.classList.add('playing'); btn.setAttribute('aria-pressed', 'true'); el.classList.add('ra-reading'); synth.speak(u);
