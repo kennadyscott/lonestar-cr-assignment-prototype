@@ -1089,6 +1089,8 @@ body.ra-on .ra-btn { display: inline-flex; }
 .ra-btn svg { width: 15px; height: 15px; }
 .ra-btn:hover { background: #eef6fa; }
 .ra-btn.playing { background: #02384d; color: #fff; border-color: #02384d; }
+#scrLengthDialog .ra-btn, #scrChecklistDialog .ra-btn { min-height: 0; width: 26px; height: 26px; padding: 0; border-radius: 999px; border: 1px solid #b9d7e6; background: #fff; color: #02384d; }
+#scrLengthDialog .ra-btn.playing, #scrChecklistDialog .ra-btn.playing { background: #02384d; color: #fff; }
 .ra-reading { outline: 3px solid #ffd45a; outline-offset: 2px; border-radius: 6px; }
 .ra-pass { display: none; align-items: center; gap: 6px; white-space: nowrap; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #b9d7e6; background: #fff; color: #02384d; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 body.ra-on .ra-pass { display: inline-flex; }
@@ -3643,6 +3645,7 @@ else { setPageView('assignment'); syncTaskControls('assignment'); }
     '#step .best-ev': 'Choose your best evidence', '#step .idea-box': 'your idea', '#step .org-head': 'this part of the organizer', '#lunaGreeting': 'Luna',
     '#supports .support-body': 'this support', '.qs-intro': 'the directions', '.qs-q': 'the question', '.qs-opts': 'the answer choices',
     '.scr-instruction': 'the directions', '#scrQuestion': 'the question', '.scr-bubble': 'Luna', '#scrSupports .scr-support-content': 'this support',
+    '#scrWarningMessage': 'this message', '#scrChecklistIntro': 'the checklist directions', '#scrChecklistRows .scr-checklist-label': 'this checklist item', '#scrStatus': 'this message',
   };
   const PASSAGES = [['#passageBar .tools', '#passage'], ['#scrView .scr-reading-tools', '#scrPassage']];
   const synth = window.speechSynthesis; let playing = null;
