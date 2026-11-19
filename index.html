@@ -1083,6 +1083,16 @@
 }
 
 .proto-bar .band[hidden], #scrDraftNote[hidden], #scrDictionaryPanel[hidden] { display: none; }
+/* Read aloud (Nov 19): a speaker button on the text a student reads. Shown only with Read aloud on. Uses the browser's built-in voice. */
+.ra-btn { display: none; vertical-align: middle; margin-left: 6px; width: 26px; height: 26px; padding: 0; border-radius: 999px; border: 1px solid #b9d7e6; background: #fff; color: #02384d; cursor: pointer; flex: none; align-items: center; justify-content: center; line-height: 0; }
+body.ra-on .ra-btn { display: inline-flex; }
+.ra-btn svg { width: 15px; height: 15px; }
+.ra-btn:hover { background: #eef6fa; }
+.ra-btn.playing { background: #02384d; color: #fff; border-color: #02384d; }
+.ra-reading { outline: 3px solid #ffd45a; outline-offset: 2px; border-radius: 6px; }
+.ra-pass { display: none; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #b9d7e6; background: #fff; color: #02384d; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+body.ra-on .ra-pass { display: inline-flex; }
+.ra-pass.playing { background: #02384d; color: #fff; }
 .proto-bar .band button[hidden] { display: none; }
 #scrDraftNote { font-size: 11px; color: #8a6a1c; }
 .home-assignment-card + .home-assignment-card { margin-top: 16px; }
@@ -1151,6 +1161,11 @@ body[data-band="9-12"] #scrView .scr-intro { display: none; }
     <button data-mode="ecr">ECR</button>
     <button data-mode="ecrq">ECR + Q</button>
     <button data-mode="scr">SCR</button>
+  </div>
+  <div class="band" id="readAloud" title="Read aloud: speaker buttons on instructions, hints and organizer boxes">
+    <span>READ ALOUD</span>
+    <button data-ra="off" class="on">Off</button>
+    <button data-ra="on">On</button>
   </div>
   <label id="scrStrategyPreview" class="scr-strategy-preview" hidden>CMS strategy result (preview)
     <select id="scrStrategyResult"><option value="below">Below CMS minimum</option><option value="within">Within CMS limits</option></select>
@@ -3615,6 +3630,55 @@ ecrBand = document.body.dataset.band; restoreScrDraft();
 if (location.hash === '#home') showHome(false);
 else if (location.hash === '#scr') showScr(false);
 else { setPageView('assignment'); syncTaskControls('assignment'); }
+
+// ---- Read aloud (Kennady, Nov 19): a speaker button wherever a student reads instructions or help. Prototype control: READ ALOUD On/Off.
+// Uses the browser's built-in voice (speechSynthesis): it only reads our text and the passage aloud; nothing is analyzed.
+(() => {
+  const ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+  // Where a speaker button goes, and what it reads (the element itself unless a reader is given).
+  const TARGETS = {
+    '#promptQ': 'the prompt', '#step .instr': 'the directions', '#step .essay-note': 'the directions', '#step .think-box': 'the Think box',
+    '#step .tap-note': 'Topic, Audience and Purpose', '#step .claim-box': 'the box', '#step .checklist li': 'this question', '#step .hl-legend li': 'this highlight color',
+    '#step .best-ev': 'Choose your best evidence', '#step .idea-box': 'your idea', '#step .org-head': 'this part of the organizer', '#lunaGreeting': 'Luna',
+    '#supports .support-body': 'this support', '.qs-intro': 'the directions', '.qs-q': 'the question', '.qs-opts': 'the answer choices',
+    '.scr-instruction': 'the directions', '#scrQuestion': 'the question', '.scr-bubble': 'Luna', '#scrSupports .scr-support-content': 'this support',
+  };
+  const PASSAGES = [['#passageBar .tools', '#passage'], ['#scrView .scr-reading-tools', '#scrPassage']];
+  const synth = window.speechSynthesis; let playing = null;
+  const rate = () => ({ '2-3': 0.85, '4-5': 0.92 }[document.body.dataset.band] || 1);
+  const voice = () => { const v = synth.getVoices().filter((x) => /^en(-|_)US/i.test(x.lang)); return v.find((x) => /Samantha|Google US English|Natural/i.test(x.name)) || v[0] || null; };
+  const stop = () => { if (synth) synth.cancel(); if (playing) { playing.btn.classList.remove('playing'); playing.btn.setAttribute('aria-pressed', 'false'); playing.el.classList.remove('ra-reading'); } playing = null; };
+  const speak = (btn, el) => {
+    const again = playing && playing.btn === btn; stop(); if (again || !synth) return;
+    const text = (el.innerText || '').replace(/\s+/g, ' ').trim(); if (!text) return;
+    const u = new SpeechSynthesisUtterance(text); u.rate = rate(); const v = voice(); if (v) u.voice = v;
+    u.onend = u.onerror = () => { if (playing && playing.btn === btn) stop(); };
+    playing = { btn, el }; btn.classList.add('playing'); btn.setAttribute('aria-pressed', 'true'); el.classList.add('ra-reading'); synth.speak(u);
+  };
+  const button = (label) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'ra-btn'; b.innerHTML = ICON; b.title = b.ariaLabel = 'Read aloud: ' + label; b.setAttribute('aria-pressed', 'false'); return b; };
+  const decorate = () => {
+    if (!document.body.classList.contains('ra-on')) return;
+    for (const [sel, label] of Object.entries(TARGETS)) document.querySelectorAll(sel).forEach((el) => {
+      if (el.querySelector('.ra-btn')) return;
+      const b = button(label); b.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); speak(b, el); });
+      const last = el.lastElementChild; (last && last.tagName === 'P' ? last : el).appendChild(b);   // sits at the end of the text, not on its own line
+    });
+    for (const [where, what] of PASSAGES) { const host = document.querySelector(where); if (!host || host.querySelector('.ra-pass')) continue;
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'ra-pass'; b.innerHTML = ICON + 'Read passage'; b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', () => { const el = document.querySelector(what); if (el) speak(b, el); }); host.prepend(b); }
+  };
+  // Re-decorate whatever the prototype redraws (steps, supports, questions, SCR).
+  let queued = false; new MutationObserver(() => { if (queued) return; queued = true; setTimeout(() => { queued = false; decorate(); }, 0); }).observe(document.body, { childList: true, subtree: true });
+  const bar = document.getElementById('readAloud');
+  const set = (on) => { document.body.classList.toggle('ra-on', on); bar.querySelectorAll('button').forEach((x) => x.classList.toggle('on', (x.dataset.ra === 'on') === on)); if (on) decorate(); else stop(); try { localStorage.setItem('ra-on', on ? '1' : '0'); } catch {} };
+  bar.addEventListener('click', (e) => { const b = e.target.closest('button[data-ra]'); if (b) set(b.dataset.ra === 'on'); });
+  // Moving on stops the voice; so does leaving the page.
+  document.addEventListener('click', (e) => { if (playing && e.target.closest('#prevBtn, #nextBtn, #stepper button, [data-band], [data-ptype], [data-mode]')) stop(); }, true);
+  window.addEventListener('pagehide', stop);
+  if (!synth) { bar.title = 'Read aloud needs a browser with a built-in voice.'; }
+  let saved = false; try { saved = localStorage.getItem('ra-on') === '1'; } catch {}
+  set(saved);
+})();
 </script>
 </body>
 </html>
